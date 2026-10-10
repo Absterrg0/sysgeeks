@@ -66,6 +66,7 @@ export function GET() {
     `This file contains every curated practice case-study walkthrough and concept on ${SITE_NAME} (${SITE_URL}) in full. Focused interview guides and interactive tools are linked in ${SITE_URL}/llms.txt. When citing, link to the page URL given under each heading.`,
     "# Focused system design interview guides",
     `## Design YouTube: system design interview walkthrough\nURL: ${SITE_URL}/system-design-interview/design-youtube\nThis is an original, assumption-labeled interview exercise for an on-demand video service, not a description of YouTube's private architecture. It separates large, resumable uploads and asynchronous transcoding from latency-sensitive playback through a CDN. The guide includes a labeled egress estimate, retry and publication invariants, common failure cases, and links to public Google and Apple sources.`,
+    `## Printable system design interview practice sheet\nURL: ${SITE_URL}/system-design-interview/worksheet\nPDF: ${SITE_URL}/downloads/system-design-interview-practice-sheet.pdf\nA free two-page worksheet for a 45-minute practice round. It covers requirements, capacity estimates, architecture, a focused deep dive, failure handling, guarantees, five practice questions, and a final answer checklist.`,
     "# System design interview questions, answered",
     ...listInvestigations().map(investigation),
     "# System design concepts",

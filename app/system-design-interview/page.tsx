@@ -235,6 +235,9 @@ export default function SystemDesignInterviewPage() {
             <Link href="/system-design-mock-interview" className="font-medium text-accent hover:underline">
               How the mock interview works
             </Link>
+            <Link href="/system-design-interview/worksheet" className="font-medium text-accent hover:underline">
+              Download the free printable practice sheet
+            </Link>
           </div>
         </div>
       </Section>
