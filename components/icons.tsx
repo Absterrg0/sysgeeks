@@ -84,6 +84,15 @@ export function UnderstandingIcon() {
   );
 }
 
+export function CapacityIcon() {
+  return (
+    <Icon>
+      <path d="M2 13.5h12M3 11l3-3 2 1.5 4-5 2 1" />
+      <path d="M11.5 4.5H14v2.5" />
+    </Icon>
+  );
+}
+
 export function ArrowIcon() {
   return (
     <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" className="shrink-0">

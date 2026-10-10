@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
     "/",
     "/system-design-interview",
+    "/capacity-estimator",
     "/investigations",
     "/concepts",
     "/companies",

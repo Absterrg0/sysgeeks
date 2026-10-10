@@ -26,6 +26,7 @@ export function GET() {
     "## Start here",
     "",
     `- [How to prepare for a system design interview](${SITE_URL}/system-design-interview): What the interview tests, how to spend the 45 minutes, common mistakes, and which systems to practise.`,
+    `- [System design capacity estimator](${SITE_URL}/capacity-estimator): Estimate average and peak QPS, storage, and network throughput from explicit workload assumptions.`,
     `- [About ${SITE_NAME}](${SITE_URL}/about): How the exercises are built, where the material comes from, and how answers are checked.`,
     `- [How ${SITE_NAME} uses AI](${SITE_URL}/ai): Which features use AI, what is sent to model providers, which models run, how long data is kept, and how AI output is labelled.`,
     "",

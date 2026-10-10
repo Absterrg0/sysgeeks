@@ -31,6 +31,7 @@ const PLAN = [
     step: "Estimate the load",
     minutes: "about 5 minutes",
     text: "Requests per second at peak, storage per year, the ratio of reads to writes. Round freely. The point is not the number but what it tells you: which part of the system is under pressure, and which is not worth optimising.",
+    tool: true,
   },
   {
     step: "Sketch the high-level design",
@@ -185,6 +186,11 @@ export default function SystemDesignInterviewPage() {
                   {item.step} <span className="font-normal text-ink-3">({item.minutes})</span>
                 </h3>
                 <p className="mt-1 text-[0.9375rem] leading-relaxed text-ink-2">{item.text}</p>
+                {"tool" in item && item.tool ? (
+                  <Link href="/capacity-estimator" className="mt-2 inline-block text-[0.8125rem] font-medium text-accent hover:underline">
+                    Estimate QPS, storage and bandwidth →
+                  </Link>
+                ) : null}
               </div>
             </li>
           ))}

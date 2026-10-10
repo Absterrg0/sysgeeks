@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { CompaniesIcon, ConceptsIcon, InvestigationsIcon, ProjectsIcon, UnderstandingIcon } from "@/components/icons";
+import { CapacityIcon, CompaniesIcon, ConceptsIcon, InvestigationsIcon, ProjectsIcon, UnderstandingIcon } from "@/components/icons";
 
 export type NavItem = { href: string; label: string; icon: ReactNode; description: string };
 
@@ -52,6 +52,7 @@ export const LEARN: NavItem[] = [
     description: "Real systems to learn, play with and break",
   },
   EXAMPLES,
+  { href: "/capacity-estimator", label: "Capacity", icon: <CapacityIcon />, description: "Estimate QPS, storage and bandwidth" },
   { href: "/concepts", label: "Concepts", icon: <ConceptsIcon />, description: "The mechanisms, and how they fail" },
   {
     href: "/review",
