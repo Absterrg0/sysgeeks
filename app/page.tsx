@@ -166,6 +166,9 @@ export default function Home() {
               <Link href="/system-design-mock-interview" className="transition-colors hover:text-accent">
                 How timed practice works →
               </Link>
+              <Link href="/system-design-interview/worksheet" className="transition-colors hover:text-accent">
+                Free system design interview worksheet →
+              </Link>
             </div>
           </div>
 
