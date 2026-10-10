@@ -145,8 +145,9 @@ export default function Home() {
               System design interview practice on real systems.
             </h1>
             <p className="mt-5 max-w-[52ch] text-[1.0625rem] leading-relaxed text-ink-2 text-pretty">
-              Practise on a URL shortener, news feed, payment system and more. Make design decisions, explain the
-              tradeoffs, then handle failures and changing requirements. Free, with no account needed.
+              Work through a URL shortener, news feed, payment system and more. Make each design decision before you
+              see the reasoning. Test the design against failures and changed requirements, then compare your work
+              with the full written walkthrough. Free, no account needed.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-2.5">
               {first && (
