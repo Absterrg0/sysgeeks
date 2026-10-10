@@ -287,6 +287,11 @@ export default function SystemDesignInterviewPage() {
             LLM inference service system design walkthrough
           </Link>
           , which covers token-based estimates, GPU admission, batching and streamed failures.
+          For retrieval-augmented generation, see the{" "}
+          <Link href="/system-design-interview/design-rag-system" className="link">
+            RAG system design interview walkthrough
+          </Link>
+          , which covers document freshness, permission-scoped retrieval, citations, and evaluation.
         </p>
       </Section>
 

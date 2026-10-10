@@ -181,6 +181,16 @@ export default function InvestigationsPage() {
               streaming failures.
             </p>
           </li>
+          <li className="py-4">
+            <h3 className="text-[0.9375rem] font-medium">
+              <Link href="/system-design-interview/design-rag-system" className="transition-colors hover:text-accent">
+                Design a RAG system
+              </Link>
+            </h3>
+            <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+              Design private-document ingestion and retrieval with access controls, citations, freshness, and evaluation.
+            </p>
+          </li>
         </ul>
       </section>
     </div>

@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/downloads/system-design-interview-practice-sheet.pdf",
     "/system-design-interview/design-youtube",
     "/system-design-interview/design-llm-inference",
+    "/system-design-interview/design-rag-system",
     "/system-design-mock-interview",
     "/capacity-estimator",
     "/investigations",

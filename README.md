@@ -6,6 +6,7 @@
 
 - **[How to prepare for a system design interview](https://www.sysgeeks.com/system-design-interview)**: what the interview tests, how to spend the 45 minutes, and the common mistakes.
 - **[Design an LLM inference service](https://www.sysgeeks.com/system-design-interview/design-llm-inference)**: a detailed walkthrough of token-aware capacity, GPU scheduling, continuous batching, streaming, and failure handling.
+- **[Design a RAG system](https://www.sysgeeks.com/system-design-interview/design-rag-system)**: a walkthrough of private-document ingestion, permission-scoped retrieval, citations, freshness, and evaluation.
 - **[Free system design interview worksheet](https://www.sysgeeks.com/system-design-interview/worksheet)**: a printable two-page guide with a 45-minute plan, capacity formulas, and a readiness checklist.
 - **[All system design interview questions](https://www.sysgeeks.com/investigations)**, from foundational to advanced.
 - **[System design concepts](https://www.sysgeeks.com/concepts)**: each one taught as a mechanism, with its failure modes and a short check.
