@@ -8,7 +8,7 @@ import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = pageMetadata({
   title: "System Design Interview Questions and Answers",
   description:
-    "Read five concise system design interview answers, then practise each through interactive exercises and full walkthroughs. Free, with no signup.",
+    "13 system design interview questions with short answers, design tradeoffs and full interactive walkthroughs. Free practice, no signup.",
   path: "/investigations",
 });
 
@@ -43,6 +43,54 @@ const PRACTICE_PATH = [
       "Assume at-least-once delivery: acknowledge work only after its effect is durable, make handlers idempotent, and use expiring leases so another worker can recover a crashed job. Bound retries and route repeatedly failing jobs to a dead-letter queue.",
     focus: "Handle duplicate delivery, worker crashes, retries and messages that can never succeed.",
   },
+  {
+    id: "video-pipeline",
+    answer:
+      "Upload video bytes directly and resumably to object storage, while a durable state machine tracks each video and transcode job. Workers claim jobs with expiring, fenced leases and write attempt-specific outputs, so a crash can trigger a retry without letting stale work overwrite the current result.",
+    focus: "Separate upload, durable job state and transcoding so each can recover from failures independently.",
+  },
+  {
+    id: "product-analytics",
+    answer:
+      "Append validated events to a durable stream before acknowledging them, then batch them into a column store for queries by team, event and time. Stable event IDs make retries safe; an identity override table handles anonymous-to-known user merges without rewriting the event history.",
+    focus: "Keep ingestion durable and deduplicated while making time-range analytics fast for each customer.",
+  },
+  {
+    id: "notification-system",
+    answer:
+      "Write product events through an outbox, then create notifications with stable deduplication keys. Delivery workers claim each notification through a state machine, recheck current preferences before sending, and isolate critical traffic from bulk traffic; retries must account for providers that may accept a message before timing out.",
+    focus: "Prevent duplicate sends, honor preference changes and protect urgent messages when a provider slows down.",
+  },
+  {
+    id: "distributed-cache",
+    answer:
+      "Keep the database authoritative and treat the cache as a disposable, demand-filled copy. Record invalidations with each database commit and deliver them after replication; use leases to stop an old read from restoring stale data, and a spare pool to absorb a cache-node failure.",
+    focus: "Control stale reads and database load during writes, hot-key bursts and cache failures.",
+  },
+  {
+    id: "chat-message-store",
+    answer:
+      "Partition messages by channel and time bucket, then order them with time-sortable IDs so recent pages and history reads touch a small range. A routing layer keeps each channel's reads local and coalesces identical requests; tombstones, repair and dual writes make deletes and live database moves explicit.",
+    focus: "Make channel history cheap to read while keeping hot channels and database migrations manageable.",
+  },
+  {
+    id: "realtime-collaboration",
+    answer:
+      "Give each document one fenced owner to assign durable sequence numbers, while clients apply edits locally and resend unacknowledged operations after reconnecting. Use an operation merge algorithm so concurrent edits converge; keep transient presence separate from the durable edit log.",
+    focus: "Preserve one document history through concurrent edits, reconnects, owner changes and fan-out.",
+  },
+  {
+    id: "live-queries",
+    answer:
+      "Run each query at a versioned snapshot and record the index ranges it reads. When a commit changes one of those ranges, rerun only the affected queries and push results with the commit timestamp; clients apply updates only when their subscriptions agree on that timestamp.",
+    focus: "Update subscribed query results without polling or showing data from mixed snapshots.",
+  },
+  {
+    id: "shard-live-database",
+    answer:
+      "Shard by workspace because most reads and joins stay within one workspace, and map a fixed set of logical shards to database hosts. For migration, log writes, backfill versioned rows, catch up, verify with comparisons and dark reads, then cut over reversibly; handle cross-workspace features as a separate design problem.",
+    focus: "Scale write volume without rehashing every row, and migrate live data without losing newer writes.",
+  },
 ] as const;
 
 export default function InvestigationsPage() {
@@ -75,7 +123,7 @@ export default function InvestigationsPage() {
       </PageHeader>
       <section aria-labelledby="practice-path" className="mt-8 max-w-[72ch]">
         <h2 id="practice-path" className="font-display text-[1.375rem] leading-tight tracking-[-0.015em]">
-          Five system design interview questions with short answers
+          {PRACTICE_PATH.length} system design interview questions with short answers
         </h2>
         <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
           These summaries show the key design choice and its cost; the full answer depends on the requirements and
