@@ -1,12 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Funnel_Display, Funnel_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { Toaster } from "@/components/feedback";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { SiteAnalytics } from "@/components/site-analytics";
 import { StorageNotice } from "@/components/storage-notice";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import type { StageBarInvestigation } from "@/components/investigation/stage-bar";
@@ -159,8 +158,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           }),
         }}
       />
-      <Analytics />
-      <SpeedInsights />
+      <SiteAnalytics />
     </>
   );
 

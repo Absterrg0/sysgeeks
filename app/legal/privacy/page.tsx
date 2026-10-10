@@ -65,6 +65,15 @@ export default function PrivacyPage() {
               <strong>Learner state.</strong> Your answers, progress, projects and tailored questions are stored in your
               browser. They reach us only when you run an AI feature that sends them, such as an assessment of an answer.
             </li>
+            <li>
+              <strong>Analytics and performance.</strong> Vercel Web Analytics records page views and daily visitor
+              counts on public pages, along with page URL and route, referrer, timestamp, location, device, operating
+              system and browser summaries. Vercel says Web Analytics does not use cookies and its visitor hash expires
+              after 24 hours. Vercel Speed Insights records page performance measurements, such as loading and
+              interaction metrics, along with page URL and route, network speed, browser, device, operating system and
+              country. Both tools exclude sign-in and sign-up pages, account pages, saved reports, interview sessions
+              and private project URLs.
+            </li>
           </ul>
         </div>
       </Section>
@@ -79,7 +88,7 @@ export default function PrivacyPage() {
               <strong>Neon</strong> for the database, through the Vercel Marketplace.
             </li>
             <li>
-              <strong>Vercel</strong> for hosting and the AI Gateway.
+              <strong>Vercel</strong> for hosting, Web Analytics, Speed Insights and the AI Gateway.
             </li>
             <li>
               <strong>Model providers</strong> reached through the gateway, currently Anthropic and OpenAI.
@@ -92,8 +101,25 @@ export default function PrivacyPage() {
             </li>
           </ul>
           <p>
-            <mark className="bg-highlight px-1">TODO(owner): confirm whether analytics or error monitoring is enabled,
-            and list it here.</mark>
+            Read{" "}
+            <a
+              href="https://vercel.com/docs/analytics/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link"
+            >
+              Vercel Web Analytics privacy details
+            </a>{" "}
+            and{" "}
+            <a
+              href="https://vercel.com/docs/speed-insights/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link"
+            >
+              Vercel Speed Insights privacy details
+            </a>{" "}
+            for the providers’ data handling information.
           </p>
         </div>
       </Section>
