@@ -51,6 +51,12 @@ export const LEARN: NavItem[] = [
     icon: <InvestigationsIcon />,
     description: "Real systems to learn, play with and break",
   },
+  {
+    href: "/system-design-mock-interview",
+    label: "Mock interview",
+    icon: <UnderstandingIcon />,
+    description: "Timed 30, 45, or 60-minute system design practice",
+  },
   EXAMPLES,
   { href: "/capacity-estimator", label: "Capacity", icon: <CapacityIcon />, description: "Estimate QPS, storage and bandwidth" },
   { href: "/concepts", label: "Concepts", icon: <ConceptsIcon />, description: "The mechanisms, and how they fail" },
