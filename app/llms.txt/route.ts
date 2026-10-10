@@ -29,6 +29,7 @@ export function GET() {
     `- [Printable system design interview practice sheet](${SITE_URL}/system-design-interview/worksheet): A free two-page PDF with a 45-minute plan, sizing formulas, five questions, and a readiness checklist. Download: ${SITE_URL}/downloads/system-design-interview-practice-sheet.pdf`,
     `- [Free system design mock interview practice](${SITE_URL}/system-design-mock-interview): Choose a timed 30, 45, or 60-minute self-guided interview and review the answers after you finish.`,
     `- [Design YouTube: system design interview walkthrough](${SITE_URL}/system-design-interview/design-youtube): A sourced, assumption-labeled design for video uploads, transcoding, playback, and CDN delivery.`,
+    `- [Design an LLM inference service](${SITE_URL}/system-design-interview/design-llm-inference): An original interview walkthrough for token-aware capacity estimates, GPU scheduling, continuous batching, streaming, tenant fairness, and failures.`,
     `- [System design capacity estimator](${SITE_URL}/capacity-estimator): Estimate average and peak QPS, storage, and network throughput from explicit workload assumptions.`,
     `- [About ${SITE_NAME}](${SITE_URL}/about): How the exercises are built, where the material comes from, and how answers are checked.`,
     `- [How ${SITE_NAME} uses AI](${SITE_URL}/ai): Which features use AI, what is sent to model providers, which models run, how long data is kept, and how AI output is labelled.`,

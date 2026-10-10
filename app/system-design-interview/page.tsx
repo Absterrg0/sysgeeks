@@ -281,7 +281,12 @@ export default function SystemDesignInterviewPage() {
           <Link href="/system-design-interview/design-youtube" className="link">
             YouTube system design interview walkthrough
           </Link>
-          , including upload, transcoding, playback and CDN trade-offs.
+          , including upload, transcoding, playback and CDN trade-offs. For a current AI infrastructure prompt, see
+          the{" "}
+          <Link href="/system-design-interview/design-llm-inference" className="link">
+            LLM inference service system design walkthrough
+          </Link>
+          , which covers token-based estimates, GPU admission, batching and streamed failures.
         </p>
       </Section>
 

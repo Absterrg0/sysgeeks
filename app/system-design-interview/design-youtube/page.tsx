@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, Section } from "@/components/page-header";
 import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
-import { SITE_NAME, SITE_URL } from "@/lib/site";
+import { SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-interview/design-youtube";
 const TITLE = "Design YouTube: System Design Interview Walkthrough";

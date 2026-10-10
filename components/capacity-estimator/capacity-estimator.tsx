@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 const STARTING_VALUES = {
   dailyActiveUsers: "10000000",
@@ -29,6 +29,27 @@ const URL_FIELDS: Record<FieldName, string> = {
   storageOverheadPercent: "overhead",
   storedCopies: "copies",
 };
+
+function readValuesFromSearch(search: string) {
+  const params = new URLSearchParams(search);
+  const next = { ...STARTING_VALUES };
+
+  for (const [field, key] of Object.entries(URL_FIELDS) as [FieldName, string][]) {
+    const value = params.get(key);
+    const parsed = Number(value);
+    const minimum = field === "peakFactor" || field === "storedCopies" ? 1 : 0;
+    if (value !== null && value.trim() !== "" && Number.isFinite(parsed) && parsed >= minimum) {
+      next[field] = value;
+    }
+  }
+
+  return next;
+}
+
+function subscribeToLocationSearch(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  return () => window.removeEventListener("popstate", onChange);
+}
 
 const numberFormat = new Intl.NumberFormat("en", { maximumSignificantDigits: 3 });
 
@@ -102,29 +123,13 @@ function EstimateLine({ label, value }: { label: string; value: string }) {
 }
 
 export function CapacityEstimator() {
-  const [values, setValues] = useState(STARTING_VALUES);
+  const search = useSyncExternalStore(subscribeToLocationSearch, () => window.location.search, () => "");
+  const [override, setOverride] = useState<{ search: string; values: typeof STARTING_VALUES } | null>(null);
+  const values = override?.search === search ? override.values : readValuesFromSearch(search);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (![...Object.values(URL_FIELDS)].some((key) => params.has(key))) return;
-
-    setValues((current) => {
-      const next = { ...current };
-      for (const [field, key] of Object.entries(URL_FIELDS) as [FieldName, string][]) {
-        const value = params.get(key);
-        const parsed = Number(value);
-        const minimum = field === "peakFactor" || field === "storedCopies" ? 1 : 0;
-        if (value !== null && value.trim() !== "" && Number.isFinite(parsed) && parsed >= minimum) {
-          next[field] = value;
-        }
-      }
-      return next;
-    });
-  }, []);
-
   const update = (key: FieldName, value: string) => {
-    setValues((current) => ({ ...current, [key]: value }));
+    setOverride({ search, values: { ...values, [key]: value } });
     setCopyState("idle");
   };
   const copyEstimateLink = async () => {
@@ -183,7 +188,11 @@ export function CapacityEstimator() {
             type="button"
             className="btn btn-secondary btn-sm"
             onClick={() => {
-              setValues(STARTING_VALUES);
+              const url = new URL(window.location.href);
+              url.search = "";
+              window.history.replaceState(window.history.state, "", url.toString());
+              setOverride({ search: "", values: STARTING_VALUES });
+              window.dispatchEvent(new PopStateEvent("popstate"));
               setCopyState("idle");
             }}
           >
