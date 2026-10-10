@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/",
     "/system-design-interview",
     "/system-design-interview/worksheet",
+    "/downloads/system-design-interview-practice-sheet.pdf",
     "/system-design-interview/design-youtube",
     "/system-design-mock-interview",
     "/capacity-estimator",
