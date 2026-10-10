@@ -15,31 +15,41 @@ export const metadata: Metadata = pageMetadata({
 const PRACTICE_PATH = [
   {
     id: "url-shortener",
+    answer:
+      "Generate a unique key, store its mapping to the long URL durably, and keep redirects fast with a cache for popular keys. Record click analytics asynchronously so tracking does not slow the redirect path.",
     focus: "Estimate a read-heavy workload, then decide what to cache and how to count clicks without slowing redirects.",
   },
   {
     id: "api-rate-limiter",
+    answer:
+      "A token bucket handles bursts while enforcing an average refill rate. A strict global limit needs shared state across servers; local counters are more available but can temporarily exceed the intended limit.",
     focus: "Compare counter and token-bucket designs, then decide how multiple servers share limits.",
   },
   {
     id: "news-feed",
+    answer:
+      "Build most feeds by writing new posts into followers’ timelines, then fetch posts on read for very large publishers. A hybrid avoids making celebrity posts fan out to millions of inboxes while keeping ordinary reads fast.",
     focus: "Choose between write fan-out and read fan-out when a few accounts have millions of followers.",
   },
   {
     id: "payment-workflow",
+    answer:
+      "Give each payment attempt a durable idempotency key and move it through an explicit state machine. Retries can then return the existing result, while provider events are deduplicated and reconciled instead of assuming exactly-once delivery.",
     focus: "Make retries safe when a payment succeeds but the caller never receives the response.",
   },
   {
     id: "job-queue",
+    answer:
+      "Assume at-least-once delivery: acknowledge work only after its effect is durable, make handlers idempotent, and use expiring leases so another worker can recover a crashed job. Bound retries and route repeatedly failing jobs to a dead-letter queue.",
     focus: "Handle duplicate delivery, worker crashes, retries and messages that can never succeed.",
   },
 ] as const;
 
 export default function InvestigationsPage() {
   const investigations = listInvestigations();
-  const practicePath = PRACTICE_PATH.flatMap(({ id, focus }) => {
+  const practicePath = PRACTICE_PATH.flatMap(({ id, focus, answer }) => {
     const investigation = getInvestigation(id);
-    return investigation ? [{ investigation, focus }] : [];
+    return investigation ? [{ investigation, focus, answer }] : [];
   });
   return (
     <div>
@@ -63,24 +73,34 @@ export default function InvestigationsPage() {
         </Link>
         .
       </PageHeader>
-      <section aria-labelledby="practice-path" className="mt-8 max-w-[66ch]">
+      <section aria-labelledby="practice-path" className="mt-8 max-w-[72ch]">
         <h2 id="practice-path" className="font-display text-[1.375rem] leading-tight tracking-[-0.015em]">
-          Five questions for a focused practice path
+          Five system design interview questions with short answers
         </h2>
         <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
-          Start with these to practise different decisions instead of memorising five diagrams. Each opens a complete
-          exercise with a worked design, tradeoffs and failure cases.
+          These summaries show the key design choice and its cost; the full answer depends on the requirements and
+          scale you agree on in the interview. Use each one as a starting point, then work through the linked exercise
+          before reading its complete walkthrough.
         </p>
         <ol className="mt-5 divide-y divide-rule border-y border-rule">
-          {practicePath.map(({ investigation, focus }) => (
+          {practicePath.map(({ investigation, focus, answer }) => (
             <li key={investigation.id} className="py-3.5">
               <Link
                 href={`/investigations/${investigation.id}`}
-                className="font-medium text-accent transition-colors hover:text-ink"
+                className="font-medium transition-colors hover:text-accent"
               >
                 {investigation.searchTitle}
               </Link>
-              <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">{focus}</p>
+              <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+                <strong className="font-medium text-ink">Short answer: </strong>
+                {answer}
+              </p>
+              <p className="mt-1 text-[0.8125rem] leading-relaxed text-ink-3">
+                Practise: {focus}{" "}
+                <Link href={`/investigations/${investigation.id}/review`} className="font-medium text-accent hover:underline">
+                  Read the full worked answer →
+                </Link>
+              </p>
             </li>
           ))}
         </ol>
