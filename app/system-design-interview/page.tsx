@@ -232,6 +232,9 @@ export default function SystemDesignInterviewPage() {
             <Link href="/review#session" className="font-medium text-accent hover:underline">
               Start a timed mock interview
             </Link>
+            <Link href="/system-design-mock-interview" className="font-medium text-accent hover:underline">
+              How the mock interview works
+            </Link>
           </div>
         </div>
       </Section>
