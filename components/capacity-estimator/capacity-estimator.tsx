@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const STARTING_VALUES = {
   dailyActiveUsers: "10000000",
@@ -16,6 +16,19 @@ const STARTING_VALUES = {
 };
 
 type FieldName = keyof typeof STARTING_VALUES;
+
+const URL_FIELDS: Record<FieldName, string> = {
+  dailyActiveUsers: "dau",
+  writesPerUserPerDay: "writes",
+  readsPerWrite: "reads",
+  peakFactor: "peak",
+  recordBytes: "recordBytes",
+  retentionYears: "years",
+  readResponseKb: "readKb",
+  writeRequestKb: "writeKb",
+  storageOverheadPercent: "overhead",
+  storedCopies: "copies",
+};
 
 const numberFormat = new Intl.NumberFormat("en", { maximumSignificantDigits: 3 });
 
@@ -90,7 +103,44 @@ function EstimateLine({ label, value }: { label: string; value: string }) {
 
 export function CapacityEstimator() {
   const [values, setValues] = useState(STARTING_VALUES);
-  const update = (key: FieldName, value: string) => setValues((current) => ({ ...current, [key]: value }));
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (![...Object.values(URL_FIELDS)].some((key) => params.has(key))) return;
+
+    setValues((current) => {
+      const next = { ...current };
+      for (const [field, key] of Object.entries(URL_FIELDS) as [FieldName, string][]) {
+        const value = params.get(key);
+        const parsed = Number(value);
+        const minimum = field === "peakFactor" || field === "storedCopies" ? 1 : 0;
+        if (value !== null && value.trim() !== "" && Number.isFinite(parsed) && parsed >= minimum) {
+          next[field] = value;
+        }
+      }
+      return next;
+    });
+  }, []);
+
+  const update = (key: FieldName, value: string) => {
+    setValues((current) => ({ ...current, [key]: value }));
+    setCopyState("idle");
+  };
+  const copyEstimateLink = async () => {
+    const url = new URL(window.location.href);
+    url.search = "";
+    for (const [field, key] of Object.entries(URL_FIELDS) as [FieldName, string][]) {
+      url.searchParams.set(key, values[field]);
+    }
+
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      setCopyState("copied");
+    } catch {
+      setCopyState("failed");
+    }
+  };
   const positive = (key: FieldName) => {
     const parsed = Number(values[key]);
     return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
@@ -129,7 +179,14 @@ export function CapacityEstimator() {
               Change a value to see how the estimate moves. Start with a rough number; refine it only when it changes a design choice.
             </p>
           </div>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setValues(STARTING_VALUES)}>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={() => {
+              setValues(STARTING_VALUES);
+              setCopyState("idle");
+            }}
+          >
             Use URL shortener example
           </button>
         </div>
@@ -230,6 +287,17 @@ export function CapacityEstimator() {
       </div>
 
       <div className="space-y-4">
+        <section aria-label="Share this estimate" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rule-soft bg-raised px-4 py-3">
+          <p className="text-[0.8125rem] leading-snug text-ink-2">Share these assumptions or reopen them later.</p>
+          <div className="flex items-center gap-2">
+            <p aria-live="polite" className="text-[0.75rem] text-ink-3">
+              {copyState === "copied" ? "Link copied" : copyState === "failed" ? "Copy failed; check browser permissions." : null}
+            </p>
+            <button type="button" className="btn btn-secondary btn-sm" onClick={copyEstimateLink}>
+              Copy estimate link
+            </button>
+          </div>
+        </section>
         <section aria-labelledby="capacity-summary" className="screen p-5 sm:p-6">
           <p className="kicker">Estimated at peak</p>
           <h2 id="capacity-summary" className="sr-only">Estimated system capacity</h2>
