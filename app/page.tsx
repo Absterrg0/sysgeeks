@@ -142,11 +142,11 @@ export default function Home() {
               id="hero"
               className="mt-5 max-w-[17ch] font-display text-[clamp(2.5rem,1.3rem+3vw,3.75rem)] leading-[1.02] tracking-[-0.03em] text-balance"
             >
-              Every system breaks. Learn <span className="lit">why</span> before the interviewer asks.
+              System design interview practice on real systems.
             </h1>
             <p className="mt-5 max-w-[52ch] text-[1.0625rem] leading-relaxed text-ink-2 text-pretty">
-              Design real systems one decision at a time. Then a worker dies, a message arrives twice, traffic goes up
-              ten times, and you defend what is left.
+              Practise on a URL shortener, news feed, payment system and more. Make design decisions, explain the
+              tradeoffs, then handle failures and changing requirements. Free, with no account needed.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-2.5">
               {first && (

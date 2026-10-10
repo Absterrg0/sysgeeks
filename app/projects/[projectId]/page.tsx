@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ProjectWorkspace } from "@/components/projects/project-workspace";
 import { listConcepts } from "@/lib/content";
 
-export const metadata: Metadata = { title: "Project" };
+export const metadata: Metadata = { title: "Project", robots: { index: false, follow: true } };
 
 /** Projects live in the learner's browser, so the server renders only the shell. */
 export default async function ProjectPage(props: PageProps<"/projects/[projectId]">) {

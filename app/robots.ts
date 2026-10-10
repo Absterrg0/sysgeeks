@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 
-const PRIVATE = ["/interview/session", "/projects/"];
+const PRIVATE = ["/interview/session"];
 
 /**
  * Search and AI answer engines are welcome everywhere public. They are named explicitly because
@@ -24,8 +24,8 @@ const AI_CRAWLERS = [
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: "*", allow: "/", disallow: PRIVATE },
-      { userAgent: AI_CRAWLERS, allow: "/", disallow: PRIVATE },
+      { userAgent: "*", allow: ["/"], disallow: PRIVATE },
+      { userAgent: AI_CRAWLERS, allow: ["/"], disallow: PRIVATE },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
