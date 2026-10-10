@@ -8,7 +8,7 @@ import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = pageMetadata({
   title: "System Design Interview Questions and Answers",
   description:
-    "Practice system design interview questions with worked, interactive answers. Design a URL shortener, rate limiter, news feed, payment system, job queue and more.",
+    "Read five concise system design interview answers, then practise each through interactive exercises and full walkthroughs. Free, with no signup.",
   path: "/investigations",
 });
 
@@ -85,12 +85,11 @@ export default function InvestigationsPage() {
         <ol className="mt-5 divide-y divide-rule border-y border-rule">
           {practicePath.map(({ investigation, focus, answer }) => (
             <li key={investigation.id} className="py-3.5">
-              <Link
-                href={`/investigations/${investigation.id}`}
-                className="font-medium transition-colors hover:text-accent"
-              >
-                {investigation.searchTitle}
-              </Link>
+              <h3 className="text-[0.9375rem] font-medium">
+                <Link href={`/investigations/${investigation.id}`} className="transition-colors hover:text-accent">
+                  {investigation.searchTitle}
+                </Link>
+              </h3>
               <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
                 <strong className="font-medium text-ink">Short answer: </strong>
                 {answer}
