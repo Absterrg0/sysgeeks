@@ -115,6 +115,11 @@ const FAQ = [
       "Choose a real system, state its requirements and assumptions, then make the design decisions before reading a worked answer. Compare your reasoning with the answer, test what happens when a component fails or a requirement changes, and finish with a timed mock interview.",
   },
   {
+    question: "Can I practise system design interviews alone?",
+    answer:
+      "Yes. Pick a prompt, talk through a timed design out loud, and compare it with a worked answer afterward. This helps you rehearse your reasoning, though it cannot replace an interviewer who asks follow-up questions.",
+  },
+  {
     question: "What are five good system design interview questions to practise first?",
     answer:
       "Lists of common questions vary. A useful starter set is a URL shortener for read-heavy traffic and caching, an API rate limiter for distributed counters, a news feed for fan-out, a payment system for retries and idempotency, and a job queue for acknowledgements and worker failures. These cover distinct constraints, so compare the tradeoffs instead of memorizing five diagrams.",
@@ -200,6 +205,35 @@ export default function SystemDesignInterviewPage() {
             </li>
           ))}
         </ol>
+      </Section>
+
+      <Section id="practice-alone" title="How to practise system design alone">
+        <div className="max-w-[66ch] space-y-4 text-[0.9375rem] leading-relaxed text-ink-2">
+          <p>
+            You can rehearse a full answer without a practice partner. Choose a prompt you have not studied, set a
+            45-minute timer, and explain your decisions out loud before you read a worked answer. Use the time plan
+            above, and write down the assumptions that affect your design.
+          </p>
+          <p>
+            At the end, compare your answer with the walkthrough. Look for a requirement you missed, a number that did
+            not change a decision, or a failure you could not explain. Then repeat the question later and see whether
+            your reasoning has changed.
+          </p>
+          <p>
+            A solo run can show you where your answer is weak, but it cannot reproduce an interviewer&apos;s follow-up
+            questions. Use a mock interview when you want to practise responding in the moment.
+          </p>
+          <div className="flex flex-wrap gap-x-5 gap-y-2 pt-1">
+            {investigations[0] && (
+              <Link href={`/investigations/${investigations[0].id}`} className="font-medium text-accent hover:underline">
+                Try an interactive system design question
+              </Link>
+            )}
+            <Link href="/review#session" className="font-medium text-accent hover:underline">
+              Start a timed mock interview
+            </Link>
+          </div>
+        </div>
       </Section>
 
       <Section id="listen" title="What do interviewers listen for?">
