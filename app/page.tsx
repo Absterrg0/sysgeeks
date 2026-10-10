@@ -155,16 +155,18 @@ export default function Home() {
                   Start the first system
                 </Link>
               )}
-              <Link href="/investigations" className="btn btn-secondary btn-lg">
-                Browse all {investigations.length}
+              <Link href="/review#session" className="btn btn-secondary btn-lg">
+                Start a timed mock interview
               </Link>
             </div>
-            <Link
-              href="/system-design-mock-interview"
-              className="mt-3 inline-block text-[0.875rem] font-medium text-ink-3 transition-colors hover:text-accent"
-            >
-              Prefer a timed round? See the system design mock interview →
-            </Link>
+            <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[0.875rem] font-medium text-ink-3">
+              <Link href="/investigations" className="transition-colors hover:text-accent">
+                Browse all {investigations.length} systems →
+              </Link>
+              <Link href="/system-design-mock-interview" className="transition-colors hover:text-accent">
+                How timed practice works →
+              </Link>
+            </div>
           </div>
 
           {scene && stage?.event && (
