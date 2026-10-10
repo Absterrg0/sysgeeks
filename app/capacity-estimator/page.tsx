@@ -6,7 +6,7 @@ import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const PATH = "/capacity-estimator";
-const TITLE = "System Design Capacity Estimator";
+const TITLE = "System Design Capacity Estimation Calculator";
 const DESCRIPTION =
   "Estimate average and peak QPS, storage, and network bandwidth for a system design interview. Free interactive calculator with clear formulas and assumptions.";
 
