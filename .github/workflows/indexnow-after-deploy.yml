@@ -1,0 +1,25 @@
+name: Notify search engines after production deploy
+
+on:
+  repository_dispatch:
+    types:
+      - vercel.deployment.success
+
+permissions:
+  contents: read
+
+jobs:
+  submit-sitemap:
+    if: github.event.client_payload.project.name == 'interviewgeek' && github.event.client_payload.environment == 'production'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Submit the production sitemap to IndexNow
+        env:
+          SITE_URL: https://www.sysgeeks.com
+        run: node scripts/indexnow.mjs
