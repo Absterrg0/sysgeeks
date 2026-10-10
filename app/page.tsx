@@ -117,7 +117,6 @@ export default function Home() {
                 applicationCategory: "EducationalApplication",
                 operatingSystem: "Any (web browser)",
                 isAccessibleForFree: true,
-                offers: { "@type": "Offer", price: 0, priceCurrency: "USD" },
                 publisher: { "@id": `${SITE_URL}/#organization` },
               },
               itemList(
