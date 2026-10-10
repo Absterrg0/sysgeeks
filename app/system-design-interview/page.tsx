@@ -9,7 +9,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-interview";
 const PUBLISHED = "2026-10-06";
-const MODIFIED = "2026-10-06";
+const MODIFIED = "2026-10-11";
 
 export const metadata: Metadata = pageMetadata({
   title: "System Design Interview: How It Works and How to Prepare",
@@ -112,7 +112,12 @@ const FAQ = [
   {
     question: "How should I practise for a system design interview?",
     answer:
-      "Work through whole systems from their requirements, out loud or in writing, and check your reasoning against a worked answer. Practise failure scenarios deliberately, since that is where most candidates are weakest. Finish with timed mock interviews.",
+      "Choose a real system, state its requirements and assumptions, then make the design decisions before reading a worked answer. Compare your reasoning with the answer, test what happens when a component fails or a requirement changes, and finish with a timed mock interview.",
+  },
+  {
+    question: "What are five good system design interview questions to practise first?",
+    answer:
+      "Lists of common questions vary. A useful starter set is a URL shortener for read-heavy traffic and caching, an API rate limiter for distributed counters, a news feed for fan-out, a payment system for retries and idempotency, and a job queue for acknowledgements and worker failures. These cover distinct constraints, so compare the tradeoffs instead of memorizing five diagrams.",
   },
   {
     question: `Is ${SITE_NAME} free?`,
