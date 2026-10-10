@@ -61,7 +61,7 @@ export function DiagnosisInput({ interaction, draftKey, onSubmit }: InputProps<D
       }}
     >
       <div>
-        <p className="font-display text-[1.125rem] leading-snug">{interaction.prompt}</p>
+        <p className="font-heading text-[1.125rem] leading-snug">{interaction.prompt}</p>
         <p className="mt-1.5 text-sm text-ink-2">
           Select every line that points to a flaw. Select a line again to clear it.
         </p>
@@ -110,7 +110,7 @@ export function DiagnosisFeedback({
   const selected = new Set(response.selected);
   return (
     <div className="space-y-4">
-      <p className="font-display text-[1.125rem] leading-snug">{interaction.prompt}</p>
+      <p className="font-heading text-[1.125rem] leading-snug">{interaction.prompt}</p>
       <Artifact interaction={interaction}>
         {(line, index) => {
           const mine = selected.has(index);
@@ -171,7 +171,7 @@ function Artifact({
 }) {
   const { artifact } = interaction;
   return (
-    <figure className="overflow-hidden rounded-xl bg-well shadow-[inset_0_0_0_1px_var(--rule)]">
+    <figure className="overflow-hidden rounded-xl bg-well shadow-[var(--shadow-well)]">
       <figcaption className="flex items-center justify-between gap-3 border-b border-rule-soft px-4 py-2">
         <span className="inline-flex items-center gap-2 font-mono text-[0.625rem] uppercase tracking-wider text-ink-3">
           <span className="text-ink">{ARTIFACT_NAME[artifact.type]}</span>

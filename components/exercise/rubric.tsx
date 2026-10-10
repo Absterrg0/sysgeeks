@@ -7,7 +7,7 @@ import type { RubricPoint } from "@/lib/domain/content";
 import { RUBRIC_MARKS, type Citations, type RubricMark, type SelfAssessment } from "@/lib/domain/learner";
 import { splitPassages } from "@/lib/domain/passages";
 
-const MARK_LABEL: Record<RubricMark, string> = {
+export const MARK_LABEL: Record<RubricMark, string> = {
   covered: "Covered",
   partial: "Partly",
   missed: "Missed",
@@ -16,13 +16,13 @@ const MARK_OPTIONS = RUBRIC_MARKS.map((m) => ({
   value: m,
   label: MARK_LABEL[m],
 }));
-const MARK_CLASS: Record<RubricMark, string> = {
+export const MARK_CLASS: Record<RubricMark, string> = {
   covered: "text-signal-strong",
   partial: "text-signal-partial",
   missed: "text-signal-gap",
 };
 
-const MARK_LED: Record<RubricMark, string> = {
+export const MARK_LED: Record<RubricMark, string> = {
   covered: "led-strong",
   partial: "led-partial",
   missed: "led-gap",
@@ -30,7 +30,7 @@ const MARK_LED: Record<RubricMark, string> = {
 
 export type Written = { label: string; text: string; mono?: boolean };
 
-function WrittenText({ written }: { written: Written }) {
+export function WrittenText({ written }: { written: Written }) {
   return (
     <div>
       <h3 className="eyebrow mb-2">{written.label}</h3>

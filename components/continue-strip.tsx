@@ -28,7 +28,7 @@ export function ContinueStrip({ investigations }: { investigations: Outline[] })
         <div className="tint flex flex-col justify-between gap-4 p-4 sm:flex-row sm:items-center sm:px-5">
           <div className="min-w-0">
             <p className="eyebrow">Where you left off</p>
-            <p className="mt-1 font-display text-[1rem] leading-snug">{inv.title}</p>
+            <p className="mt-1 font-heading text-[1rem] leading-snug">{inv.title}</p>
             <div className="mt-2">
               <InvestigationProgress investigationId={inv.id} stages={inv.stages} />
             </div>
@@ -44,7 +44,7 @@ export function ContinueStrip({ investigations }: { investigations: Outline[] })
             </span>{" "}
             <span className="text-ink-2">Answering from memory after a few days is what makes it stick.</span>
           </p>
-          <Link href="/understanding#review" className="btn btn-secondary shrink-0">
+          <Link href="/review#review" className="btn btn-secondary shrink-0">
             Review now
           </Link>
         </div>

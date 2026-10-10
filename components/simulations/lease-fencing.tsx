@@ -84,7 +84,7 @@ export function LeaseFencing() {
         <div className="sim-grid">
           <span className="sim-label">Worker A</span>
           <svg viewBox={`0 0 ${W} ${LANE}`} className="sim-track" aria-hidden="true">
-            <rect x={0} y={7} width={x(expired ? (sim.expiresAt as number) : SPAN)} height={12} rx={3} style={{ fill: "var(--accent-soft)", stroke: "var(--accent)" }} strokeWidth={1} />
+            <rect x={0} y={7} width={x(expired ? (sim.expiresAt as number) : SPAN)} height={12} rx={3} style={{ fill: "var(--highlight)", stroke: "var(--ink)" }} strokeWidth={1} />
             {pause > 0 && (
               <rect x={x(PAUSE_AT)} y={7} width={x(sim.resumesAt) - x(PAUSE_AT)} height={12} rx={3} style={{ fill: "var(--signal-partial-soft)", stroke: "var(--mark-partial)" }} strokeDasharray="3 2" strokeWidth={1} />
             )}
@@ -95,7 +95,7 @@ export function LeaseFencing() {
           <span className="sim-label">Worker B</span>
           <svg viewBox={`0 0 ${W} ${LANE}`} className="sim-track" aria-hidden="true">
             {expired && (
-              <rect x={x(sim.expiresAt as number)} y={7} width={W - x(sim.expiresAt as number)} height={12} rx={3} style={{ fill: "var(--accent-soft)", stroke: "var(--accent)" }} strokeWidth={1} />
+              <rect x={x(sim.expiresAt as number)} y={7} width={W - x(sim.expiresAt as number)} height={12} rx={3} style={{ fill: "var(--highlight)", stroke: "var(--ink)" }} strokeWidth={1} />
             )}
           </svg>
           <span className="sim-label">Storage</span>

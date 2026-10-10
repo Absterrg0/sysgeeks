@@ -41,9 +41,9 @@ function Field({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="block text-xs font-medium text-ink-3 mb-1.5">{label}</span>
+      <span className="eyebrow mb-1.5 block">{label}</span>
       <input
-        className="field py-2 text-sm"
+        className="field"
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
@@ -67,9 +67,9 @@ function Select<T extends string>({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="block text-xs font-medium text-ink-3 mb-1.5">{label}</span>
+      <span className="eyebrow mb-1.5 block">{label}</span>
       <select
-        className="field py-2 text-sm"
+        className="field"
         value={value}
         onChange={(e) => {
           const next = options.find((o) => o.value === e.target.value);
@@ -97,8 +97,8 @@ const FLOW_OPTIONS = FLOW_KINDS.map((k) => ({
 
 /**
  * Edits a draft of the model and saves it only when valid. Mount it with a key
- * that changes on save (the project's updatedAt) so the draft restarts from
- * what was stored.
+ * that changes when the model changes (its modelHash), so the draft restarts
+ * from what was stored, and context or question saves keep the draft.
  */
 export function ModelEditor({ project, onSave }: { project: Project; onSave: (model: ProjectModel) => void }) {
   const [model, setModel] = useState<ProjectModel>(() => modelOf(project));
@@ -147,10 +147,10 @@ export function ModelEditor({ project, onSave }: { project: Project; onSave: (mo
   return (
     <div className="space-y-12 pb-24">
       <section aria-labelledby="components-heading">
-        <h2 id="components-heading" className="font-display text-[1.0625rem] leading-tight">
+        <h2 id="components-heading" className="font-heading text-h3">
           Components
         </h2>
-        <p className="mt-1 mb-4 text-sm text-ink-2">
+        <p className="mt-1 mb-4 text-ui text-ink-2">
           The parts that run or hold state: apps, services, workers, databases, queues, third-party APIs.
         </p>
         <ul className="space-y-3">
@@ -166,7 +166,7 @@ export function ModelEditor({ project, onSave }: { project: Project; onSave: (mo
                 />
                 <button
                   type="button"
-                  className="btn btn-ghost text-sm"
+                  className="btn btn-ghost btn-sm"
                   onClick={() => setModel(removeComponent(model, c.id))}
                   aria-label={`Remove ${c.label || "component"}`}
                 >
@@ -195,7 +195,7 @@ export function ModelEditor({ project, onSave }: { project: Project; onSave: (mo
           ))}
         </ul>
         <form
-          className="mt-3 flex flex-wrap items-end gap-3 rounded-xl border border-dashed border-rule-strong p-4"
+          className="mt-3 flex flex-wrap items-end gap-3 rounded-[10px] border border-dashed border-rule-strong p-4"
           onSubmit={(e) => {
             e.preventDefault();
             const label = newComponent.label.trim();
@@ -232,14 +232,14 @@ export function ModelEditor({ project, onSave }: { project: Project; onSave: (mo
       </section>
 
       <section aria-labelledby="flows-heading">
-        <h2 id="flows-heading" className="font-display text-[1.0625rem] leading-tight">
+        <h2 id="flows-heading" className="font-heading text-h3">
           Flows
         </h2>
-        <p className="mt-1 mb-4 text-sm text-ink-2">
+        <p className="mt-1 mb-4 text-ui text-ink-2">
           How requests, messages and data move. Mark whether the caller waits (request) or not (asynchronous).
         </p>
         {model.components.length < 2 ? (
-          <p className="text-sm text-ink-3">Add at least two components to describe flows between them.</p>
+          <p className="text-ui text-ink-3">Add at least two components to describe flows between them.</p>
         ) : (
           <>
             <ul className="space-y-3">
@@ -269,7 +269,7 @@ export function ModelEditor({ project, onSave }: { project: Project; onSave: (mo
                   />
                   <button
                     type="button"
-                    className="btn btn-ghost text-sm"
+                    className="btn btn-ghost btn-sm"
                     onClick={() =>
                       setModel({
                         ...model,
@@ -284,7 +284,7 @@ export function ModelEditor({ project, onSave }: { project: Project; onSave: (mo
               ))}
             </ul>
             <form
-              className="mt-3 grid gap-3 rounded-xl border border-dashed border-rule-strong p-4 sm:grid-cols-2 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_11rem_auto] lg:items-end"
+              className="mt-3 grid gap-3 rounded-[10px] border border-dashed border-rule-strong p-4 sm:grid-cols-2 lg:grid-cols-[10rem_10rem_minmax(0,1fr)_11rem_auto] lg:items-end"
               onSubmit={(e) => {
                 e.preventDefault();
                 const label = newFlow.label.trim();
@@ -333,10 +333,10 @@ export function ModelEditor({ project, onSave }: { project: Project; onSave: (mo
       </section>
 
       <section aria-labelledby="invariants-heading">
-        <h2 id="invariants-heading" className="font-display text-[1.0625rem] leading-tight">
+        <h2 id="invariants-heading" className="font-heading text-h3">
           Invariants
         </h2>
-        <p className="mt-1 mb-4 text-sm text-ink-2">
+        <p className="mt-1 mb-4 text-ui text-ink-2">
           Things that must always be true, such as &ldquo;an order is charged at most once&rdquo; or &ldquo;a username
           is unique&rdquo;. You will be asked where each one is enforced.
         </p>
@@ -352,7 +352,7 @@ export function ModelEditor({ project, onSave }: { project: Project; onSave: (mo
                 />
                 <button
                   type="button"
-                  className="btn btn-ghost text-sm"
+                  className="btn btn-ghost btn-sm"
                   onClick={() =>
                     setModel({
                       ...model,
@@ -366,10 +366,10 @@ export function ModelEditor({ project, onSave }: { project: Project; onSave: (mo
               </div>
               {model.components.length > 0 && (
                 <fieldset>
-                  <legend className="text-xs font-medium text-ink-3 mb-2">Enforced by</legend>
+                  <legend className="eyebrow mb-2">Enforced by</legend>
                   <div className="flex flex-wrap gap-x-4 gap-y-1.5">
                     {model.components.map((c) => (
-                      <label key={c.id} className="inline-flex items-center gap-2 text-sm">
+                      <label key={c.id} className="inline-flex items-center gap-2 text-ui">
                         <input
                           type="checkbox"
                           className="size-4 accent-[var(--accent)]"
@@ -392,7 +392,7 @@ export function ModelEditor({ project, onSave }: { project: Project; onSave: (mo
           ))}
         </ul>
         <form
-          className="mt-3 flex flex-wrap items-end gap-3 rounded-xl border border-dashed border-rule-strong p-4"
+          className="mt-3 flex flex-wrap items-end gap-3 rounded-[10px] border border-dashed border-rule-strong p-4"
           onSubmit={(e) => {
             e.preventDefault();
             const statement = newInvariant.trim();
@@ -424,7 +424,7 @@ export function ModelEditor({ project, onSave }: { project: Project; onSave: (mo
       {dirty && (
         <div className="fixed inset-x-0 bottom-0 z-30 px-3 sm:px-5 pb-3" role="region" aria-label="Unsaved changes">
           <div className="panel mx-auto max-w-4xl px-4 py-2.5 shadow-[var(--shadow-raised)] flex flex-wrap items-center justify-between gap-3">
-            <div className="text-sm min-w-0">
+            <div className="text-ui min-w-0">
               {problems.length > 0 ? (
                 <p className="text-signal-gap">
                   {problems[0]}

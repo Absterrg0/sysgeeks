@@ -78,10 +78,15 @@ export default async function CompanyPage(props: PageProps<"/companies/[companyI
       />
       <PageHeader
         title={`${company.name}: ${company.topic.toLowerCase()}`}
+        eyebrow={
+          <Link href="/companies" className="hover:text-ink">
+            Companies
+          </Link>
+        }
         actions={
           <>
             {investigations[0] && (
-              <Link href={`/investigations/${investigations[0].id}`} className="btn btn-primary">
+              <Link href={`/investigations/${investigations[0].id}`} className="btn btn-accent">
                 Practise it
               </Link>
             )}

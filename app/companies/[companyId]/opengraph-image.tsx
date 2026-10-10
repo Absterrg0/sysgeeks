@@ -1,5 +1,5 @@
 import { getCompany, listCompanies, writeupsByCompany } from "@/lib/content";
-import { card, OG_CONTENT_TYPE, OG_SIZE } from "@/lib/og";
+import { C, card, OG_CONTENT_TYPE, OG_SIZE } from "@/lib/og";
 
 export function generateStaticParams() {
   return listCompanies().map((c) => ({ companyId: c.id }));
@@ -24,10 +24,10 @@ export default async function Image({ params }: { params: Promise<{ companyId: s
       <div style={{ display: "flex", flexDirection: "column", gap: 18, padding: "0 32px", width: "100%" }}>
         {writeups.slice(0, 3).map((w) => (
           <div key={w.id} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <div style={{ display: "flex", fontFamily: "Mono", fontSize: 15, letterSpacing: 1.5, color: "#858585" }}>
+            <div style={{ display: "flex", fontFamily: "Mono", fontSize: 15, letterSpacing: 1.5, color: C.ink3 }}>
               {w.published.slice(0, 4)}
             </div>
-            <div style={{ display: "flex", fontSize: 22, lineHeight: 1.25, color: "#e5e5e5" }}>{w.title}</div>
+            <div style={{ display: "flex", fontSize: 22, lineHeight: 1.25, color: C.ink }}>{w.title}</div>
           </div>
         ))}
       </div>

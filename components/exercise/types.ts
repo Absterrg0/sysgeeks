@@ -1,13 +1,15 @@
 import type { ReactNode } from "react";
 import type { Interaction } from "@/lib/domain/content";
 import type { ExerciseTags } from "@/lib/domain/evaluate";
-import type { ExerciseRef, Response } from "@/lib/domain/learner";
+import type { ExerciseRef, Project, Response } from "@/lib/domain/learner";
 
 /** What the client needs to run an exercise: the interaction itself plus evidence tags. */
 export type ExerciseSpec = {
   ref: ExerciseRef;
   interaction: Interaction;
   tags: ExerciseTags;
+  /** Project questions only: the project the question belongs to, sent to AI assessment. */
+  project?: Project;
 };
 
 /**

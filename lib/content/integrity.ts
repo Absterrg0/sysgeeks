@@ -3,7 +3,8 @@
  * document's shape; this validates the graph between documents: every id a
  * document mentions must exist, and ids must be unique where they are keys.
  */
-import type { Company, Concept, Investigation, Lesson, Writeup } from "@/lib/domain/content";
+import type { Company, Concept, ExampleProject, Investigation, Lesson, Writeup } from "@/lib/domain/content";
+import { modelProblems } from "@/lib/domain/project-model";
 import { visibleAfter } from "@/lib/domain/visibility";
 
 const CONCEPT_REF = /\[\[([a-z0-9-]+)(?:\|[^\]]+)?\]\]/g;
@@ -178,6 +179,52 @@ export function checkSourceIntegrity(
       if (!conceptIds.has(id)) errors.push(`company ${c.id} prose: unknown concept "${id}"`);
     }
   }
+  return errors;
+}
+
+/** Example projects: each is a valid model on its own, and points only at known content. */
+export function checkExampleIntegrity(
+  examples: readonly ExampleProject[],
+  concepts: readonly Concept[],
+  investigations: readonly Investigation[],
+): string[] {
+  const errors: string[] = [];
+  const conceptIds = new Set(concepts.map((c) => c.id));
+  const investigationIds = new Set(investigations.map((i) => i.id));
+
+  for (const id of duplicates(examples.map((e) => e.id))) errors.push(`duplicate example project id "${id}"`);
+
+  for (const ex of examples) {
+    const at = `example ${ex.id}`;
+    const componentIds = new Set(ex.components.map((c) => c.id));
+    const clientIds = new Set(ex.components.filter((c) => c.kind === "client").map((c) => c.id));
+
+    for (const id of duplicates(ex.components.map((c) => c.id))) errors.push(`${at}: duplicate component id "${id}"`);
+    for (const id of duplicates(ex.flows.map((f) => f.id))) errors.push(`${at}: duplicate flow id "${id}"`);
+    for (const id of duplicates(ex.invariants.map((i) => i.id))) errors.push(`${at}: duplicate invariant id "${id}"`);
+
+    for (const flow of ex.flows) {
+      if (!componentIds.has(flow.from)) errors.push(`${at}: flow ${flow.id} from unknown component "${flow.from}"`);
+      if (!componentIds.has(flow.to)) errors.push(`${at}: flow ${flow.id} to unknown component "${flow.to}"`);
+    }
+    for (const inv of ex.invariants) {
+      for (const c of inv.enforcedBy) {
+        if (!componentIds.has(c)) errors.push(`${at}: invariant ${inv.id} enforced by unknown "${c}"`);
+      }
+    }
+    if (!ex.flows.some((f) => f.kind === "request" && clientIds.has(f.from)))
+      errors.push(`${at}: no request flow starts at a client component`);
+
+    for (const problem of modelProblems(ex)) errors.push(`${at}: ${problem}`);
+
+    for (const id of ex.focusConceptIds) {
+      if (!conceptIds.has(id)) errors.push(`${at}: unknown focus concept "${id}"`);
+    }
+    for (const id of ex.relatedInvestigationIds) {
+      if (!investigationIds.has(id)) errors.push(`${at}: unknown related investigation "${id}"`);
+    }
+  }
+
   return errors;
 }
 

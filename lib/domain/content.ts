@@ -82,6 +82,39 @@ export const invariant = z.object({
 });
 export type Invariant = z.infer<typeof invariant>;
 
+export const EXAMPLE_CATEGORIES = [
+  "saas",
+  "marketplace",
+  "realtime",
+  "commerce",
+  "ml",
+  "iot",
+  "mobility",
+  "content",
+  "gaming",
+  "fintech",
+  "ticketing",
+  "devtools",
+] as const;
+
+/** A curated system a learner can copy into their own projects and practise on. */
+export const exampleProject = z.object({
+  id: slug,
+  name: z.string().min(1).max(80),
+  category: z.enum(EXAMPLE_CATEGORIES),
+  /** What it does and its stack, in one or two sentences. */
+  summary: z.string().min(1).max(400),
+  /** e.g. "2,000 paying teams; 30 req/s peak". */
+  scale: z.string().min(1).max(200),
+  focusConceptIds: z.array(slug).min(2).max(8),
+  relatedInvestigationIds: z.array(slug),
+  components: z.array(architectureComponent).min(5).max(14),
+  flows: z.array(architectureFlow).min(5).max(20),
+  invariants: z.array(invariant).min(2).max(5),
+});
+export type ExampleProject = z.infer<typeof exampleProject>;
+export type ExampleProjectInput = z.input<typeof exampleProject>;
+
 /** Grid placement for drawing curated system maps. */
 const position = z.object({
   col: z.number().int().min(0).max(5),

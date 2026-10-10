@@ -241,21 +241,22 @@ export function checkedParts(interaction: Interaction, response: Response): Evid
 // ---------------------------------------------------------------------------
 
 function basisOf(parts: readonly EvidencePart[]): Basis {
-  const checked = parts.some((p) => p.basis === "checked");
-  const self = parts.some((p) => p.basis === "self-assessed");
-  return checked && self ? "mixed" : checked ? "checked" : "self-assessed";
+  const first = parts[0]?.basis ?? "checked";
+  return parts.every((p) => p.basis === first) ? first : "mixed";
 }
 
 /**
  * Evidence for a response, or null while the self-assessment is incomplete or
  * the response does not fit the interaction. The overall signal is the weakest
  * part: a sound decision defended with missing reasoning is not yet strong.
+ * `assessor` records whether the rubric marks came from the learner or an AI.
  */
 export function evaluate(
   interaction: Interaction,
   response: Response,
   selfAssessment: SelfAssessment | null,
   tags: ExerciseTags,
+  assessor: "self" | "ai" = "self",
 ): Evidence | null {
   const parts = checkedParts(interaction, response);
   if (parts === null) return null;
@@ -264,7 +265,11 @@ export function evaluate(
     if (selfAssessment === null) return null;
     const signal = rubricSignal(rubric, selfAssessment);
     if (signal === null) return null;
-    parts.push({ label: rubricLabel(interaction.kind), signal, basis: "self-assessed" });
+    parts.push({
+      label: rubricLabel(interaction.kind),
+      signal,
+      basis: assessor === "ai" ? "ai-assessed" : "self-assessed",
+    });
   }
   if (parts.length === 0) return null;
   return {

@@ -322,7 +322,7 @@ function ComparePhase({
           return (
             <li key={section.id}>
               <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-rule pb-2">
-                <h3 className="font-display text-[1.125rem] leading-tight">
+                <h3 className="font-heading text-[1.125rem] leading-tight">
                   <span className="mr-2 font-mono text-[0.8125rem] text-ink-3">{String(i + 1).padStart(2, "0")}</span>
                   {section.title}
                 </h3>
@@ -471,7 +471,7 @@ function RoundSaved({
 function PastRounds({ rounds, ids }: { rounds: DesignRound[]; ids: ReferenceIds }) {
   return (
     <section aria-labelledby="past-rounds" className="max-w-3xl">
-      <h2 id="past-rounds" className="mb-1 font-display text-[1.0625rem] leading-tight">
+      <h2 id="past-rounds" className="mb-1 font-heading text-[1.0625rem] leading-tight">
         Your rounds on this system
       </h2>
       <p className="mb-4 text-[0.8125rem] text-ink-3">Newest first. Coverage is what you ticked against the reference.</p>

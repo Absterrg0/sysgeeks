@@ -17,7 +17,7 @@ export function GET() {
     "",
     `> ${SITE_DESCRIPTION}`,
     "",
-    `${SITE_NAME} is a free system design interview practice site. Each system is worked through from its requirements in stages: the learner makes a design decision and explains why, then sees the engineering reasoning, injects a failure, changes a constraint and defends the final design. There are ${investigations.length} systems, from foundational (URL shortener, rate limiter) to advanced (sharding a live database, collaborative editing). No account is needed, progress stays in the browser, and nothing is graded by AI: choices are checked against an authored key and written answers are self-assessed against specific rubric points.`,
+    `${SITE_NAME} is a free system design interview practice site. Each system is worked through from its requirements in stages: the learner makes a design decision and explains why, then sees the engineering reasoning, injects a failure, changes a constraint and defends the final design. There are ${investigations.length} systems, from foundational (URL shortener, rate limiter) to advanced (sharding a live database, collaborative editing). No account is needed to practise, and progress stays in the browser. Choices are checked against an authored key, and written answers are self-assessed against specific rubric points. Signed-in users can also have a written answer assessed by an AI model; those assessments are labelled as AI-assessed.`,
     "",
     "Good fit for: software engineers preparing for system design (high-level design) interviews, and anyone who wants to understand why distributed systems are built the way they are and how they fail.",
     "",
@@ -27,6 +27,7 @@ export function GET() {
     "",
     `- [How to prepare for a system design interview](${SITE_URL}/system-design-interview): What the interview tests, how to spend the 45 minutes, common mistakes, and which systems to practise.`,
     `- [About ${SITE_NAME}](${SITE_URL}/about): How the exercises are built, where the material comes from, and how answers are checked.`,
+    `- [How ${SITE_NAME} uses AI](${SITE_URL}/ai): Which features use AI, what is sent to model providers, which models run, how long data is kept, and how AI output is labelled.`,
     "",
     "## System design interview questions",
     "",
@@ -52,8 +53,8 @@ export function GET() {
     "",
     "## Practice",
     "",
-    `- [Mock system design interview](${SITE_URL}/interview): A timed session drawn from the systems and concepts above.`,
-    `- [Claim check](${SITE_URL}/practice): Common engineering statements ("adding Redis makes it faster") judged as holds, fails or depends, with the reason.`,
+    `- [Review](${SITE_URL}/review): A timed mock interview session drawn from the systems and concepts above, answers due for review, and a claim check of common engineering statements ("adding Redis makes it faster") judged as holds, fails or depends, with the reason.`,
+    `- Every system also has a playground at /investigations/{id}/playground: change its architecture, turn up the traffic and break parts to see what each change buys and costs.`,
     "",
   ].join("\n");
 

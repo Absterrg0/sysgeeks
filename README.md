@@ -1,10 +1,63 @@
-# SysGeeks
+# SysGeeks: free system design interview practice
+
+**[sysgeeks.com](https://www.sysgeeks.com)** · Practise system design interview questions on real systems: a URL shortener, a rate limiter, a news feed, a payment system, a distributed cache and more. Each one is worked through in stages: you make a design decision, see the engineering reasoning, break the system with a failure, change a constraint, and defend what is left. Free, no signup.
+
+[![SysGeeks: system design interview practice](https://www.sysgeeks.com/opengraph-image)](https://www.sysgeeks.com)
+
+- **[How to prepare for a system design interview](https://www.sysgeeks.com/system-design-interview)**: what the interview tests, how to spend the 45 minutes, and the common mistakes.
+- **[All system design interview questions](https://www.sysgeeks.com/investigations)**, from foundational to advanced.
+- **[System design concepts](https://www.sysgeeks.com/concepts)**: each one taught as a mechanism, with its failure modes and a short check.
+- **[Architecture playgrounds](https://www.sysgeeks.com/investigations/url-shortener/playground)**: add caches, queues and replicas, turn up the traffic, kill parts, and see what each change costs.
+
+## System design interview questions
+
+Every question has a stage-by-stage practice version and a full written walkthrough (requirements, estimates, the architecture, tradeoffs, failure modes and alternatives).
+
+| Question | Practice | Answer |
+| --- | --- | --- |
+| Design a URL Shortener | [Practise it](https://www.sysgeeks.com/investigations/url-shortener) | [Full walkthrough](https://www.sysgeeks.com/investigations/url-shortener/review) |
+| Design a Video Processing Pipeline | [Practise it](https://www.sysgeeks.com/investigations/video-processing-pipeline) | [Full walkthrough](https://www.sysgeeks.com/investigations/video-processing-pipeline/review) |
+| Design an API Rate Limiter | [Practise it](https://www.sysgeeks.com/investigations/api-rate-limiter) | [Full walkthrough](https://www.sysgeeks.com/investigations/api-rate-limiter/review) |
+| Design a News Feed (Twitter Timeline) | [Practise it](https://www.sysgeeks.com/investigations/news-feed) | [Full walkthrough](https://www.sysgeeks.com/investigations/news-feed/review) |
+| Design a Distributed Job Queue | [Practise it](https://www.sysgeeks.com/investigations/job-queue) | [Full walkthrough](https://www.sysgeeks.com/investigations/job-queue/review) |
+| Design a Product Analytics System | [Practise it](https://www.sysgeeks.com/investigations/product-analytics) | [Full walkthrough](https://www.sysgeeks.com/investigations/product-analytics/review) |
+| Design a Notification System | [Practise it](https://www.sysgeeks.com/investigations/notification-system) | [Full walkthrough](https://www.sysgeeks.com/investigations/notification-system/review) |
+| Design a Payment System | [Practise it](https://www.sysgeeks.com/investigations/payment-workflow) | [Full walkthrough](https://www.sysgeeks.com/investigations/payment-workflow/review) |
+| Design a Distributed Cache (Memcache) | [Practise it](https://www.sysgeeks.com/investigations/distributed-cache) | [Full walkthrough](https://www.sysgeeks.com/investigations/distributed-cache/review) |
+| Design Discord's Message Storage | [Practise it](https://www.sysgeeks.com/investigations/chat-message-store) | [Full walkthrough](https://www.sysgeeks.com/investigations/chat-message-store/review) |
+| Design a Collaborative Editor (Google Docs) | [Practise it](https://www.sysgeeks.com/investigations/realtime-collaboration) | [Full walkthrough](https://www.sysgeeks.com/investigations/realtime-collaboration/review) |
+| Design a Reactive Database (Live Queries) | [Practise it](https://www.sysgeeks.com/investigations/live-queries) | [Full walkthrough](https://www.sysgeeks.com/investigations/live-queries/review) |
+| Shard a Live Database Without Downtime | [Practise it](https://www.sysgeeks.com/investigations/shard-live-database) | [Full walkthrough](https://www.sysgeeks.com/investigations/shard-live-database/review) |
+
+## System design concepts
+
+[Asynchronous processing](https://www.sysgeeks.com/concepts/asynchronous-processing), [Message queues](https://www.sysgeeks.com/concepts/message-queues), [Delivery guarantees](https://www.sysgeeks.com/concepts/delivery-guarantees), [Server push: polling, long polling, SSE, WebSockets](https://www.sysgeeks.com/concepts/server-push), [Persistent connections](https://www.sysgeeks.com/concepts/persistent-connections), [Webhooks](https://www.sysgeeks.com/concepts/webhooks), [Publish/subscribe](https://www.sysgeeks.com/concepts/publish-subscribe), [Object storage](https://www.sysgeeks.com/concepts/object-storage), [Transactions](https://www.sysgeeks.com/concepts/transactions), [Append-only logs](https://www.sysgeeks.com/concepts/event-log), [Durability](https://www.sysgeeks.com/concepts/durability), [State machines for business state](https://www.sysgeeks.com/concepts/state-machines), [Online data migrations](https://www.sysgeeks.com/concepts/online-migrations), [Log-structured storage (LSM trees)](https://www.sysgeeks.com/concepts/lsm-trees), [Columnar storage](https://www.sysgeeks.com/concepts/columnar-storage), [Idempotency](https://www.sysgeeks.com/concepts/idempotency), [Retries, backoff and jitter](https://www.sysgeeks.com/concepts/retries-and-backoff), [Timeouts and unknown outcomes](https://www.sysgeeks.com/concepts/timeouts), [Reconciliation](https://www.sysgeeks.com/concepts/reconciliation), [Transactional outbox](https://www.sysgeeks.com/concepts/transactional-outbox), [Concurrency control](https://www.sysgeeks.com/concepts/concurrency-control), [Ordering](https://www.sysgeeks.com/concepts/ordering), [Conflict resolution and convergence](https://www.sysgeeks.com/concepts/conflict-resolution), [Generating unique identifiers](https://www.sysgeeks.com/concepts/id-generation), [Replication](https://www.sysgeeks.com/concepts/replication), [Leases and fencing tokens](https://www.sysgeeks.com/concepts/leases-and-fencing), [Partitioning](https://www.sysgeeks.com/concepts/partitioning), [Soft state](https://www.sysgeeks.com/concepts/soft-state), [Consistent hashing](https://www.sysgeeks.com/concepts/consistent-hashing), [Backpressure and capacity](https://www.sysgeeks.com/concepts/backpressure), [Caching](https://www.sysgeeks.com/concepts/caching), [Rate limiting](https://www.sysgeeks.com/concepts/rate-limiting), [Fan-out on write and fan-out on read](https://www.sysgeeks.com/concepts/fan-out), [Request coalescing](https://www.sysgeeks.com/concepts/request-coalescing), [Load shedding](https://www.sysgeeks.com/concepts/load-shedding).
+
+## How real companies solved these problems
+
+Each system is paired with the engineering blog posts and papers it is built from, linked to the original and credited to its authors.
+
+- [Dub: Redirects at the edge](https://www.sysgeeks.com/companies/dub)
+- [Mux: Video that plays before it is processed](https://www.sysgeeks.com/companies/mux)
+- [Cloudflare: Rate limiting at the edge](https://www.sysgeeks.com/companies/cloudflare)
+- [Twitter (X): Fan-out for home timelines](https://www.sysgeeks.com/companies/twitter)
+- [Slack: Job queues under backlog](https://www.sysgeeks.com/companies/slack)
+- [Uber: Push instead of polling](https://www.sysgeeks.com/companies/uber)
+- [Stripe: Payments that never charge twice](https://www.sysgeeks.com/companies/stripe)
+- [Meta (Facebook): Caching in front of a database](https://www.sysgeeks.com/companies/meta)
+- [Discord: Storing chat history forever](https://www.sysgeeks.com/companies/discord)
+- [Figma: Real-time multiplayer editing](https://www.sysgeeks.com/companies/figma)
+- [Notion: Sharding Postgres without downtime](https://www.sysgeeks.com/companies/notion)
+- [Convex: A database that pushes query results](https://www.sysgeeks.com/companies/convex)
+- [PostHog: Analytics on billions of events](https://www.sysgeeks.com/companies/posthog)
+
+## How it works
 
 An environment for developing engineering judgment. Interview preparation is the reason people arrive; the product is understanding *why* systems are built the way they are, how they fail, and what changes when constraints change.
 
 The core unit is an **Investigation**: a real system worked through from requirements. The learner decides, explains why, sees the engineering reasoning, breaks the system, changes its constraints, and defends what is left. Concepts (idempotency, leases, replication, …) exist to support investigations and link back to every stage that uses them.
 
-There is no AI interviewer and no LLM anywhere in the product. Assessment is either checked against an authored key or self-assessed against specific rubric points, and the progress view says which.
+Assessment comes in three kinds, and the progress view says which one each result rests on. **Checked** results are compared with an authored key: choices, verdicts and orderings. **Self-assessed** results are marked by you against specific rubric points. **AI-assessed** results are graded by a model against the same rubric points, for signed-in users only, and each one cites the passage of the answer it relied on. The model check on a project is deterministic and never uses AI. Every AI output is labelled; `/ai` says what is sent and which models run.
 
 ## Running it
 
@@ -18,6 +71,17 @@ pnpm build
 ```
 
 Node 20.9+ and pnpm 10. Deploys to Vercel as-is; set `SITE_URL` (or rely on `VERCEL_PROJECT_PRODUCTION_URL`) for the sitemap.
+
+## Setup: accounts, AI and billing
+
+Practice content needs nothing beyond `pnpm install`. Accounts, AI features and purchases need the variables in `.env.example`. Copy it to `.env.local` and fill in the groups you use. `pnpm build` passes with none of them set.
+
+- **Site:** `SITE_URL`.
+- **AI Gateway:** `AI_GATEWAY_API_KEY` locally (on Vercel, OIDC is used instead); `AI_ENABLED` (`0` switches all AI off); `AI_MODEL_STRONG`, `AI_MODEL_STRONG_FALLBACK`, `AI_MODEL_FAST` and `AI_MODEL_FAST_FALLBACK` (gateway model ids); `AI_ZERO_DATA_RETENTION` (`1` routes only to zero-data-retention providers); `AI_DAILY_BUDGET_USD` (the daily estimated spend that pauses free AI).
+- **GitHub:** `GITHUB_TOKEN`, a fine-grained read-only token for public repositories. It is optional; without it GitHub allows 60 requests an hour per IP.
+- **Clerk:** `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_SIGN_IN_URL` and `NEXT_PUBLIC_CLERK_SIGN_UP_URL`.
+- **Database:** `DATABASE_URL` (Neon Postgres, through the Vercel Marketplace). Once it is set, run `pnpm db:migrate`, and again after pulling new migrations. The migration script needs Node 22 or newer (it uses the built-in WebSocket).
+- **Dodo Payments:** `DODO_PAYMENTS_API_KEY`, `DODO_PAYMENTS_WEBHOOK_KEY`, `DODO_PAYMENTS_ENVIRONMENT` (`test_mode` to start with), and the pack product ids `DODO_PRODUCT_PACK_STARTER`, `DODO_PRODUCT_PACK_STANDARD` and `DODO_PRODUCT_PACK_PLUS`. Create the products in the Dodo dashboard, once in test mode and once live.
 
 ## Architecture in one page
 
@@ -42,13 +106,13 @@ lib/store/                browser persistence
 | Investigation, Stage, Interaction, Competency | `lib/domain/content.ts` | Stages carry a phase (model/decide/break/change/defend), dimensions, concepts, an optional injected event, an optional lesson, an interaction and a reveal with takeaways. |
 | System model: components, flows, invariants | `lib/domain/content.ts` | Shared shape for curated systems and learners' own projects. Invariants name the components that enforce them and the mechanism. `codeLocation` evidence is reserved for repository analysis. |
 | Concept | `lib/domain/content.ts` | Problem, mechanism, assumptions, alternatives, failure modes, implementations (simplest first), claims, explain prompt. |
-| Attempt, Evidence | `lib/domain/learner.ts` | Every answer is an attempt; evidence records a signal (strong/partial/gap), its basis (checked/self-assessed/mixed), dimensions, concepts and competencies. |
+| Attempt, Evidence | `lib/domain/learner.ts` | Every answer is an attempt; evidence records a signal (strong/partial/gap), its basis (checked/self-assessed/ai-assessed/mixed), dimensions, concepts and competencies. |
 | Project | `lib/domain/learner.ts` | A learner's own architecture model, described by hand today (`source: manual`), from a repository later (`source: repository`). |
 | InterviewSession | `lib/domain/learner.ts` | A timed arrangement of existing exercises; no separate question bank. |
 
 ### Evidence
 
-`lib/domain/evaluate.ts` turns a response into evidence. Checked parts come from the key (decision assessment, claim verdicts, sequence agreement, flagged lines). Written parts come from rubric marks: core points weigh fully and supporting points half, and a strong signal requires that no core point is missed. An exercise's signal is its **weakest part**.
+`lib/domain/evaluate.ts` turns a response into evidence. Checked parts come from the key (decision assessment, claim verdicts, sequence agreement, flagged lines). Written parts come from rubric marks, or from an AI assessment that cites the passage it relied on: core points weigh fully and supporting points half, and a strong signal requires that no core point is missed. An exercise's signal is its **weakest part**.
 
 `lib/domain/understanding.ts` aggregates only the **latest** assessed attempt per exercise into standings by dimension, concept and competency, and derives plain-language insights from counts (for example, "Defend is your most reliable dimension… Break is where gaps cluster").
 

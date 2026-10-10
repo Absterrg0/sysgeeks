@@ -46,7 +46,7 @@ export function ClaimsInput({ interaction, draftKey, onSubmit }: InputProps<Clai
         onSubmit({ kind: "claims", verdicts: picked });
       }}
     >
-      <p className="font-display text-[1.125rem] leading-snug">{interaction.prompt}</p>
+      <p className="font-heading text-[1.125rem] leading-snug">{interaction.prompt}</p>
       <p className="text-sm text-ink-2 -mt-2">
         <strong className="font-medium text-ink">Depends</strong> means the statement is true under some conditions in
         the scenario and false under others. Use it when you can name the condition.
@@ -90,7 +90,7 @@ export function ClaimsFeedback({
   const shown = interaction.claims.filter((c) => response.verdicts[c.id] !== undefined);
   return (
     <div>
-      <p className="font-display text-[1.125rem] leading-snug mb-4">{interaction.prompt}</p>
+      <p className="font-heading text-[1.125rem] leading-snug mb-4">{interaction.prompt}</p>
       <ol className="panel divide-y divide-rule-soft">
         {shown.map((claim, i) => {
           const mine = response.verdicts[claim.id];

@@ -11,17 +11,18 @@ import { SITE_HOST } from "@/lib/site";
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_CONTENT_TYPE = "image/png";
 
-const C = {
-  paper: "#0a0a0a",
-  raised: "#141414",
-  ink: "#ffffff",
-  ink2: "#a3a3a3",
-  ink3: "#858585",
-  rule: "#262626",
-  accent: "#00bbff",
-  gap: "#ff7b7f",
-  partial: "#f2bd52",
-  strong: "#5fd28e",
+export const C = {
+  paper: "#0A0A0A",
+  raised: "#111112",
+  ink: "#EDEDEE",
+  ink2: "#A3A4AB",
+  ink3: "#85878F",
+  rule: "#222225",
+  /* The logo's blue: the one lit colour. */
+  accent: "#00BBFF",
+  gap: "#FF8086",
+  partial: "#F2B252",
+  strong: "#4CC9A0",
 };
 
 export type Tone = "accent" | "gap" | "partial" | "strong";
@@ -29,15 +30,15 @@ const TONE: Record<Tone, string> = { accent: C.accent, gap: C.gap, partial: C.pa
 
 const font = (file: string) => readFile(join(process.cwd(), "assets/fonts", file));
 const fonts = Promise.all([
-  font("FunnelDisplay-SemiBold.woff"),
-  font("FunnelSans-Regular.woff"),
-  font("GeistMono-Medium.woff"),
   font("GeistPixel-Regular.woff"),
-]).then(([display, sans, mono, pixel]) => [
-  { name: "Display", data: display, weight: 600 as const, style: "normal" as const },
-  { name: "Sans", data: sans, weight: 400 as const, style: "normal" as const },
-  { name: "Mono", data: mono, weight: 500 as const, style: "normal" as const },
+  font("Geist-Regular-Latin.woff"),
+  font("Geist-SemiBold-Latin.woff"),
+  font("GeistMono-Medium.woff"),
+]).then(([pixel, sans, sansBold, mono]) => [
   { name: "Pixel", data: pixel, weight: 400 as const, style: "normal" as const },
+  { name: "Sans", data: sans, weight: 400 as const, style: "normal" as const },
+  { name: "Sans", data: sansBold, weight: 600 as const, style: "normal" as const },
+  { name: "Mono", data: mono, weight: 500 as const, style: "normal" as const },
 ]);
 
 /** Strip inline markdown, then cut at a word boundary so the text fits a fixed number of lines. */
@@ -51,7 +52,7 @@ export function clip(markdown: string, max: number): string {
 export function Mark({ size }: { size: number }) {
   const cell = size / 8;
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", width: size, height: size, background: "#000", borderRadius: size / 5, overflow: "hidden" }}>
+    <div style={{ display: "flex", flexWrap: "wrap", width: size, height: size, background: "#0A0A0A", borderRadius: size / 5, overflow: "hidden" }}>
       {PIXEL_MARK_GRID.flatMap((row, y) =>
         [...row].map((v, x) => (
           <div key={`${x}-${y}`} style={{ display: "flex", width: cell, height: cell, padding: cell * 0.08 }}>
@@ -140,8 +141,8 @@ export function Diagram({
             width={boxW}
             height={boxH}
             rx={c.kind === "client" ? boxH / 2 : 9}
-            fill={solid ? "#e5e5e5" : C.raised}
-            stroke={solid ? "none" : C.accent}
+            fill={solid ? C.ink : "rgba(0,187,255,0.16)"}
+            stroke={solid ? "none" : C.ink2}
             strokeWidth={2.5}
             strokeDasharray={solid ? undefined : "8 6"}
           />
@@ -190,7 +191,7 @@ export async function card({
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <Mark size={48} />
-            <div style={{ display: "flex", fontFamily: "Pixel", fontSize: 34 }}>
+            <div style={{ display: "flex", fontFamily: "Pixel", fontSize: 36 }}>
               <span>sys</span>
               <span style={{ color: C.ink3 }}>geeks</span>
             </div>
@@ -218,7 +219,7 @@ export async function card({
 
         <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 48 }}>
           <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 22 }}>
-            <div style={{ display: "flex", fontFamily: "Display", fontSize: aside ? 58 : 72, lineHeight: 1.05, letterSpacing: -1 }}>
+            <div style={{ display: "flex", fontFamily: "Sans", fontWeight: 600, fontSize: aside ? 56 : 68, lineHeight: 1.05, letterSpacing: -2 }}>
               {title}
             </div>
             {body && (
@@ -235,7 +236,7 @@ export async function card({
                 height: 300,
                 borderRadius: 20,
                 border: `2px solid ${C.rule}`,
-                background: "rgba(20,20,20,0.85)",
+                background: "rgba(17,17,18,0.9)",
               }}
             >
               {aside}

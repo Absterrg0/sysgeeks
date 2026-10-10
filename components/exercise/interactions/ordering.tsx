@@ -40,7 +40,7 @@ export function OrderingInput({ interaction, draftKey, seed, onSubmit }: InputPr
       }}
     >
       <div>
-        <p className="font-display text-[1.125rem] leading-snug">{interaction.prompt}</p>
+        <p className="font-heading text-[1.125rem] leading-snug">{interaction.prompt}</p>
         <p className="mt-1.5 text-sm text-ink-2">Move each step up or down until the sequence is right.</p>
       </div>
       <ol className="well space-y-1.5 p-2" aria-label="Sequence">
@@ -114,7 +114,7 @@ export function OrderingFeedback({
   const position = new Map(response.order.map((id, i) => [id, i]));
   return (
     <div className="space-y-5">
-      <p className="font-display text-[1.125rem] leading-snug">{interaction.prompt}</p>
+      <p className="font-heading text-[1.125rem] leading-snug">{interaction.prompt}</p>
       <ol className="well space-y-1.5 p-2" aria-label="Correct sequence">
         {interaction.items.map((item, index) => {
           const mine = position.get(item.id);

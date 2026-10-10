@@ -179,7 +179,7 @@ export default function SystemDesignInterviewPage() {
         <ol className="max-w-[66ch] space-y-6">
           {PLAN.map((item, i) => (
             <li key={item.step} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3">
-              <span className="pt-0.5 font-display text-[1.125rem] text-ink-3 tabular-nums">{i + 1}</span>
+              <span className="pt-0.5 font-heading text-[1.125rem] text-ink-3 tabular-nums">{i + 1}</span>
               <div>
                 <h3 className="text-[1rem] font-medium">
                   {item.step} <span className="font-normal text-ink-3">({item.minutes})</span>
@@ -263,7 +263,7 @@ export default function SystemDesignInterviewPage() {
               Start with {investigations[0].searchTitle.toLowerCase()}
             </Link>
           )}
-          <Link href="/interview" className="btn btn-secondary">
+          <Link href="/review#session" className="btn btn-secondary">
             Take a mock interview
           </Link>
         </div>

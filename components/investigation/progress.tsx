@@ -44,7 +44,7 @@ function StepMark({ status, current }: { status: ExerciseStatus | null; current:
       role="img"
       aria-label={statusLabel(status)}
       className={`relative z-10 block size-[11px] shrink-0 rounded-full shadow-[inset_0_0_0_1.5px_var(--rule-strong)] ${STEP_FILL[status ?? "unattempted"]} ${
-        current ? "outline-2 outline-offset-2 outline-accent-solid [outline-style:solid]" : ""
+        current ? "outline-2 outline-offset-2 outline-focus [outline-style:solid]" : ""
       }`}
     />
   );
@@ -150,7 +150,7 @@ export function ContinueLink({ investigationId, stages }: { investigationId: str
   // a first-time visitor needs: a working link to the first stage.
   if (!state) {
     return (
-      <Link href={`/investigations/${investigationId}/${first.id}`} className="btn btn-primary">
+      <Link href={`/investigations/${investigationId}/${first.id}`} className="btn btn-accent">
         Start the investigation
       </Link>
     );
@@ -160,14 +160,14 @@ export function ContinueLink({ investigationId, stages }: { investigationId: str
   const started = marks.some((m) => m !== "unattempted");
   if (nextIndex < 0) {
     return (
-      <Link href={`/investigations/${investigationId}/review`} className="btn btn-primary">
+      <Link href={`/investigations/${investigationId}/review`} className="btn btn-accent">
         Review the design
       </Link>
     );
   }
   const next = stages[nextIndex] as StageLink;
   return (
-    <Link href={`/investigations/${investigationId}/${next.id}`} className="btn btn-primary">
+    <Link href={`/investigations/${investigationId}/${next.id}`} className="btn btn-accent">
       {started ? `Continue at stage ${nextIndex + 1}: ${next.title}` : "Start the investigation"}
     </Link>
   );

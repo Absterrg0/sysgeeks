@@ -62,7 +62,7 @@ export function StageWalkthrough({
 
         <div className="max-w-[70ch]">
           <h4 className="eyebrow mb-2">What the stage asks</h4>
-          <p className="font-display text-[1.0625rem] leading-snug">{stage.interaction.prompt}</p>
+          <p className="font-heading text-[1.0625rem] leading-snug">{stage.interaction.prompt}</p>
         </div>
 
         <div className="max-w-[70ch]">
@@ -217,7 +217,7 @@ function DiagnosisAnswer({ interaction }: { interaction: InteractionOf<"diagnosi
   const { artifact } = interaction;
   return (
     <div className="space-y-5">
-      <figure className="overflow-hidden rounded-xl bg-well shadow-[inset_0_0_0_1px_var(--rule)]">
+      <figure className="overflow-hidden rounded-xl bg-well shadow-[var(--shadow-well)]">
         <figcaption className="flex items-center justify-between gap-3 border-b border-rule-soft px-4 py-2">
           <span className="inline-flex items-center gap-2 font-mono text-[0.625rem] tracking-wider text-ink-3 uppercase">
             <span className="text-ink">{ARTIFACT_NAME[artifact.type]}</span>

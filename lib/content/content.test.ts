@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { checkContentIntegrity, checkSourceIntegrity, conceptReferences } from "./integrity";
+import { checkContentIntegrity, checkExampleIntegrity, checkSourceIntegrity, conceptReferences } from "./integrity";
 import { getConcept, listCompanies, listConcepts, listInvestigations, listWriteups, writeupsForInvestigation } from ".";
+import { getExampleProject, listExampleProjects } from "./example-projects";
 import { listExercises, resolveExercise } from "./exercises";
 import { parseExerciseKey } from "@/lib/domain/learner";
 
@@ -11,6 +12,10 @@ describe("curated content", () => {
 
   it("has sources that reference existing companies, investigations and concepts", () => {
     expect(checkSourceIntegrity(listCompanies(), listWriteups(), listInvestigations(), listConcepts())).toEqual([]);
+  });
+
+  it("has example projects that are valid models and reference existing content", () => {
+    expect(checkExampleIntegrity(listExampleProjects(), listConcepts(), listInvestigations())).toEqual([]);
   });
 
   it("cites at least one published source for every investigation", () => {
@@ -80,5 +85,18 @@ describe("integrity checker", () => {
     const errors = checkContentIntegrity([broken], listConcepts());
     expect(errors.some((e) => e.includes("does-not-exist"))).toBe(true);
     expect(errors.some((e) => e.includes("no-such-concept"))).toBe(true);
+  });
+
+  it("reports broken example projects", () => {
+    const example = getExampleProject("subscription-saas");
+    if (!example) throw new Error("no example projects");
+    const broken = {
+      ...example,
+      focusConceptIds: ["no-such-concept", ...example.focusConceptIds],
+      flows: example.flows.map((f) => (f.id === "read-write" ? { ...f, to: "nowhere" } : f)),
+    };
+    const errors = checkExampleIntegrity([broken], listConcepts(), listInvestigations());
+    expect(errors.some((e) => e.includes("no-such-concept"))).toBe(true);
+    expect(errors.some((e) => e.includes("nowhere"))).toBe(true);
   });
 });

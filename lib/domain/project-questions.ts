@@ -8,7 +8,15 @@
  */
 import type { ArchitectureComponent, ArchitectureFlow, Dimension, InteractionOf, RubricPoint } from "./content";
 import type { ExerciseTags } from "./evaluate";
-import type { Project, ProjectInvariant } from "./learner";
+import {
+  exerciseKey,
+  MAX_TAILORED_QUESTIONS,
+  type ExerciseRef,
+  type Project,
+  type ProjectInvariant,
+  type TailoredQuestion,
+} from "./learner";
+import { uniqueSlug } from "./layout";
 
 export const QUESTION_GROUPS = ["trace", "state", "failure", "concurrency", "change", "defend"] as const;
 export type QuestionGroup = (typeof QUESTION_GROUPS)[number];
@@ -28,7 +36,10 @@ export type ProjectQuestion = {
   title: string;
   interaction: InteractionOf<"open">;
   tags: ExerciseTags;
+  aiWritten?: true;
 };
+
+const PLACEHOLDER = "Answer about your system as it is today, not as it should be…";
 
 const CODE_POINT: RubricPoint = {
   id: "points-to-code",
@@ -53,11 +64,28 @@ function question(input: {
     interaction: {
       kind: "open",
       prompt: input.prompt,
-      placeholder: "Answer about your system as it is today, not as it should be…",
+      placeholder: PLACEHOLDER,
       rubric: [...input.rubric, CODE_POINT],
       reference: input.reference,
     },
     tags: { dimensions: input.dimensions, conceptIds: input.conceptIds, competencyIds: [] },
+  };
+}
+
+function tailoredQuestion(input: TailoredQuestion): ProjectQuestion {
+  return {
+    id: `ai.${input.id}`,
+    group: input.group,
+    title: input.title,
+    interaction: {
+      kind: "open",
+      prompt: input.prompt,
+      placeholder: PLACEHOLDER,
+      rubric: input.rubric,
+      reference: input.reference,
+    },
+    tags: { dimensions: input.dimensions, conceptIds: input.conceptIds, competencyIds: [] },
+    aiWritten: true,
   };
 }
 
@@ -256,11 +284,40 @@ export function projectQuestions(project: Project): ProjectQuestion[] {
     if (c.kind === "worker") questions.push(boundaryQuestion(c));
   }
   questions.push(...SYSTEM_QUESTIONS);
+  for (const q of project.tailoredQuestions ?? []) questions.push(tailoredQuestion(q));
   return questions;
 }
 
 export function findProjectQuestion(project: Project, questionId: string): ProjectQuestion | undefined {
   return projectQuestions(project).find((q) => q.id === questionId);
+}
+
+/** The AI-written questions that have at least one attempt. */
+export function answeredTailored(project: Project, attempts: readonly { exercise: ExerciseRef }[]): TailoredQuestion[] {
+  const answered = new Set(attempts.map((attempt) => exerciseKey(attempt.exercise)));
+  return (project.tailoredQuestions ?? []).filter((q) =>
+    answered.has(exerciseKey({ kind: "project-question", projectId: project.id, questionId: `ai.${q.id}` })),
+  );
+}
+
+/**
+ * The tailored questions after regenerating: answered ones stay, the rest are
+ * replaced by `generated`. Ids stay unique across the two, and the newest
+ * MAX_TAILORED_QUESTIONS are kept.
+ */
+export function regenerateTailored(
+  project: Project,
+  attempts: readonly { exercise: ExerciseRef }[],
+  generated: readonly TailoredQuestion[],
+): TailoredQuestion[] {
+  const kept = answeredTailored(project, attempts);
+  const taken = new Set(kept.map((q) => q.id));
+  const fresh = generated.map((q) => {
+    const id = uniqueSlug(q.id, taken);
+    taken.add(id);
+    return { ...q, id };
+  });
+  return [...kept, ...fresh].slice(-MAX_TAILORED_QUESTIONS);
 }
 
 /** Concept ids referenced by templates, for content integrity checks. */

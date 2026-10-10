@@ -6,9 +6,12 @@ const BOX_W = 26;
 const BOX_H = 13;
 const PAD = 6;
 
+/** Parts that hold state, lit in the outline so the shape of the data shows. */
+const STORES = new Set(["database", "cache", "object-store", "queue", "stream"]);
+
 /**
  * The silhouette of an investigation's finished architecture. Parts given by
- * the scenario are solid; parts the learner designs are drawn as outlines.
+ * the scenario are solid; parts the learner designs are dashed. Stores are lit.
  */
 export function SystemThumb({
   components,
@@ -62,6 +65,7 @@ export function SystemThumb({
         const p = at.get(c.id);
         if (!p) return null;
         const isGiven = given.has(c.id);
+        const store = STORES.has(c.kind);
         return (
           <rect
             key={c.id}
@@ -70,9 +74,9 @@ export function SystemThumb({
             width={BOX_W}
             height={BOX_H}
             rx={c.kind === "client" ? 6.5 : 3.5}
-            fill={isGiven ? "var(--ink)" : "var(--raised)"}
-            fillOpacity={isGiven ? 0.78 : 1}
-            stroke={isGiven ? "none" : "var(--accent-solid)"}
+            fill={isGiven ? "color-mix(in srgb, var(--ink) 9%, var(--raised))" : "var(--raised)"}
+            stroke={store ? "var(--accent-solid)" : isGiven ? "color-mix(in srgb, var(--ink) 38%, transparent)" : "var(--ink-3)"}
+            strokeOpacity={store ? 0.75 : 1}
             strokeWidth={1}
             strokeDasharray={isGiven ? undefined : "2.5 1.8"}
           />

@@ -28,8 +28,8 @@ export function StorageNotice() {
   }
   if (messages.length === 0) return null;
   return (
-    <div role="status" className="shell pt-4">
-      <div className="rounded-xl bg-signal-partial-soft">
+    <div role="status" className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-2xl">
+      <div className="rounded-xl bg-signal-partial-soft shadow-[var(--shadow-raised)]">
         {messages.map((m) => (
           <div key={m.key} className="flex items-start justify-between gap-4 px-4 py-2.5 text-[0.8125rem] text-ink">
             <p className="flex gap-3">
@@ -37,7 +37,11 @@ export function StorageNotice() {
               {m.text}
             </p>
             {m.dismiss && (
-              <button type="button" className="btn btn-secondary min-h-0 shrink-0 px-2.5 py-1 text-[0.75rem]" onClick={m.dismiss}>
+              <button
+                type="button"
+                className="btn btn-secondary min-h-0 shrink-0 px-2.5 py-1 text-[0.75rem]"
+                onClick={m.dismiss}
+              >
                 Dismiss
               </button>
             )}

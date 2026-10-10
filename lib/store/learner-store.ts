@@ -13,6 +13,7 @@ import type { Interaction } from "@/lib/domain/content";
 import type { DesignRound } from "@/lib/domain/design-round";
 import { evaluate, type ExerciseTags } from "@/lib/domain/evaluate";
 import type {
+  AiAssessment,
   Attempt,
   AttemptContext,
   Citations,
@@ -190,9 +191,17 @@ export function assessAttempt(input: {
   tags: ExerciseTags;
   selfAssessment: SelfAssessment;
   citations: Citations;
+  assessor?: "self" | "ai";
 }) {
-  const evidence = evaluate(input.interaction, input.attempt.response, input.selfAssessment, input.tags);
-  commit(transitions.assessAttempt(current(), input.attempt.id, input.selfAssessment, evidence, input.citations));
+  const assessor = input.assessor ?? "self";
+  const evidence = evaluate(input.interaction, input.attempt.response, input.selfAssessment, input.tags, assessor);
+  commit(
+    transitions.assessAttempt(current(), input.attempt.id, input.selfAssessment, evidence, input.citations, assessor),
+  );
+}
+
+export function attachAiAssessment(attemptId: string, ai: AiAssessment) {
+  commit(transitions.attachAiAssessment(current(), attemptId, ai));
 }
 
 export function saveProject(project: Project) {

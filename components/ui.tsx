@@ -44,7 +44,8 @@ export function SignalDot({ signal, label }: { signal: Signal | null; label: str
 export const BASIS_LABEL: Record<Basis, string> = {
   checked: "checked against the key",
   "self-assessed": "self-assessed",
-  mixed: "checked and self-assessed",
+  "ai-assessed": "assessed by AI against the rubric",
+  mixed: "checked and assessed",
 };
 
 export const STANDING_LABEL: Record<Standing, string> = {
@@ -137,7 +138,7 @@ export function Segmented<T extends string>({
   return (
     <fieldset disabled={disabled} className="min-w-0">
       <legend className={hideLegend ? "sr-only" : "eyebrow mb-2"}>{legend}</legend>
-      <div className="inline-flex gap-0.5 rounded-[10px] bg-sunken p-[3px] shadow-[inset_0_0_0_1px_var(--rule-soft)]">
+      <div className="inline-flex gap-0.5 rounded-[10px] bg-well p-[3px] shadow-[var(--shadow-well)]">
         {options.map((option) => {
           const checked = value === option.value;
           return (
@@ -166,7 +167,7 @@ export function Segmented<T extends string>({
 
 export function SectionHeading({ children, id }: { children: ReactNode; id?: string }) {
   return (
-    <h2 id={id} className="font-display text-[1.0625rem] leading-tight mb-3 scroll-mt-14">
+    <h2 id={id} className="font-heading text-[1.0625rem] leading-tight mb-3 scroll-mt-14">
       {children}
     </h2>
   );

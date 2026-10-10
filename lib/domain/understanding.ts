@@ -95,6 +95,7 @@ export type Summary = {
   /** Fewer than three pieces of evidence: indicative, not conclusive. */
   thin: boolean;
   selfAssessed: number;
+  aiAssessed: number;
 };
 
 const SIGNAL_VALUE: Record<Signal, number> = { strong: 1, partial: 0.5, gap: 0 };
@@ -104,16 +105,18 @@ export function summarize(entries: Iterable<LatestEvidence>): Summary {
   let total = 0;
   let value = 0;
   let selfAssessed = 0;
+  let aiAssessed = 0;
   for (const entry of entries) {
     counts[entry.evidence.signal]++;
     value += SIGNAL_VALUE[entry.evidence.signal];
     total++;
     if (entry.evidence.basis === "self-assessed") selfAssessed++;
+    if (entry.evidence.basis === "ai-assessed") aiAssessed++;
   }
   const score = total === 0 ? 0 : value / total;
   const standing: Standing =
     total === 0 ? "unexplored" : score >= 0.8 ? "strong" : score >= 0.4 ? "developing" : "weak";
-  return { counts, total, score, standing, thin: total < 3, selfAssessed };
+  return { counts, total, score, standing, thin: total < 3, selfAssessed, aiAssessed };
 }
 
 function groupBy(

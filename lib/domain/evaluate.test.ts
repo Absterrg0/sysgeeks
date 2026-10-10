@@ -73,6 +73,24 @@ describe("evaluate", () => {
     expect(evidence?.conceptIds).toEqual(["idempotency"]);
   });
 
+  it("labels rubric marks by who assessed them", () => {
+    const marks = { a: "covered", b: "covered", c: "covered" } as const;
+    const written: InteractionOf<"open"> = { kind: "open", prompt: "?", rubric, reference: "ref" };
+    const text = { kind: "open" as const, text: "my answer" };
+    expect(evaluate(written, text, marks, tags)).toMatchObject({ basis: "self-assessed", signal: "strong" });
+    expect(evaluate(written, text, marks, tags, "self")?.parts.map((p) => p.basis)).toEqual(["self-assessed"]);
+    expect(evaluate(written, text, marks, tags, "ai")).toMatchObject({ basis: "ai-assessed", signal: "strong" });
+    expect(evaluate(written, text, marks, tags, "ai")?.parts.map((p) => p.basis)).toEqual(["ai-assessed"]);
+
+    const reasoned = { kind: "decision" as const, optionId: "good", rationale: "because" };
+    expect(evaluate(decision, reasoned, marks, tags, "self")?.basis).toBe("mixed");
+    expect(evaluate(decision, reasoned, marks, tags, "ai")?.basis).toBe("mixed");
+    expect(evaluate(decision, reasoned, marks, tags, "ai")?.parts.map((p) => p.basis)).toEqual([
+      "checked",
+      "ai-assessed",
+    ]);
+  });
+
   it("treats a defensible choice as partial and a flawed one as a gap", () => {
     const marks = { a: "covered", b: "covered", c: "covered" } as const;
     expect(evaluate(decision, { kind: "decision", optionId: "ok", rationale: "x" }, marks, tags)?.signal).toBe("partial");

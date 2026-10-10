@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SysGeeks: Graphite &amp; Citron design direction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&family=Newsreader:ital,opsz,wght@0,6..72,400..500;1,6..72,400..500&display=swap" rel="stylesheet" />
+<style>
+/* ===== Tokens (identical to design.md Appendix A) ===== */
+:root{
+  color-scheme: light dark;
+  --paper: light-dark(#f7f6f1,#131210); --raised: light-dark(#ffffff,#1c1b18); --well: light-dark(#f0eee7,#171614);
+  --sunken: light-dark(#e9e6dd,#23211d); --hover: light-dark(#ebe8df,#2a2824);
+  --ink: light-dark(#1a1916,#eeebe3); --ink-2: light-dark(#4a463f,#b7b2a6); --ink-3: light-dark(#686359,#958f83);
+  --rule: light-dark(#e0dcd1,#2e2b26); --rule-soft: light-dark(#eae7df,#252320); --rule-strong: light-dark(#c6c0b2,#44403a);
+  --grid-minor: light-dark(#cec8ba,#34312b); --grid-major: light-dark(#b3ac9c,#4d4840);
+  --accent-solid:#d3ee3f; --accent: light-dark(#4d5a00,#d3ee3f); --accent-ink: light-dark(#1a1916,#161600);
+  --accent-soft: light-dark(#eff6c8,#23280f); --highlight: light-dark(#e3f380,#3a4416); --focus: light-dark(#1a1916,#d3ee3f);
+  --signal-strong: light-dark(#0b6a4e,#4cc9a0); --signal-strong-soft: light-dark(#e3f1ea,#0f2620);
+  --signal-partial: light-dark(#8f4e00,#f2b252); --signal-partial-soft: light-dark(#faeed8,#2b200e);
+  --signal-gap: light-dark(#b4233a,#ff8086); --signal-gap-soft: light-dark(#fae8e9,#331719);
+  --mark-strong: light-dark(#0e8f6a,#22a47e); --mark-partial: light-dark(#d88a00,#efa12a); --mark-gap: light-dark(#e04a5a,#f4606a);
+  --on-signal: light-dark(#ffffff,#131210);
+  --ai: light-dark(#6a3cc9,#c3afff); --ai-soft: light-dark(#f1edfa,#1e1a2c); --ai-rule: light-dark(#cbbdee,#4a3e75); --mark-ai: light-dark(#8b5cf6,#a385fa);
+  --shadow-color: light-dark(rgb(26 25 22 / .16), rgb(0 0 0 / .55));
+  --shadow-btn: 0 0 0 1px var(--rule-strong); --shadow-card: 0 0 0 1px var(--rule);
+  --shadow-raised: 0 0 0 1px var(--rule-strong), 0 16px 36px -18px var(--shadow-color);
+  --font-display: "Newsreader", ui-serif, Georgia, serif; --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, Menlo, monospace;
+  --ease-out: cubic-bezier(.23,1,.32,1);
+}
+:root[data-theme="light"]{color-scheme:light} :root[data-theme="dark"]{color-scheme:dark}
+.force-light{color-scheme:light} .force-dark{color-scheme:dark}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;scroll-padding-top:5rem}
+body{font-family:var(--font-sans);font-size:1rem;line-height:1.5}
+::selection{background:var(--highlight);color:var(--ink)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+button,input,textarea,select{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+.shell{width:100%;max-width:76rem;margin-inline:auto;padding-inline:1.25rem}
+@media(min-width:640px){.shell{padding-inline:2rem}} @media(min-width:1024px){.shell{padding-inline:2.5rem}}
+
+/* type */
+.font-display{font-family:var(--font-display);font-weight:450;letter-spacing:-.02em;font-optical-sizing:auto}
+.font-heading{font-family:var(--font-sans);font-weight:600;letter-spacing:-.01em}
+.t-hero{font-size:clamp(2.75rem,1.6rem + 4.2vw,4.75rem);line-height:1;letter-spacing:-.03em;font-weight:400}
+.t-h1{font-size:clamp(2.125rem,1.6rem + 2vw,3rem);line-height:1.06;letter-spacing:-.025em}
+.t-h2{font-size:clamp(1.5rem,1.25rem + .9vw,1.875rem);line-height:1.15;letter-spacing:-.015em}
+.t-h2sm{font-size:1.25rem;line-height:1.25;letter-spacing:-.01em;font-weight:500}
+.t-h3{font-size:1.125rem;line-height:1.35}
+.t-h4{font-size:.9375rem;line-height:1.4}
+.t-lede{font-size:1.125rem;line-height:1.6;color:var(--ink-2)}
+.t-body{font-size:1rem;line-height:1.65}
+.t-ui{font-size:.875rem;line-height:1.5}
+.t-small{font-size:.8125rem;line-height:1.45}
+.t-micro{font-size:.75rem;line-height:1.4}
+.t-code{font-family:var(--font-mono);font-size:.8125rem;line-height:1.6}
+.kicker{font-family:var(--font-mono);font-size:.6875rem;line-height:1;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.mono{font-family:var(--font-mono)} .tnum{font-variant-numeric:tabular-nums}
+.ink-2{color:var(--ink-2)} .ink-3{color:var(--ink-3)}
+.eyebrow{font-size:.8125rem;line-height:1.25rem;font-weight:500;color:var(--ink-2)}
+
+/* surfaces */
+.panel{background:var(--raised);border-radius:10px;box-shadow:var(--shadow-card)}
+.tile{background:var(--raised);border-radius:8px;box-shadow:var(--shadow-card)}
+.well{background:var(--well);border-radius:10px;box-shadow:inset 0 0 0 1px var(--rule-soft)}
+.tint{background:var(--accent-soft);border-radius:10px}
+.dotgrid,.screen{background-color:var(--well);background-image:radial-gradient(circle at center,var(--grid-major) 1.5px,transparent 1.75px),radial-gradient(circle at center,var(--grid-minor) 1px,transparent 1.25px);background-size:120px 120px,24px 24px;background-position:-60px -60px,-12px -12px}
+.screen{border-radius:14px;box-shadow:inset 0 0 0 1px var(--rule)}
+.glass{background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+
+/* chips */
+.led{display:inline-block;width:.4375rem;height:.4375rem;border-radius:999px;flex-shrink:0;background:var(--led,var(--rule-strong))}
+.led-strong{--led:var(--mark-strong)} .led-partial{--led:var(--mark-partial)} .led-gap{--led:var(--mark-gap)} .led-ai{--led:var(--mark-ai)} .led-accent{--led:var(--ink)} .led-idle{--led:var(--ink-3)}
+.led-off{--led:transparent;box-shadow:inset 0 0 0 1px var(--rule-strong)}
+.led-pulse{animation:pulse 1.4s ease-in-out infinite} @keyframes pulse{50%{opacity:.3}}
+.chip,.chip-flat{display:inline-flex;align-items:center;gap:.375rem;height:1.375rem;border-radius:4px;padding:0 .45rem;font-size:.75rem;line-height:1;color:var(--ink-2);white-space:nowrap;background:color-mix(in srgb,var(--ink) 5%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 7%,transparent)}
+.chip{background:var(--raised);box-shadow:var(--shadow-btn)}
+button.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);box-shadow:none}
+.c-strong{color:var(--signal-strong)} .c-partial{color:var(--signal-partial)} .c-gap{color:var(--signal-gap)}
+.badge-new{display:inline-flex;align-items:center;height:1.125rem;padding:0 .3rem;border-radius:4px;background:var(--highlight);color:var(--accent-ink);font-family:var(--font-mono);font-size:.625rem;letter-spacing:.08em;text-transform:uppercase}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:2.25rem;border-radius:6px;padding:.5rem .875rem;font-size:.875rem;font-weight:500;line-height:1.1;white-space:nowrap;transition:background-color 160ms var(--ease-out),box-shadow 160ms var(--ease-out),color 160ms var(--ease-out),transform 120ms var(--ease-out)}
+.btn:active{transform:scale(.98)} .btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-sm{min-height:1.875rem;padding:.375rem .625rem;font-size:.8125rem;border-radius:5px}
+.btn-lg{min-height:2.75rem;padding:.75rem 1.125rem;font-size:.9375rem;border-radius:7px}
+.btn-primary{color:var(--paper);background:var(--ink)} .btn-primary:hover:not(:disabled){background:color-mix(in srgb,var(--ink) 86%,var(--paper))}
+.btn-accent{color:#1a1916;background:var(--accent-solid);box-shadow:inset 0 0 0 1px rgb(26 25 22 / .14)} .btn-accent:hover{background:color-mix(in srgb,var(--accent-solid) 88%,#1a1916)}
+.btn-secondary{color:var(--ink);background:var(--raised);box-shadow:var(--shadow-btn)} .btn-secondary:hover:not(:disabled){background:var(--well)}
+.btn-ghost{color:var(--ink-2)} .btn-ghost:hover{color:var(--ink);background:var(--hover)}
+.btn-danger{color:var(--signal-gap);background:var(--raised);box-shadow:var(--shadow-btn)} .btn-danger:hover{background:var(--signal-gap-soft)}
+.btn-danger-solid{color:var(--on-signal);background:var(--signal-gap)}
+.cost{display:inline-flex;align-items:center;height:1.125rem;padding:0 .35rem;margin-right:-.25rem;border-radius:4px;font-family:var(--font-mono);font-size:.6875rem;font-weight:400;background:color-mix(in srgb,currentColor 14%,transparent)}
+.spinner{width:12px;height:12px;border-radius:999px;border:1.5px solid currentColor;border-right-color:transparent;animation:spin 700ms linear infinite} @keyframes spin{to{transform:rotate(360deg)}}
+.knob{display:inline-grid;place-items:center;width:1.75rem;height:1.75rem;border-radius:6px;color:var(--ink-3)} .knob:hover{color:var(--ink);background:var(--hover)}
+
+/* inputs */
+.field{width:100%;background:var(--raised);border:0;border-radius:6px;padding:.625rem .75rem;font-size:.875rem;color:var(--ink);box-shadow:var(--shadow-btn);transition:box-shadow 160ms var(--ease-out)}
+.field::placeholder{color:var(--ink-3)}
+.field:focus,.field.is-focus{outline:none;box-shadow:0 0 0 1px var(--ink),0 0 0 4px color-mix(in srgb,var(--accent-solid) 45%,transparent)}
+.field[aria-invalid="true"]{box-shadow:0 0 0 1px var(--mark-gap)}
+.field-mono{font-family:var(--font-mono);font-size:.8125rem;line-height:1.6}
+.choice{display:flex;gap:.75rem;border-radius:8px;padding:.875rem 1rem;cursor:pointer;background:var(--raised);box-shadow:var(--shadow-card)}
+.choice:has(:checked){background:var(--accent-soft);box-shadow:0 0 0 1.5px var(--ink)}
+.seg{display:inline-flex;gap:2px;border-radius:8px;background:var(--sunken);padding:3px;box-shadow:inset 0 0 0 1px var(--rule-soft)}
+.seg span{border-radius:6px;padding:.25rem .625rem;font-size:.75rem;font-weight:500;color:var(--ink-3)}
+.seg span.on{background:var(--raised);color:var(--ink);box-shadow:var(--shadow-btn)}
+
+/* tabs */
+.tabs{display:flex;gap:1.5rem;border-bottom:1px solid var(--rule)}
+.tab{position:relative;padding-block:.75rem;font-size:.875rem;font-weight:500;color:var(--ink-3)}
+.tab[aria-selected="true"]{color:var(--ink)} .tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--ink)}
+.tab .n{font-family:var(--font-mono);font-weight:400;color:var(--ink-3);margin-left:.25rem}
+
+/* callouts */
+.callout{border-left:2px solid var(--callout,var(--rule-strong));padding:.25rem 0 .25rem 1.25rem}
+.callout-title{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.08em;text-transform:uppercase;color:var(--callout-text,var(--ink-3))}
+.callout-failure{--callout:var(--mark-gap);--callout-text:var(--signal-gap)}
+.callout-scale{--callout:var(--mark-partial);--callout-text:var(--signal-partial)}
+.callout-change{--callout:var(--ink);--callout-text:var(--ink)}
+.callout-ai{border-left-style:dashed;--callout:var(--mark-ai);--callout-text:var(--ai)}
+
+/* AI */
+.ai-block{background:var(--ai-soft);border-radius:10px;padding:1rem 1.25rem;outline:1px dashed var(--ai-rule);outline-offset:-1px}
+.ai-block-head{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .75rem;margin-bottom:.75rem}
+.ai-label{display:inline-flex;align-items:center;gap:.375rem;height:1.25rem;padding:0 .375rem;border-radius:4px;background:var(--ai-soft);box-shadow:inset 0 0 0 1px var(--ai-rule);color:var(--ai);font-family:var(--font-mono);font-size:.6875rem;line-height:1;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.ai-inline{background:var(--ai-soft);border-bottom:1px dashed var(--mark-ai);border-radius:2px}
+.stream-caret{display:inline-block;width:2px;height:1.1em;margin-left:1px;vertical-align:text-bottom;background:var(--mark-ai);animation:caret 1s step-end infinite} @keyframes caret{50%{opacity:0}}
+.skeleton{border-radius:6px;background:linear-gradient(90deg,var(--sunken) 0%,var(--hover) 50%,var(--sunken) 100%) 0 0/200% 100%;animation:shimmer 1.6s linear infinite}
+.skeleton-text{height:.75em;margin-block:.45em}
+@keyframes shimmer{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.skeleton{background:var(--sunken)}}
+
+/* commerce */
+.credits{display:inline-flex;align-items:center;gap:.5rem;height:1.875rem;padding:0 .625rem;border-radius:6px;background:var(--raised);box-shadow:var(--shadow-btn);font-size:.8125rem;color:var(--ink-2)}
+.credits-meter{width:18px;height:6px;border-radius:2px;background:var(--sunken);overflow:hidden}
+.credits-meter>span{display:block;height:100%;background:var(--ink)}
+.credits-count{font-family:var(--font-mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.credits[data-low="true"] .credits-count{color:var(--signal-partial)}
+.price-card{display:flex;flex-direction:column;gap:1rem;background:var(--raised);border-radius:14px;box-shadow:var(--shadow-card);padding:1.5rem;overflow:hidden}
+.price-card-featured{box-shadow:0 0 0 1.5px var(--ink);padding-top:0}
+.price-card-band{margin-inline:-1.5rem;height:1.75rem;display:flex;align-items:center;padding-inline:1.5rem;background:var(--accent-solid);color:#1a1916;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.08em;text-transform:uppercase}
+.checks{list-style:none;display:grid;gap:.5rem;font-size:.875rem;color:var(--ink-2)}
+.checks li{display:flex;gap:.6rem}
+.checks svg{flex-shrink:0;margin-top:.2rem;color:var(--ink)}
+.toast{display:flex;align-items:flex-start;gap:.625rem;max-width:24rem;padding:.75rem 1rem;background:var(--raised);border-radius:10px;box-shadow:var(--shadow-raised);font-size:.875rem}
+.empty{display:grid;justify-items:center;gap:.75rem;text-align:center;padding:2.5rem 1.5rem;border-radius:14px;box-shadow:inset 0 0 0 1px var(--rule)}
+
+/* stepper */
+.stepper{display:flex;gap:.25rem;border-bottom:1px solid var(--rule);overflow-x:auto}
+.step{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.25rem .75rem 0;font-size:.8125rem;color:var(--ink-3);white-space:nowrap}
+.step-num{display:grid;place-items:center;width:22px;height:22px;border-radius:999px;font-family:var(--font-mono);font-size:.6875rem;box-shadow:inset 0 0 0 1px var(--rule-strong)}
+.step[data-state="done"]{color:var(--ink-2)} .step[data-state="done"] .step-num{background:var(--ink);color:var(--paper);box-shadow:none}
+.step[aria-current="step"]{color:var(--ink);font-weight:500} .step[aria-current="step"] .step-num{background:var(--accent-solid);color:#1a1916;box-shadow:none}
+.avatar{width:28px;height:28px;border-radius:999px;background:var(--sunken);color:var(--ink-2);display:grid;place-items:center;font-size:.75rem;font-weight:600;box-shadow:0 0 0 1px var(--rule-strong)}
+
+/* prose bits */
+.link{color:var(--ink);font-weight:500;text-decoration:underline;text-decoration-color:var(--rule-strong);text-underline-offset:3px;border-radius:2px}
+.link:hover{text-decoration-color:var(--ink);background:var(--highlight)}
+.concept-link{text-decoration:underline dotted var(--ink-3);text-decoration-thickness:1.5px;text-underline-offset:3px;border-radius:2px}
+.concept-link:hover{text-decoration-style:solid;text-decoration-color:var(--ink);background:var(--highlight)}
+code.inl{font-family:var(--font-mono);font-size:.82em;background:var(--sunken);box-shadow:inset 0 0 0 1px var(--rule-soft);border-radius:4px;padding:.1em .35em}
+pre.code{font-family:var(--font-mono);font-size:.8125rem;line-height:1.6;padding:.85rem 1rem;overflow-x:auto}
+.code-wrap{background:var(--well);box-shadow:inset 0 0 0 1px var(--rule);border-radius:10px}
+.code-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.4rem .5rem .4rem 1rem;border-bottom:1px solid var(--rule-soft);font-family:var(--font-mono);font-size:.6875rem;color:var(--ink-3)}
+.data-table{width:100%;border-collapse:collapse;font-size:.8125rem;line-height:1.5}
+.data-table th,.data-table td{text-align:left;padding:.6rem 1rem .6rem 0;border-bottom:1px solid var(--rule-soft)}
+.data-table thead th{font-family:var(--font-mono);font-size:.6875rem;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.data-table td{color:var(--ink-2)}
+.meter{display:flex;height:6px;gap:2px;border-radius:999px;overflow:hidden;background:var(--sunken);flex:1;min-width:4rem}
+.meter span:first-child{border-radius:999px 0 0 999px} .meter span:last-child{border-radius:0 999px 999px 0}
+.lesson-mark{display:grid;place-items:center;width:1.4375rem;height:1.4375rem;border-radius:999px;font-family:var(--font-mono);font-size:.75rem;color:#1a1916;background:var(--accent-solid)}
+.lesson-mark-done{color:var(--on-signal);background:var(--signal-strong)}
+
+/* header */
+.nav-link{position:relative;display:inline-flex;align-items:center;height:3.5rem;padding-inline:.7rem;font-size:.875rem;color:var(--ink-2)}
+.nav-link:hover{color:var(--ink)}
+.nav-link[aria-current="page"]{color:var(--ink);font-weight:500}
+.nav-link[aria-current="page"]::after{content:"";position:absolute;left:.7rem;right:.7rem;bottom:-1px;height:2px;background:var(--ink)}
+
+/* mockup-only scaffolding */
+.doc-section{padding-block:4rem;border-top:1px solid var(--rule)}
+.doc-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}
+.grid2{display:grid;gap:1.25rem} @media(min-width:900px){.grid2{grid-template-columns:1fr 1fr}}
+.grid3{display:grid;gap:1.25rem} @media(min-width:900px){.grid3{grid-template-columns:repeat(3,1fr)}}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}
+.stack>*+*{margin-top:.75rem}
+.spec{font-family:var(--font-mono);font-size:.6875rem;color:var(--ink-3)}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(8.5rem,1fr));gap:.625rem}
+.sw{border-radius:8px;box-shadow:var(--shadow-card);overflow:hidden;background:var(--raised)}
+.sw b{display:block;height:3.25rem}
+.sw div{padding:.45rem .55rem}
+.sw p{font-size:.75rem;font-weight:500} .sw small{font-family:var(--font-mono);font-size:.625rem;color:var(--ink-3)}
+.theme-pane{background:var(--paper);color:var(--ink);border-radius:14px;padding:1.5rem;box-shadow:inset 0 0 0 1px var(--rule)}
+.typerow{display:grid;grid-template-columns:9rem 1fr;gap:1.5rem;align-items:baseline;padding-block:1rem;border-top:1px solid var(--rule-soft)}
+.workspace{display:grid;gap:1.5rem} @media(min-width:1000px){.workspace{grid-template-columns:minmax(0,1fr) 22rem}}
+svg text{font-family:var(--font-sans)}
+</style>
+</head>
+<body>
+
+<!-- ===================== HEADER (signed in) ===================== -->
+<header class="glass" style="position:sticky;top:0;z-index:40;border-bottom:1px solid var(--rule-soft)">
+  <div class="shell" style="display:flex;align-items:center;height:3.5rem;gap:2rem">
+    <a href="#" style="display:flex;align-items:center;gap:.6rem">
+      <svg width="26" height="26" viewBox="0 0 8 8" aria-hidden="true" style="border-radius:7px;box-shadow:0 0 0 1px var(--rule-strong)">
+        <rect width="8" height="8" fill="#1a1916"/>
+        <g fill="#d3ee3f"><rect x=".08" y=".08" width=".84" height=".84" rx=".12"/><rect x="1.08" y=".08" width=".84" height=".84" rx=".12"/><rect x="2.08" y=".08" width=".84" height=".84" rx=".12"/><rect x=".08" y="1.08" width=".84" height=".84" rx=".12"/><rect x="1.08" y="1.08" width=".84" height=".84" rx=".12"/><rect x="2.08" y="1.08" width=".84" height=".84" rx=".12"/><rect x=".08" y="2.08" width=".84" height=".84" rx=".12"/><rect x="1.08" y="2.08" width=".84" height=".84" rx=".12"/><rect x="2.08" y="2.08" width=".84" height=".84" rx=".12"/>
+        <rect x="5.08" y="5.08" width=".84" height=".84" rx=".12"/><rect x="6.08" y="5.08" width=".84" height=".84" rx=".12"/><rect x="7.08" y="5.08" width=".84" height=".84" rx=".12"/><rect x="5.08" y="6.08" width=".84" height=".84" rx=".12"/><rect x="6.08" y="6.08" width=".84" height=".84" rx=".12"/><rect x="7.08" y="6.08" width=".84" height=".84" rx=".12"/><rect x="5.08" y="7.08" width=".84" height=".84" rx=".12"/><rect x="6.08" y="7.08" width=".84" height=".84" rx=".12"/><rect x="7.08" y="7.08" width=".84" height=".84" rx=".12"/></g>
+        <g fill="#d3ee3f" fill-opacity=".55"><rect x="3.08" y="1.08" width=".84" height=".84" rx=".12"/><rect x="4.08" y="1.08" width=".84" height=".84" rx=".12"/><rect x="5.08" y="1.08" width=".84" height=".84" rx=".12"/><rect x="6.08" y="2.08" width=".84" height=".84" rx=".12"/><rect x="6.08" y="3.08" width=".84" height=".84" rx=".12"/><rect x="6.08" y="4.08" width=".84" height=".84" rx=".12"/></g>
+      </svg>
+      <span class="font-heading" style="font-size:1.0625rem;letter-spacing:-.02em">sys<span class="ink-3">geeks</span></span>
+    </a>
+    <nav style="display:flex;flex:1;justify-content:space-between;align-items:center">
+      <div style="display:flex"><a class="nav-link" aria-current="page" href="#">Investigations</a><a class="nav-link" href="#">Concepts</a><a class="nav-link" href="#">Practice</a><a class="nav-link" href="#">Interview</a></div>
+      <div style="display:flex;align-items:center;gap:.25rem">
+        <a class="nav-link" href="#">Projects</a><a class="nav-link" href="#">Progress</a>
+        <button class="credits" style="margin-left:.5rem" aria-label="42 of 120 credits left"><span class="credits-meter"><span style="width:35%"></span></span><span class="credits-count">42</span>credits</button>
+        <button class="avatar" style="margin-left:.5rem" aria-label="Account">PJ</button>
+        <button class="btn btn-ghost btn-sm" id="themeBtn" style="margin-left:.75rem" title="Mockup only: cycle theme">Theme: system</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- ===================== HERO / LANDING ===================== -->
+<section class="dotgrid" style="border-bottom:1px solid var(--rule)">
+  <div class="shell" style="padding-block:4.5rem 3rem">
+    <div style="display:grid;gap:2rem 4rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));align-items:end">
+      <div>
+        <p class="kicker" style="margin-bottom:1.25rem">System design interview practice</p>
+        <h1 class="font-display t-hero" style="max-width:13ch">Learn <em>why</em> systems are built the way they are.</h1>
+      </div>
+      <div style="max-width:46ch">
+        <p class="t-lede">You can build a job queue or a payment flow. The interview asks why it is built that way, what happens when it fails, and what changes at ten times the load. Practise exactly that, on real systems.</p>
+        <div class="row" style="margin-top:1.75rem"><a class="btn btn-accent btn-lg" href="#">Start the first investigation</a><a class="btn btn-secondary btn-lg" href="#">See pricing</a></div>
+        <p class="t-small ink-3" style="margin-top:1rem">Every investigation and concept is free to read. AI features use credits, and anything the AI writes is labelled.</p>
+      </div>
+    </div>
+
+    <!-- hero map: mid-failure -->
+    <figure style="margin-top:3rem" aria-label="An investigation in progress">
+      <svg viewBox="0 0 900 250" style="width:100%;height:auto" role="img" aria-label="Video pipeline with the worker down">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 1L9 5L0 9z" fill="var(--ink-3)"/></marker>
+          <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--mark-gap)" stroke-width="1.2" stroke-opacity=".35"/></pattern>
+        </defs>
+        <g fill="none" stroke="var(--ink-3)" stroke-width="1.4">
+          <path d="M157 70 L 245 70" marker-end="url(#ar)"/>
+          <path d="M389 70 L 477 70" marker-end="url(#ar)" stroke-dasharray="6 4"/>
+          <path d="M621 70 L 709 70" marker-end="url(#ar)" stroke-dasharray="6 4"/>
+          <path d="M317 101 L 317 165" marker-end="url(#ar)" stroke-width="3" stroke-opacity=".55"/>
+          <path d="M781 101 L 781 165" marker-end="url(#ar)" stroke-width="3" stroke-opacity=".55"/>
+        </g>
+        <!-- client -->
+        <g transform="translate(93 70)"><rect x="-64" y="-31" width="128" height="62" rx="16" fill="var(--raised)" stroke="color-mix(in srgb,var(--ink) 55%,transparent)"/><text y="-7" text-anchor="middle" font-size="9" letter-spacing=".8" fill="var(--ink-3)" style="font-family:var(--font-mono)">CLIENT</text><text y="12" text-anchor="middle" font-size="14" font-weight="500" fill="var(--ink)">Uploader</text></g>
+        <g transform="translate(317 70)"><rect x="-64" y="-31" width="128" height="62" rx="6" fill="var(--raised)" stroke="color-mix(in srgb,var(--ink) 55%,transparent)"/><text y="-7" text-anchor="middle" font-size="9" letter-spacing=".8" fill="var(--ink-3)" style="font-family:var(--font-mono)">SERVICE</text><text y="12" text-anchor="middle" font-size="14" font-weight="500" fill="var(--ink)">Upload API</text></g>
+        <g transform="translate(549 70)"><rect x="-64" y="-31" width="128" height="62" rx="6" fill="var(--raised)" stroke="color-mix(in srgb,var(--ink) 55%,transparent)"/><g stroke="color-mix(in srgb,var(--ink) 55%,transparent)"><line x1="54" x2="54" y1="-23" y2="-13"/><line x1="48" x2="48" y1="-23" y2="-13"/><line x1="42" x2="42" y1="-23" y2="-13"/></g><text y="-7" text-anchor="middle" font-size="9" letter-spacing=".8" fill="var(--ink-3)" style="font-family:var(--font-mono)">QUEUE</text><text y="12" text-anchor="middle" font-size="14" font-weight="500" fill="var(--ink)">Job queue</text></g>
+        <!-- failed worker -->
+        <g transform="translate(781 70)"><rect x="-64" y="-31" width="128" height="62" rx="6" fill="var(--signal-gap-soft)" stroke="var(--mark-gap)" stroke-width="1.5"/><rect x="-64" y="-31" width="128" height="62" rx="6" fill="url(#hatch)"/><circle cx="54" cy="-21" r="3.5" fill="var(--mark-gap)" class="led-pulse"/><text y="-7" text-anchor="middle" font-size="9" letter-spacing=".8" fill="var(--signal-gap)" style="font-family:var(--font-mono)">WORKER · DOWN</text><text y="12" text-anchor="middle" font-size="14" font-weight="500" fill="var(--ink)">Transcoder</text></g>
+        <g transform="translate(317 197)"><rect x="-64" y="-31" width="128" height="62" rx="6" fill="var(--raised)" stroke="color-mix(in srgb,var(--ink) 55%,transparent)"/><line x1="-64" x2="64" y1="-22" y2="-22" stroke="color-mix(in srgb,var(--ink) 55%,transparent)" stroke-width=".8"/><text y="-5" text-anchor="middle" font-size="9" letter-spacing=".8" fill="var(--ink-3)" style="font-family:var(--font-mono)">OBJECT STORE</text><text y="13" text-anchor="middle" font-size="14" font-weight="500" fill="var(--ink)">Raw uploads</text></g>
+        <g transform="translate(781 197)"><rect x="-64" y="-31" width="128" height="62" rx="6" fill="var(--raised)" stroke="color-mix(in srgb,var(--ink) 55%,transparent)"/><line x1="-64" x2="64" y1="-22" y2="-22" stroke="color-mix(in srgb,var(--ink) 55%,transparent)" stroke-width=".8"/><text y="-5" text-anchor="middle" font-size="9" letter-spacing=".8" fill="var(--ink-3)" style="font-family:var(--font-mono)">OBJECT STORE</text><text y="13" text-anchor="middle" font-size="14" font-weight="500" fill="var(--ink)">Renditions</text></g>
+      </svg>
+      <div class="callout callout-failure" style="max-width:30rem;margin-left:auto;margin-right:3%">
+        <p class="callout-title">Failure</p>
+        <p class="font-display t-h2sm" style="margin-top:.4rem">The transcoder dies 40 minutes into a 2-hour job.</p>
+        <p class="t-ui ink-2" style="margin-top:.5rem">The queue still shows the message as in flight. What happens to the job now?</p>
+        <a class="btn btn-secondary" style="margin-top:1rem" href="#">Reason through it</a>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<div class="shell">
+  <div style="display:flex;flex-wrap:wrap;gap:1rem 3rem;padding-block:1.25rem;border-bottom:1px solid var(--rule)">
+    <p><span class="font-display" style="font-size:1.75rem">14</span> <span class="kicker">systems</span></p>
+    <p><span class="font-display" style="font-size:1.75rem">62</span> <span class="kicker">concepts</span></p>
+    <p><span class="font-display" style="font-size:1.75rem">14</span> <span class="kicker">company writeups</span></p>
+    <p><span class="font-display" style="font-size:1.75rem">5</span> <span class="kicker">phases per system</span></p>
+  </div>
+
+<!-- ===================== DIRECTION ===================== -->
+<section class="doc-section" style="border-top:0">
+  <div class="doc-head"><h2 class="font-display t-h2">Direction: the marked-up design review</h2><span class="kicker">Graphite &amp; Citron</span></div>
+  <div class="grid2">
+    <p class="t-body ink-2">The interface is a design document on warm paper, set in graphite and reviewed with a highlighter. Colour carries meaning here (strong, partial and gap evidence, failure events, AI content), so the chrome carries none. Primary buttons are ink. <strong style="color:var(--ink)">Citron</strong> is the only brand hue, used like a highlighter on what is new, selected or most important. It is the one hue that can't be confused with a signal or with AI.</p>
+    <p class="t-body ink-2">Headlines are set in Newsreader, so pages read like an argued document. Geist handles the tool and Geist Mono the labels and numbers. Diagrams stay the hero, now drawn on a dot-grid pad. AI output looks like pencil on vellum: a violet-tinted surface with a dashed edge, always labelled, and provisional until you ink it in.</p>
+  </div>
+</section>
+
+<!-- ===================== PALETTE ===================== -->
+<section class="doc-section">
+  <div class="doc-head"><h2 class="font-display t-h2">Tokens</h2><span class="spec">contrast vs paper shown; full table in design.md §2.2</span></div>
+  <div class="grid2">
+    <div class="theme-pane force-light" id="pal-light"><p class="kicker" style="margin-bottom:1rem">Light</p></div>
+    <div class="theme-pane force-dark" id="pal-dark"><p class="kicker" style="margin-bottom:1rem">Dark</p></div>
+  </div>
+</section>
+
+<!-- ===================== TYPE ===================== -->
+<section class="doc-section">
+  <div class="doc-head"><h2 class="font-display t-h2">Type</h2><span class="spec">Newsreader · Geist · Geist Mono</span></div>
+  <div>
+    <div class="typerow"><span class="spec">hero · Newsreader 400<br>76/76 −0.03em</span><p class="font-display t-hero">What breaks first?</p></div>
+    <div class="typerow"><span class="spec">h1 · Newsreader 450<br>48/51 −0.025em</span><p class="font-display t-h1">Design a video processing pipeline</p></div>
+    <div class="typerow"><span class="spec">h2 · Newsreader 450<br>30/34.5</span><p class="font-display t-h2">What you need to know</p></div>
+    <div class="typerow"><span class="spec">h2-sm · Newsreader 500<br>20/25</span><p class="font-display t-h2sm">A worker dies mid-job</p></div>
+    <div class="typerow"><span class="spec">h3 · Geist 600<br>18/24</span><p class="font-heading t-h3">How well you can explain it</p></div>
+    <div class="typerow"><span class="spec">h4 · Geist 600<br>15/21</span><p class="font-heading t-h4">Durability of stateful components</p></div>
+    <div class="typerow"><span class="spec">lede · Geist 400<br>18/28.8 ink-2</span><p class="t-lede">Each one is a system you design from its requirements: decide, explain why, break it, change the constraints.</p></div>
+    <div class="typerow"><span class="spec">body · Geist 400<br>16/26.4</span><p class="t-body">A lease gives a worker exclusive ownership of a job for a bounded time. If the worker dies, the lease expires and another worker can take the job. The <a class="concept-link" href="#">fencing token</a> stops the old worker's late writes.</p></div>
+    <div class="typerow"><span class="spec">ui · small · micro</span><p class="t-ui">Answer recorded. <span class="t-small ink-2">Feedback waits until the end.</span> <span class="t-micro ink-3">Updated 3 Oct</span></p></div>
+    <div class="typerow"><span class="spec">label · Geist Mono 400<br>11 caps +0.08em</span><p class="kicker">Stage 3 of 9 · Break</p></div>
+    <div class="typerow"><span class="spec">code · Geist Mono 400<br>13/20.8</span><p class="t-code">SET job:42 owner=w7 NX PX 30000</p></div>
+  </div>
+</section>
+
+<!-- ===================== COMPONENTS ===================== -->
+<section class="doc-section">
+  <div class="doc-head"><h2 class="font-display t-h2">Components</h2></div>
+  <div class="grid2">
+
+    <div class="panel" style="padding:1.25rem">
+      <p class="kicker" style="margin-bottom:1rem">Buttons</p>
+      <div class="row"><button class="btn btn-accent">Start free</button><button class="btn btn-primary">Submit answer</button><button class="btn btn-secondary">Show hint</button><button class="btn btn-ghost">Cancel</button><button class="btn btn-danger">Delete project</button></div>
+      <div class="row" style="margin-top:.75rem"><button class="btn btn-primary">Draft the architecture <span class="cost">3 credits</span></button><button class="btn btn-primary" aria-busy="true"><span class="spinner"></span>Drafting</button><button class="btn btn-secondary" disabled>Disabled</button></div>
+      <div class="row" style="margin-top:.75rem"><button class="btn btn-secondary btn-sm">Accept</button><button class="btn btn-ghost btn-sm">Reject</button><button class="btn btn-primary btn-lg">Large primary</button><button class="btn btn-danger-solid btn-sm">Delete forever</button></div>
+      <p class="t-micro ink-3" style="margin-top:.9rem">At most one citron button per view. A button that spends credits shows the cost before you click.</p>
+    </div>
+
+    <div class="panel" style="padding:1.25rem">
+      <p class="kicker" style="margin-bottom:1rem">Inputs</p>
+      <label class="eyebrow" style="display:block;margin-bottom:.375rem">Project name</label>
+      <input class="field is-focus" value="Checkout service" />
+      <label class="eyebrow" style="display:block;margin:.9rem 0 .375rem">GitHub repository</label>
+      <input class="field" aria-invalid="true" value="github.com/acme/checkout-svc" />
+      <p class="t-small c-gap" style="margin-top:.375rem">This repository is private. Make it public or paste the README instead.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.9rem">
+        <label class="choice"><input type="radio" name="c" checked style="accent-color:#1a1916"> <span class="t-ui">At-least-once with idempotent writes</span></label>
+        <label class="choice"><input type="radio" name="c"> <span class="t-ui">Exactly-once via the broker</span></label>
+      </div>
+    </div>
+
+    <div class="panel" style="padding:1.25rem">
+      <p class="kicker" style="margin-bottom:1rem">Badges, signals, meters</p>
+      <div class="row">
+        <span class="chip-flat c-strong"><span class="led led-strong" style="width:6px;height:6px"></span>Strong</span>
+        <span class="chip-flat c-partial"><span class="led led-partial" style="width:6px;height:6px"></span>Partial</span>
+        <span class="chip-flat c-gap"><span class="led led-gap" style="width:6px;height:6px"></span>Gap</span>
+        <span class="chip">Updated 3 Oct</span><span class="chip-flat">Break</span><span class="badge-new">New</span>
+        <span class="ai-label"><svg width="10" height="10" viewBox="0 0 10 10"><rect x=".6" y=".6" width="8.8" height="8.8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 1.5"/><rect x="3.75" y="3.75" width="2.5" height="2.5" fill="currentColor"/></svg>AI-assessed</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:.75rem;margin-top:1.1rem">
+        <div class="meter"><span style="width:55%;background:var(--mark-strong)"></span><span style="width:27%;background:var(--mark-partial)"></span><span style="width:18%;background:var(--mark-gap)"></span></div>
+        <span class="mono t-micro ink-2 tnum" style="display:flex;gap:.6rem"><span><span class="led led-strong" style="width:4px;height:4px"></span> 6</span><span><span class="led led-partial" style="width:4px;height:4px"></span> 3</span><span><span class="led led-gap" style="width:4px;height:4px"></span> 2</span></span>
+      </div>
+      <div class="row" style="margin-top:1.1rem;gap:1rem"><span class="lesson-mark">2</span><span class="lesson-mark lesson-mark-done">✓</span>
+        <span class="credits"><span class="credits-meter"><span style="width:35%"></span></span><span class="credits-count">42</span>credits</span>
+        <span class="credits" data-low="true"><span class="credits-meter"><span style="width:3%"></span></span><span class="credits-count">3</span>credits left</span>
+      </div>
+    </div>
+
+    <div class="panel" style="padding:1.25rem">
+      <p class="kicker" style="margin-bottom:.5rem">Tabs and segmented</p>
+      <div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="true">Questions<span class="n">12</span></button><button class="tab" role="tab">Architecture model</button><button class="tab" role="tab">Review</button></div>
+      <div class="row" style="margin-top:1rem"><span class="seg"><span class="on">Monthly</span><span>Yearly</span></span>
+        <button class="chip" aria-pressed="true">SaaS</button><button class="chip">Realtime</button><button class="chip">Fintech</button></div>
+      <p class="kicker" style="margin:1.25rem 0 .75rem">Events</p>
+      <div class="stack">
+        <div class="callout callout-failure"><p class="callout-title">Failure</p><p class="t-ui ink-2" style="margin-top:.3rem">A message is delivered twice after a broker failover.</p></div>
+        <div class="callout callout-scale"><p class="callout-title">Scale change</p><p class="t-ui ink-2" style="margin-top:.3rem">Uploads grow from 2k to 200k a day.</p></div>
+        <div class="callout callout-change"><p class="callout-title">Requirement change</p><p class="t-ui ink-2" style="margin-top:.3rem">Sales promised creators a 5-minute turnaround.</p></div>
+      </div>
+    </div>
+
+    <!-- AI blocks -->
+    <div class="ai-block">
+      <div class="ai-block-head">
+        <span class="ai-label"><svg width="10" height="10" viewBox="0 0 10 10"><rect x=".6" y=".6" width="8.8" height="8.8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 1.5"/><rect x="3.75" y="3.75" width="2.5" height="2.5" fill="currentColor"/></svg>AI draft</span>
+        <span class="t-small ink-3">From your README · 8 Oct, 14:02 · not yet reviewed by you</span>
+      </div>
+      <p class="t-ui">Your service looks like a <strong>request/response API</strong> in front of Postgres, with a <strong>Stripe webhook consumer</strong> that writes subscription state. I found 7 components and 9 flows.</p>
+      <div class="row" style="margin-top:1rem"><button class="btn btn-secondary btn-sm">Accept all 7</button><button class="btn btn-ghost btn-sm">Edit</button><button class="btn btn-ghost btn-sm">Dismiss</button></div>
+    </div>
+
+    <div class="ai-block">
+      <div role="status" style="display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem">
+        <span class="led led-ai led-pulse"></span><span class="t-small ink-2">Tracing flows… found 5 of ~9</span><span class="mono t-micro ink-3">0:14</span>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto">Stop</button>
+      </div>
+      <p class="t-ui">The webhook consumer acknowledges Stripe before the database write commits, so a crash between the two loses the event<span class="stream-caret"></span></p>
+      <div style="margin-top:1rem"><div class="skeleton skeleton-text" style="width:100%"></div><div class="skeleton skeleton-text" style="width:92%"></div><div class="skeleton skeleton-text" style="width:64%"></div></div>
+    </div>
+
+    <div class="panel" style="padding:1.25rem">
+      <p class="kicker" style="margin-bottom:.9rem">AI-assessed answer</p>
+      <div class="row"><span class="chip-flat c-partial"><span class="led led-partial" style="width:6px;height:6px"></span>Partial</span>
+        <span class="ai-label"><svg width="10" height="10" viewBox="0 0 10 10"><rect x=".6" y=".6" width="8.8" height="8.8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 1.5"/><rect x="3.75" y="3.75" width="2.5" height="2.5" fill="currentColor"/></svg>AI-assessed</span>
+        <a class="link t-small" href="#">Disagree? Mark it yourself</a></div>
+      <ul class="t-ui ink-2" style="list-style:none;margin-top:.9rem;display:grid;gap:.45rem">
+        <li style="display:flex;gap:.6rem"><span class="led led-strong" style="margin-top:.45rem"></span>Names the lease expiry as the recovery trigger.</li>
+        <li style="display:flex;gap:.6rem"><span class="led led-gap" style="margin-top:.45rem"></span>Misses the stale worker's late write. <span class="ai-inline">“the old worker may still upload its rendition”</span></li>
+      </ul>
+    </div>
+
+    <div class="paywall">
+      <p class="kicker">Out of credits</p>
+      <h3 class="font-heading t-h3" style="margin-top:.5rem">An architecture review costs 5 credits</h3>
+      <p class="t-ui ink-2" style="margin-top:.4rem">The review reads your accepted model and lists what holds up, what's worth checking and where the gaps are. Your plan renews on 1 Nov with 120 credits.</p>
+      <table class="data-table" style="margin-top:.75rem;max-width:20rem"><tbody><tr><td>This review</td><td class="mono" style="color:var(--ink)">5</td></tr><tr><td>Your balance</td><td class="mono" style="color:var(--ink)">2</td></tr></tbody></table>
+      <div class="row" style="margin-top:1rem"><button class="btn btn-primary">See plans and credit packs</button><button class="btn btn-ghost">Not now</button></div>
+    </div>
+
+    <div class="stack">
+      <div class="toast" role="status"><span class="led led-strong" style="margin-top:.4rem"></span><div style="flex:1">Project exported. <a class="link" href="#">Open file</a></div><button class="knob" aria-label="Close">×</button></div>
+      <div class="toast" role="alert"><span class="led led-gap" style="margin-top:.4rem"></span><div style="flex:1">The draft failed halfway. <strong>Not charged.</strong> <a class="link" href="#">Retry</a></div><button class="knob" aria-label="Close">×</button></div>
+      <div class="empty dotgrid">
+        <svg width="120" height="48" viewBox="0 0 120 48" fill="none" stroke="var(--ink-3)" stroke-dasharray="3 3"><rect x="1" y="14" width="30" height="20" rx="3"/><rect x="45" y="14" width="30" height="20" rx="3"/><rect x="89" y="14" width="30" height="20" rx="3"/><path d="M31 24h14M75 24h14"/></svg>
+        <h3 class="font-heading t-h3">No projects yet</h3>
+        <p class="t-ui ink-2" style="max-width:34ch">Describe a system you built, or start from one of the examples.</p>
+        <div class="row" style="justify-content:center"><button class="btn btn-primary">New project</button><button class="btn btn-secondary">Browse examples</button></div>
+      </div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-head"><span>worker.ts</span><button class="knob" aria-label="Copy">⧉</button></div>
+      <pre class="code"><span class="ink-3">// Renew the lease; stop if someone else owns the job.</span>
+const ok = await redis.set(`job:${id}`, me, { XX: true, PX: 30_000 });
+if (!ok) throw new LostLease(id, fence);</pre>
+    </div>
+
+    <div class="panel" style="padding:1.25rem">
+      <p class="kicker" style="margin-bottom:.75rem">Prose</p>
+      <p class="t-body">A <a class="concept-link" href="#">lease</a> is a lock with an expiry. Read <a class="link" href="#">how the interview works</a> first. Use <code class="inl">SET NX PX</code> to take it.</p>
+      <blockquote class="t-body ink-2" style="border-left:2px solid var(--ink);padding-left:1rem;margin-top:.85rem">At-least-once delivery means your handler must be safe to run twice.</blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PRICING ===================== -->
+<section class="doc-section">
+  <div class="doc-head"><div><p class="kicker" style="margin-bottom:.75rem">Pricing</p><h2 class="font-display t-h1">Pay for the AI, not the reading.</h2></div>
+    <span class="seg"><span class="on">Monthly</span><span>Yearly · 2 months free</span></span></div>
+  <div class="grid3" style="align-items:start">
+    <div class="price-card">
+      <p class="kicker">Free</p>
+      <p><span class="font-display" style="font-size:2.75rem;line-height:1">$0</span> <span class="t-small ink-3">forever</span></p>
+      <p class="mono t-small">10 credits to try AI features</p>
+      <p class="t-ui ink-2">Every investigation, concept, lesson and practice drill.</p>
+      <hr style="border:0;border-top:1px solid var(--rule-soft)">
+      <ul class="checks"><li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2.5 7.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>All authored content</li><li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2.5 7.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Self-assessed answers and progress</li><li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2.5 7.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Projects modelled by hand</li></ul>
+      <button class="btn btn-secondary" style="margin-top:auto">Start free</button>
+    </div>
+    <div class="price-card price-card-featured">
+      <div class="price-card-band">Recommended for active prep</div>
+      <p class="kicker">Pro</p>
+      <p><span class="font-display" style="font-size:2.75rem;line-height:1">$12</span> <span class="t-small ink-3">/ month, billed monthly</span></p>
+      <p class="mono t-small">120 credits / month</p>
+      <p class="t-ui ink-2">For the weeks you're interviewing: your own systems drafted, reviewed and drilled.</p>
+      <hr style="border:0;border-top:1px solid var(--rule-soft)">
+      <ul class="checks"><li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2.5 7.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>AI architecture drafts from a README or repo</li><li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2.5 7.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>AI architecture reviews</li><li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2.5 7.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>AI-assessed written answers</li><li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2.5 7.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Progress synced across devices</li></ul>
+      <button class="btn btn-accent" style="margin-top:auto">Get Pro</button>
+    </div>
+    <div class="price-card">
+      <p class="kicker">Credit pack</p>
+      <p><span class="font-display" style="font-size:2.75rem;line-height:1">$5</span> <span class="t-small ink-3">one-off</span></p>
+      <p class="mono t-small">50 credits · never expire</p>
+      <p class="t-ui ink-2">Top up without a subscription.</p>
+      <hr style="border:0;border-top:1px solid var(--rule-soft)">
+      <table class="data-table"><thead><tr><th>Action</th><th>Credits</th></tr></thead><tbody><tr><td>Draft an architecture</td><td class="mono">3</td></tr><tr><td>Architecture review</td><td class="mono">5</td></tr><tr><td>AI-assess an answer</td><td class="mono">1</td></tr></tbody></table>
+      <button class="btn btn-secondary" style="margin-top:auto">Buy 50 credits</button>
+    </div>
+  </div>
+  <p class="t-small ink-3" style="margin-top:1rem">Illustrative prices. Real values come from <span class="mono">lib/pricing.ts</span>.</p>
+</section>
+
+<!-- ===================== PROJECT WORKSPACE ===================== -->
+<section class="doc-section">
+  <p class="kicker">Project · from GitHub</p>
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:1rem;margin-top:.75rem">
+    <div>
+      <h2 class="font-display" style="font-size:2.25rem;line-height:1.06;letter-spacing:-.025em">Checkout service</h2>
+      <div class="row" style="margin-top:.75rem"><span class="chip">github.com/acme/checkout</span><span class="chip">Updated 8 Oct</span><span class="ai-label"><svg width="10" height="10" viewBox="0 0 10 10"><rect x=".6" y=".6" width="8.8" height="8.8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 1.5"/><rect x="3.75" y="3.75" width="2.5" height="2.5" fill="currentColor"/></svg>AI-drafted · edited by you</span></div>
+    </div>
+    <div class="row"><button class="btn btn-secondary btn-sm">Export</button><button class="knob" aria-label="More">⋯</button></div>
+  </div>
+
+  <nav class="stepper" style="margin-top:1.75rem" aria-label="Project steps">
+    <a class="step" data-state="done" href="#"><span class="step-num">✓</span>Describe</a>
+    <a class="step" data-state="done" href="#"><span class="step-num">✓</span>Draft</a>
+    <a class="step" aria-current="step" href="#"><span class="step-num">3</span>Model</a>
+    <span class="step"><span class="step-num">4</span>Review</span>
+    <span class="step"><span class="step-num">5</span>Drill</span>
+  </nav>
+
+  <div class="workspace" style="margin-top:1.5rem">
+    <div class="screen" style="padding:1.25rem">
+      <svg viewBox="0 0 620 330" style="width:100%;height:auto" role="img" aria-label="Checkout architecture, draft">
+        <defs>
+          <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 1L9 5L0 9z" fill="var(--ink-3)"/></marker>
+          <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 1L9 5L0 9z" fill="var(--ink)"/></marker>
+          <marker id="ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 1L9 5L0 9z" fill="var(--mark-ai)"/></marker>
+        </defs>
+        <g fill="none" stroke-width="1.4">
+          <path d="M140 60 L 236 60" stroke="var(--ink-3)" marker-end="url(#ar2)"/>
+          <path d="M374 60 L 470 60" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#ar3)"/>
+          <path d="M305 91 L 305 225" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#ar3)"/>
+          <path d="M540 91 L 540 225" stroke="var(--mark-ai)" stroke-dasharray="4 3" marker-end="url(#ar4)"/>
+          <path d="M470 256 L 374 256" stroke="var(--mark-ai)" stroke-dasharray="4 3" marker-end="url(#ar4)"/>
+        </g>
+        <g transform="translate(305 158)"><circle r="8.5" fill="var(--highlight)" stroke="var(--ink)" stroke-width=".8"/><text text-anchor="middle" dominant-baseline="central" font-size="8.5" fill="var(--ink)" style="font-family:var(--font-mono)">2</text></g>
+        <g transform="translate(188 60)"><circle r="8.5" fill="var(--raised)" stroke="var(--rule-strong)" stroke-width=".8"/><text text-anchor="middle" dominant-baseline="central" font-size="8.5" fill="var(--ink-2)" style="font-family:var(--font-mono)">1</text></g>
+        <!-- accepted -->
+        <g transform="translate(76 60)"><rect x="-64" y="-31" width="128" height="62" rx="16" fill="var(--raised)" stroke="color-mix(in srgb,var(--ink) 55%,transparent)"/><text y="-7" text-anchor="middle" font-size="8" letter-spacing=".8" fill="var(--ink-3)" style="font-family:var(--font-mono)">CLIENT</text><text y="10" text-anchor="middle" font-size="12.5" font-weight="500" fill="var(--ink)">Storefront</text></g>
+        <!-- selected / highlighted -->
+        <g transform="translate(305 60)"><rect x="-64" y="-31" width="128" height="62" rx="6" fill="var(--highlight)" stroke="var(--ink)" stroke-width="1.5"/><text y="-7" text-anchor="middle" font-size="8" letter-spacing=".8" fill="var(--ink-2)" style="font-family:var(--font-mono)">SERVICE</text><text y="10" text-anchor="middle" font-size="12.5" font-weight="500" fill="var(--ink)">Checkout API</text></g>
+        <!-- proposed -->
+        <g transform="translate(540 60)"><rect x="-64" y="-31" width="128" height="62" rx="6" fill="var(--ai-soft)" stroke="var(--mark-ai)" stroke-width="1.2" stroke-dasharray="4 3"/><text y="-7" text-anchor="middle" font-size="8" letter-spacing=".8" fill="var(--ai)" style="font-family:var(--font-mono)">PROPOSED · EXTERNAL</text><text y="10" text-anchor="middle" font-size="12.5" font-weight="500" fill="var(--ink)">Stripe</text></g>
+        <g transform="translate(305 256)"><rect x="-64" y="-31" width="128" height="62" rx="6" fill="var(--raised)" stroke="color-mix(in srgb,var(--ink) 55%,transparent)"/><line x1="-64" x2="64" y1="-22" y2="-22" stroke="color-mix(in srgb,var(--ink) 55%,transparent)" stroke-width=".8"/><text y="-5" text-anchor="middle" font-size="8" letter-spacing=".8" fill="var(--ink-3)" style="font-family:var(--font-mono)">DATABASE</text><text y="12" text-anchor="middle" font-size="12.5" font-weight="500" fill="var(--ink)">Orders (Postgres)</text></g>
+        <g transform="translate(540 256)"><rect x="-64" y="-31" width="128" height="62" rx="6" fill="var(--ai-soft)" stroke="var(--mark-ai)" stroke-width="1.2" stroke-dasharray="4 3"/><text y="-7" text-anchor="middle" font-size="8" letter-spacing=".8" fill="var(--ai)" style="font-family:var(--font-mono)">PROPOSED · WORKER</text><text y="10" text-anchor="middle" font-size="12.5" font-weight="500" fill="var(--ink)">Webhook consumer</text></g>
+      </svg>
+      <div class="row t-micro ink-3" style="margin-top:.75rem;gap:1.25rem">
+        <span style="display:inline-flex;align-items:center;gap:.4rem"><svg width="22" height="8"><rect x="1" y="1" width="20" height="6" rx="1.5" fill="var(--raised)" stroke="color-mix(in srgb,var(--ink) 55%,transparent)"/></svg>Accepted</span>
+        <span style="display:inline-flex;align-items:center;gap:.4rem"><svg width="22" height="8"><rect x="1" y="1" width="20" height="6" rx="1.5" fill="var(--highlight)" stroke="var(--ink)" stroke-width="1.4"/></svg>Selected</span>
+        <span style="display:inline-flex;align-items:center;gap:.4rem"><svg width="22" height="8"><rect x="1" y="1" width="20" height="6" rx="1.5" fill="var(--ai-soft)" stroke="var(--mark-ai)" stroke-dasharray="3 2"/></svg>Proposed by AI</span>
+      </div>
+    </div>
+
+    <aside class="panel" style="padding:1.25rem;align-self:start">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><h3 class="font-heading t-h4">Proposed by the draft</h3><span class="mono t-micro ink-3">5 of 7 accepted</span></div>
+      <ul style="list-style:none;margin-top:.75rem;display:grid;gap:.5rem">
+        <li class="ai-block" style="padding:.75rem .875rem">
+          <div style="display:flex;justify-content:space-between;gap:.5rem"><div><p class="t-ui" style="font-weight:500">Stripe</p><p class="kicker" style="margin-top:.3rem">external</p></div>
+          <div class="row" style="flex-wrap:nowrap"><button class="btn btn-secondary btn-sm">Accept</button><button class="btn btn-ghost btn-sm">Reject</button></div></div>
+          <p class="t-small ink-2" style="margin-top:.5rem">Found <code class="inl">stripe</code> in package.json and a <code class="inl">/webhooks/stripe</code> route.</p>
+        </li>
+        <li class="ai-block" style="padding:.75rem .875rem">
+          <div style="display:flex;justify-content:space-between;gap:.5rem"><div><p class="t-ui" style="font-weight:500">Webhook consumer</p><p class="kicker" style="margin-top:.3rem">worker</p></div>
+          <div class="row" style="flex-wrap:nowrap"><button class="btn btn-secondary btn-sm">Accept</button><button class="btn btn-ghost btn-sm">Reject</button></div></div>
+        </li>
+      </ul>
+      <hr style="border:0;border-top:1px solid var(--rule-soft);margin:1rem 0">
+      <p class="eyebrow">Checkout API</p>
+      <label class="t-small ink-3" style="display:block;margin:.6rem 0 .3rem">Responsibility</label>
+      <textarea class="field" rows="2">Creates orders, reserves stock and starts payment.</textarea>
+      <div class="row" style="margin-top:1rem;justify-content:space-between"><span class="t-small ink-2">Review uses <strong style="color:var(--ink)">5 credits</strong></span><button class="btn btn-primary btn-sm">Review the model <span class="cost">5</span></button></div>
+    </aside>
+  </div>
+
+  <!-- review report -->
+  <div class="ai-block" style="margin-top:2rem;padding:1.25rem 1.5rem">
+    <div class="ai-block-head"><span class="ai-label"><svg width="10" height="10" viewBox="0 0 10 10"><rect x=".6" y=".6" width="8.8" height="8.8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 1.5"/><rect x="3.75" y="3.75" width="2.5" height="2.5" fill="currentColor"/></svg>AI review</span><span class="t-small ink-3">Reviewed your accepted model (7 components, 9 flows) · 8 Oct</span></div>
+    <p class="t-ui">The request path is clear and the order write is transactional. Most of the risk is in the webhook path: events can be lost or applied twice.</p>
+    <p class="t-small ink-3" style="margin-top:.5rem">The review reads your model, not your code. It can be wrong. Dismiss what doesn't apply.</p>
+  </div>
+  <h3 class="font-heading t-h3" style="margin:1.5rem 0 .75rem">Gaps</h3>
+  <div class="panel" style="padding:1rem 1.25rem">
+    <div class="row" style="justify-content:space-between"><div class="row"><span class="chip-flat c-gap"><span class="led led-gap" style="width:6px;height:6px"></span>Gap</span><h4 class="font-heading t-h4">Webhook acknowledged before the write commits</h4></div>
+    <div class="row"><button class="btn btn-secondary btn-sm">Drill this</button><button class="btn btn-ghost btn-sm">Dismiss</button></div></div>
+    <div class="row" style="margin-top:.6rem"><span class="chip">Webhook consumer</span><span class="chip">Orders (Postgres)</span></div>
+    <p class="t-ui ink-2" style="margin-top:.6rem">If the process dies between the 200 response and the commit, Stripe will not retry and the subscription change is lost.</p>
+    <p class="t-small ink-2" style="margin-top:.4rem;font-style:italic">What an interviewer would ask: "Walk me through a crash right after you return 200."</p>
+  </div>
+</section>
+</div>
+
+<footer style="margin-top:2rem;background:var(--well);border-top:1px solid var(--rule)">
+  <div class="shell" style="padding-block:2.5rem;display:flex;flex-wrap:wrap;gap:2rem;justify-content:space-between">
+    <div style="max-width:24rem">
+      <span class="font-heading" style="font-size:1.0625rem;letter-spacing:-.02em">sys<span class="ink-3">geeks</span></span>
+      <p class="t-small ink-2" style="margin-top:.75rem">System design practice that asks why, what breaks, and what changes at ten times the load.</p>
+      <p class="t-micro ink-3" style="margin-top:.75rem">Lessons, investigations and keys are written and checked by people. Anything an AI wrote or assessed is labelled as such.</p>
+    </div>
+    <p class="t-small ink-3">Mockup for docs/plan/design.md</p>
+  </div>
+</footer>
+
+<script>
+const tokens = [
+  ["paper","#F7F6F1","#131210"],["raised","#FFFFFF","#1C1B18"],["well","#F0EEE7","#171614"],["sunken","#E9E6DD","#23211D"],["hover","#EBE8DF","#2A2824"],
+  ["ink","#1A1916","#EEEBE3",16.2,15.7],["ink-2","#4A463F","#B7B2A6",8.7,8.9],["ink-3","#686359","#958F83",5.5,5.8],
+  ["rule","#E0DCD1","#2E2B26"],["rule-strong","#C6C0B2","#44403A"],["grid-major","#B3AC9C","#4D4840"],
+  ["accent-solid","#D3EE3F","#D3EE3F"],["accent","#4D5A00","#D3EE3F",7.0,14.3],["accent-soft","#EFF6C8","#23280F"],["highlight","#E3F380","#3A4416"],
+  ["signal-strong","#0B6A4E","#4CC9A0",6.1,9.1],["mark-strong","#0E8F6A","#22A47E"],["signal-partial","#8F4E00","#F2B252",6.0,10.0],["mark-partial","#D88A00","#EFA12A"],
+  ["signal-gap","#B4233A","#FF8086",6.0,7.7],["mark-gap","#E04A5A","#F4606A"],["ai","#6A3CC9","#C3AFFF",6.3,9.7],["ai-soft","#F1EDFA","#1E1A2C"],["mark-ai","#8B5CF6","#A385FA"],
+];
+for (const [mode, i] of [["light",1],["dark",2]]) {
+  const host = document.getElementById("pal-"+mode);
+  const g = document.createElement("div"); g.className = "swatches";
+  for (const t of tokens) {
+    const ratio = t[i+2] ? ` · ${t[i+2]}:1` : "";
+    g.insertAdjacentHTML("beforeend", `<div class="sw"><b style="background:${t[i]}"></b><div><p>--${t[0]}</p><small>${t[i]}${ratio}</small></div></div>`);
+  }
+  host.appendChild(g);
+}
+const btn = document.getElementById("themeBtn"); const order = ["system","light","dark"]; let k = 0;
+btn.addEventListener("click", () => { k = (k + 1) % 3; const m = order[k];
+  if (m === "system") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = m;
+  btn.textContent = "Theme: " + m; });
+</script>
+</body>
+</html>

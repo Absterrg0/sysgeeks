@@ -94,14 +94,11 @@ export function InterviewSetup({ candidates }: { candidates: InterviewCandidate[
   };
 
   return (
-    <div className="grid gap-x-14 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      <section aria-labelledby="setup" className="section space-y-7">
-        <div className="flex items-baseline gap-2.5">
-          <span className="font-mono text-[0.625rem] tabular-nums text-ink-3">01</span>
-          <h2 id="setup" className="font-display text-[1.0625rem] leading-tight">
-            Set up a session
-          </h2>
-        </div>
+    <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <section aria-labelledby="setup" className="sheet space-y-6 p-5 sm:p-6">
+        <h2 id="setup" className="text-[0.875rem] font-semibold">
+          Set up a session
+        </h2>
         <Segmented
           name="duration"
           legend="Length"
@@ -128,7 +125,7 @@ export function InterviewSetup({ candidates }: { candidates: InterviewCandidate[
                     onChange={() => setFocus(f.value)}
                   />
                   <span
-                    className="led led-off peer-checked:bg-accent-solid peer-checked:shadow-none"
+                    className="led led-off peer-checked:bg-ink peer-checked:shadow-none"
                     aria-hidden="true"
                   />
                   <span>
@@ -168,8 +165,8 @@ export function InterviewSetup({ candidates }: { candidates: InterviewCandidate[
             </select>
           )}
         </div>
-        <div className="space-y-3 border-t border-rule-soft pt-6">
-          <button type="button" className="btn btn-primary" onClick={start}>
+        <div className="space-y-3 border-t border-rule-soft pt-5">
+          <button type="button" className="btn btn-accent" onClick={start}>
             Start a {duration}-minute session
           </button>
           <p className="max-w-xl text-[0.8125rem] leading-relaxed text-ink-3">
@@ -179,17 +176,14 @@ export function InterviewSetup({ candidates }: { candidates: InterviewCandidate[
         </div>
       </section>
 
-      <section aria-labelledby="history" className="section space-y-4">
-        <div className="flex items-baseline gap-2.5">
-          <span className="font-mono text-[0.625rem] tabular-nums text-ink-3">02</span>
-          <h2 id="history" className="font-display text-[1.0625rem] leading-tight">
-            Past sessions
-          </h2>
-        </div>
+      <section aria-labelledby="history" className="sheet p-4">
+        <h2 id="history" className="mb-2 text-[0.875rem] font-semibold">
+          Past sessions
+        </h2>
         {sessions.length === 0 ? (
-          <p className="text-[0.8125rem] text-ink-3">None yet. Your sessions and their debriefs will be listed here.</p>
+          <p className="text-[0.8125rem] leading-relaxed text-ink-3">None yet. Your sessions and their debriefs will be listed here.</p>
         ) : (
-          <ul className="panel divide-y divide-rule-soft">
+          <ul className="-mx-4 divide-y divide-rule-soft border-t border-rule-soft">
             {sessions.map((s) => {
               const answered = s.items.filter((i) => i.attemptId).length;
               const date = new Date(s.startedAt).toLocaleDateString(undefined, {

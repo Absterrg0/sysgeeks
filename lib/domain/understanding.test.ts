@@ -7,7 +7,7 @@ let n = 0;
 function attempt(
   stageId: string,
   signal: Signal | null,
-  opts: { at?: string; dims?: Dimension[]; concepts?: string[]; inv?: string; basis?: "checked" | "self-assessed" } = {},
+  opts: { at?: string; dims?: Dimension[]; concepts?: string[]; inv?: string; basis?: "checked" | "self-assessed" | "ai-assessed" } = {},
 ): Attempt {
   n++;
   return {
@@ -59,6 +59,17 @@ describe("summaries", () => {
     expect(s.standing).toBe("developing");
     expect(s.thin).toBe(false);
     expect(summarize([]).standing).toBe("unexplored");
+  });
+
+  it("counts self-assessed and AI-assessed evidence separately", () => {
+    const latest = latestEvidence([
+      attempt("s1", "strong", { basis: "self-assessed" }),
+      attempt("s2", "partial", { basis: "ai-assessed" }),
+      attempt("s3", "gap", { basis: "ai-assessed" }),
+      attempt("s4", "strong"),
+    ]);
+    expect(summarize(latest.values())).toMatchObject({ total: 4, selfAssessed: 1, aiAssessed: 2 });
+    expect(summarize([]).aiAssessed).toBe(0);
   });
 
   it("groups by dimension, concept and competency", () => {

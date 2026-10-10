@@ -13,6 +13,7 @@ import { type ExerciseRef } from "@/lib/domain/learner";
 import { visibleAfter } from "@/lib/domain/visibility";
 import { breadcrumbs, clip, jsonLd, pageMetadata } from "@/lib/metadata";
 import { proseToPlainText } from "@/lib/prose";
+import { SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
   return listInvestigations().flatMap((inv) =>
@@ -116,25 +117,42 @@ export default async function StagePage(props: PageProps<"/investigations/[inves
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: jsonLd(
-            breadcrumbs([
-              { name: "System design interview questions", path: "/investigations" },
-              { name: investigation.searchTitle, path: `/investigations/${investigation.id}` },
-              { name: stage.title, path: `/investigations/${investigation.id}/${stage.id}` },
-            ]),
-          ),
+          __html: jsonLd({
+            "@graph": [
+              breadcrumbs([
+                { name: "System design interview questions", path: "/investigations" },
+                { name: investigation.searchTitle, path: `/investigations/${investigation.id}` },
+                { name: stage.title, path: `/investigations/${investigation.id}/${stage.id}` },
+              ]),
+              {
+                "@type": "LearningResource",
+                name: `${investigation.searchTitle}: ${stage.title}`,
+                description: proseToPlainText(stage.interaction.prompt),
+                url: `${SITE_URL}/investigations/${investigation.id}/${stage.id}`,
+                learningResourceType: "Practice problem",
+                educationalLevel: investigation.difficulty,
+                position: index + 1,
+                isPartOf: { "@id": `${SITE_URL}/investigations/${investigation.id}#resource` },
+                about: concepts.map((c) => ({ "@type": "DefinedTerm", name: c.title, url: `${SITE_URL}/concepts/${c.id}` })),
+                isAccessibleForFree: true,
+                inLanguage: "en",
+                provider: { "@id": `${SITE_URL}/#organization` },
+                // The worked answer to this stage, for engines that want the answer and not the exercise.
+                subjectOf: {
+                  "@type": "LearningResource",
+                  name: `${investigation.searchTitle}: full walkthrough`,
+                  url: `${SITE_URL}/investigations/${investigation.id}/review#stage-${stage.id}`,
+                },
+              },
+            ],
+          }),
         }}
       />
       <header className="section rise pb-0 sm:pb-0">
-        <p className="text-[0.8125rem] text-ink-3">
-          <Link href={`/investigations/${investigation.id}`} className="hover:text-ink">
-            {investigation.searchTitle}
-          </Link>
-          , stage {index + 1} of {investigation.stages.length}: {PHASE_LABELS[stage.phase].toLowerCase()}
+        <p className="kicker">
+          Stage {index + 1} of {investigation.stages.length} · {PHASE_LABELS[stage.phase]}
         </p>
-        <h1 className="mt-3 font-display text-[2.25rem] leading-[1.05] tracking-[-0.03em] text-balance sm:text-[3rem]">
-          {stage.title}
-        </h1>
+        <h1 className="mt-3 font-display text-h1 text-balance">{stage.title}</h1>
       </header>
 
       <section aria-label="The situation" className="section space-y-6">
@@ -144,8 +162,14 @@ export default async function StagePage(props: PageProps<"/investigations/[inves
         </div>
         {before.components.size > 0 && (
           <details className="group">
-            <summary className="flex w-fit cursor-pointer select-none list-none items-center gap-2 rounded-lg py-1 text-[0.8125rem] text-ink-2 hover:text-ink [&::-webkit-details-marker]:hidden">
-              <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" className="transition-transform group-open:rotate-90">
+            <summary className="btn btn-secondary btn-sm w-fit select-none list-none text-ink-2 [&::-webkit-details-marker]:hidden">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                aria-hidden="true"
+                className="transition-transform group-open:rotate-90"
+              >
                 <path d="M3.5 2l3 3-3 3" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
               </svg>
               <span className="font-medium">System so far</span>
@@ -166,15 +190,11 @@ export default async function StagePage(props: PageProps<"/investigations/[inves
 
       {stage.lesson ? (
         <section aria-labelledby="learn" className="section">
-          <h2 id="learn" className="mb-2 font-display text-[1.5rem] leading-tight">
+          <h2 id="learn" className="mb-2 font-display text-[1.75rem] leading-tight">
             What you need to know
           </h2>
-          <Lesson
-            lessonKey={`stage:${investigation.id}/${stage.id}`}
-            steps={stage.lesson}
-            finishLabel="the question"
-          >
-            <h2 className="mb-5 font-display text-[1.5rem] leading-tight">Your turn</h2>
+          <Lesson lessonKey={`stage:${investigation.id}/${stage.id}`} steps={stage.lesson} finishLabel="the question">
+            <h2 className="mb-5 font-display text-[1.75rem] leading-tight">Your turn</h2>
             {workspace}
           </Lesson>
         </section>
@@ -184,24 +204,23 @@ export default async function StagePage(props: PageProps<"/investigations/[inves
         </section>
       )}
 
-      <nav aria-label="Stage navigation" className="mt-6 grid grid-cols-2 gap-6 border-t border-rule py-8">
+      <nav aria-label="Stage navigation" className="mt-6 grid grid-cols-2 gap-3 py-8">
         {previous ? (
-          <Link
-            href={`/investigations/${investigation.id}/${previous.id}`}
-            className="group min-w-0 text-[0.9375rem] leading-snug"
-          >
-            <span className="block text-[0.8125rem] text-ink-3">Previous stage</span>
-            <span className="mt-1 block font-medium group-hover:text-accent">{previous.title}</span>
+          <Link href={`/investigations/${investigation.id}/${previous.id}`} className="tile group min-w-0 p-4">
+            <span className="kicker">Previous stage</span>
+            <span className="mt-2 block text-h4 font-medium transition-colors group-hover:text-accent">
+              {previous.title}
+            </span>
           </Link>
         ) : (
           <span />
         )}
         <Link
           href={`/investigations/${investigation.id}/${next ? next.id : "review"}`}
-          className="group min-w-0 text-right text-[0.9375rem] leading-snug"
+          className="tile group min-w-0 p-4 text-right"
         >
-          <span className="block text-[0.8125rem] text-ink-3">{next ? "Next stage" : "Finished the stages"}</span>
-          <span className="mt-1 block font-medium group-hover:text-accent">
+          <span className="kicker">{next ? "Next stage" : "Finished the stages"}</span>
+          <span className="mt-2 block text-h4 font-medium transition-colors group-hover:text-accent">
             {next ? next.title : "Read the full walkthrough"}
           </span>
         </Link>

@@ -88,7 +88,7 @@ export function OpenFeedback({
 }) {
   return (
     <div>
-      <p className="font-display text-[1.125rem] leading-snug mb-5">{interaction.prompt}</p>
+      <p className="font-heading text-[1.125rem] leading-snug mb-5">{interaction.prompt}</p>
       <h3 className="eyebrow mb-3">What a strong answer covers</h3>
       <div className="panel px-5 py-4">{slots.reference}</div>
     </div>
@@ -104,10 +104,10 @@ export function ImplementationFeedback({
 }) {
   return (
     <div className="space-y-4">
-      <p className="font-display text-[1.125rem] leading-snug">{interaction.prompt}</p>
+      <p className="font-heading text-[1.125rem] leading-snug">{interaction.prompt}</p>
       <div>
         <h3 className="eyebrow mb-3">One reference implementation</h3>
-        <pre className="rounded-xl bg-well px-5 py-4 shadow-[inset_0_0_0_1px_var(--rule)] overflow-x-auto font-mono text-[0.8125rem] leading-relaxed">
+        <pre className="rounded-xl bg-well px-5 py-4 shadow-[var(--shadow-well)] overflow-x-auto font-mono text-[0.8125rem] leading-relaxed">
           <code>{interaction.reference.code}</code>
         </pre>
       </div>

@@ -49,7 +49,7 @@ export function DataControls() {
         <button type="button" className="btn btn-secondary" onClick={download}>
           Export my data
         </button>
-        <label className="btn btn-secondary has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent">
+        <label className="btn btn-secondary has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-focus">
           Import from file
           <input
             ref={fileRef}

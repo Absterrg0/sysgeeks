@@ -10,9 +10,12 @@
 import {
   ATTEMPT_CONTEXTS,
   LEARNER_STATE_VERSION,
+  MAX_PROJECT_CONTEXT,
+  MAX_TAILORED_QUESTIONS,
   PROJECT_QUESTION_ID_RE,
   RUBRIC_MARKS,
   SIGNALS,
+  type AiAssessment,
   type Attempt,
   type Citations,
   type Evidence,
@@ -22,6 +25,7 @@ import {
   type SelfAssessment,
 } from "./learner";
 import { DESIGN_SECTION_IDS, type DesignRound } from "./design-round";
+import { QUESTION_GROUPS } from "./project-questions";
 import { CLAIM_VERDICTS, COMPONENT_KINDS, DIMENSIONS, FLOW_KINDS, isSlug } from "./taxonomy";
 
 export function createLearnerState(learnerId: string, now: string): LearnerState {
@@ -46,10 +50,21 @@ export function assessAttempt(
   selfAssessment: SelfAssessment,
   evidence: Evidence | null,
   citations: Citations = {},
+  assessor: "self" | "ai" = "self",
 ): LearnerState {
   return {
     ...state,
-    attempts: state.attempts.map((a) => (a.id === attemptId ? { ...a, selfAssessment, citations, evidence } : a)),
+    attempts: state.attempts.map((a) =>
+      a.id === attemptId ? { ...a, selfAssessment, citations, evidence, assessor } : a,
+    ),
+  };
+}
+
+/** Keeps the AI's assessment on the attempt without recording it as evidence; see assessAttempt. */
+export function attachAiAssessment(state: LearnerState, attemptId: string, ai: AiAssessment): LearnerState {
+  return {
+    ...state,
+    attempts: state.attempts.map((a) => (a.id === attemptId ? { ...a, aiAssessment: ai } : a)),
   };
 }
 
@@ -260,10 +275,32 @@ function citationsCheck(value: unknown, path: string): Check {
   return null;
 }
 
+function notesCheck(value: unknown, path: string): Check {
+  if (!isRecord(value)) return `${path} must be an object.`;
+  for (const [id, note] of Object.entries(value)) {
+    const error = slugCheck(id, path) ?? textCheck(note, `${path}.${id}`, { max: 1_000, min: 0 });
+    if (error) return error;
+  }
+  return null;
+}
+
+function aiAssessmentCheck(value: unknown, path: string): Check {
+  if (!isRecord(value)) return `${path} must be an object.`;
+  return (
+    textCheck(value.runId, `${path}.runId`) ??
+    textCheck(value.model, `${path}.model`) ??
+    (isDateTime(value.assessedAt) ? null : `${path}.assessedAt must be a date.`) ??
+    selfAssessmentCheck(value.marks, `${path}.marks`) ??
+    citationsCheck(value.citations, `${path}.citations`) ??
+    notesCheck(value.notes, `${path}.notes`) ??
+    textCheck(value.summary, `${path}.summary`, { max: 2_000, min: 0 })
+  );
+}
+
 function evidenceCheck(value: unknown, path: string): Check {
   if (!isRecord(value)) return `${path} must be an object.`;
   if (!oneOf(value.signal, SIGNALS)) return `${path}.signal is not a signal.`;
-  if (!oneOf(value.basis, ["checked", "self-assessed", "mixed"])) return `${path}.basis is not a basis.`;
+  if (!oneOf(value.basis, ["checked", "self-assessed", "ai-assessed", "mixed"])) return `${path}.basis is not a basis.`;
   const parts = listCheck(
     value.parts,
     `${path}.parts`,
@@ -271,7 +308,7 @@ function evidenceCheck(value: unknown, path: string): Check {
       if (!isRecord(part)) return `${partPath} must be an object.`;
       if (typeof part.label !== "string") return `${partPath}.label must be text.`;
       if (!oneOf(part.signal, SIGNALS)) return `${partPath}.signal is not a signal.`;
-      return oneOf(part.basis, ["checked", "self-assessed"]) ? null : `${partPath}.basis is not a basis.`;
+      return oneOf(part.basis, ["checked", "self-assessed", "ai-assessed"]) ? null : `${partPath}.basis is not a basis.`;
     },
     1,
   );
@@ -296,6 +333,10 @@ function attemptCheck(value: unknown, path: string): Check {
     (isDateTime(value.submittedAt) ? null : `${path}.submittedAt must be a date.`) ??
     (value.selfAssessment === null ? null : selfAssessmentCheck(value.selfAssessment, `${path}.selfAssessment`)) ??
     (value.citations === undefined ? null : citationsCheck(value.citations, `${path}.citations`)) ??
+    (value.assessor === undefined || oneOf(value.assessor, ["self", "ai"])
+      ? null
+      : `${path}.assessor is not an assessor.`) ??
+    (value.aiAssessment === undefined ? null : aiAssessmentCheck(value.aiAssessment, `${path}.aiAssessment`)) ??
     (value.evidence === null ? null : evidenceCheck(value.evidence, `${path}.evidence`))
   );
 }
@@ -344,6 +385,74 @@ function invariantCheck(value: unknown, path: string): Check {
   );
 }
 
+function sourceCheck(value: unknown, path: string): Check {
+  if (!isRecord(value)) return `${path} must be an object.`;
+  switch (value.type) {
+    case "manual":
+      return null;
+    case "repository": {
+      const url = value.url;
+      const valid = typeof url === "string" && (() => { try { new URL(url); return true; } catch { return false; } })();
+      return (
+        (valid ? null : `${path}.url must be a URL.`) ??
+        (isDateTime(value.analyzedAt) ? null : `${path}.analyzedAt must be a date.`) ??
+        (value.commit === undefined ? null : textCheck(value.commit, `${path}.commit`)) ??
+        (value.runId === undefined ? null : textCheck(value.runId, `${path}.runId`))
+      );
+    }
+    case "description":
+      return (
+        (isDateTime(value.draftedAt) ? null : `${path}.draftedAt must be a date.`) ??
+        (value.runId === undefined ? null : textCheck(value.runId, `${path}.runId`))
+      );
+    default:
+      return `${path}.type is not a source type.`;
+  }
+}
+
+function rubricPointCheck(value: unknown, path: string): Check {
+  if (!isRecord(value)) return `${path} must be an object.`;
+  return (
+    slugCheck(value.id, `${path}.id`) ??
+    textCheck(value.text, `${path}.text`, { max: 240 }) ??
+    (oneOf(value.weight, ["core", "supporting"]) ? null : `${path}.weight is not a weight.`)
+  );
+}
+
+function rubricCheck(value: unknown, path: string): Check {
+  const points = listCheck(value, path, rubricPointCheck, 2);
+  if (points) return points;
+  const hasCore = (value as Record<string, unknown>[]).some((point) => point.weight === "core");
+  return hasCore ? null : `${path} needs at least one core point.`;
+}
+
+function tailoredQuestionCheck(value: unknown, path: string): Check {
+  if (!isRecord(value)) return `${path} must be an object.`;
+  return (
+    slugCheck(value.id, `${path}.id`) ??
+    (oneOf(value.group, QUESTION_GROUPS) ? null : `${path}.group is not a question group.`) ??
+    textCheck(value.title, `${path}.title`, { max: 120 }) ??
+    textCheck(value.prompt, `${path}.prompt`, { max: 800 }) ??
+    rubricCheck(value.rubric, `${path}.rubric`) ??
+    textCheck(value.reference, `${path}.reference`, { max: 1_500 }) ??
+    listCheck(value.dimensions, `${path}.dimensions`, (d, dPath) => (oneOf(d, DIMENSIONS) ? null : `${dPath} is not a dimension.`), 1) ??
+    slugListCheck(value.conceptIds, `${path}.conceptIds`) ??
+    slugListCheck(value.componentIds, `${path}.componentIds`) ??
+    (isDateTime(value.generatedAt) ? null : `${path}.generatedAt must be a date.`) ??
+    textCheck(value.runId, `${path}.runId`)
+  );
+}
+
+function tailoredQuestionsCheck(value: unknown, path: string): Check {
+  if (Array.isArray(value) && value.length > MAX_TAILORED_QUESTIONS) {
+    return `${path} has more than ${MAX_TAILORED_QUESTIONS} questions.`;
+  }
+  const list = listCheck(value, path, tailoredQuestionCheck);
+  if (list) return list;
+  const ids = (value as { id: string }[]).map((question) => question.id);
+  return new Set(ids).size === ids.length ? null : `${path} has duplicate question ids.`;
+}
+
 function projectCheck(value: unknown, path: string): Check {
   if (!isRecord(value)) return `${path} must be an object.`;
   const id = slugCheck(value.id, `${path}.id`);
@@ -352,14 +461,11 @@ function projectCheck(value: unknown, path: string): Check {
   if (name) return name;
   const summary = textCheck(value.summary, `${path}.summary`, { max: 2_000, min: 0 });
   if (summary) return summary;
-  if (!isRecord(value.source)) return `${path}.source must be an object.`;
-  if (value.source.type === "repository") {
-    const url = value.source.url;
-    const valid = typeof url === "string" && (() => { try { new URL(url); return true; } catch { return false; } })();
-    if (!valid) return `${path}.source.url must be a URL.`;
-    if (!isDateTime(value.source.analyzedAt)) return `${path}.source.analyzedAt must be a date.`;
-  } else if (value.source.type !== "manual") {
-    return `${path}.source.type is not a source type.`;
+  const source = sourceCheck(value.source, `${path}.source`);
+  if (source) return source;
+  if (value.context !== undefined) {
+    const context = textCheck(value.context, `${path}.context`, { max: MAX_PROJECT_CONTEXT, min: 0 });
+    if (context) return context;
   }
   const components = listCheck(value.components, `${path}.components`, componentCheck);
   if (components) return components;
@@ -367,6 +473,10 @@ function projectCheck(value: unknown, path: string): Check {
   if (flows) return flows;
   const invariants = listCheck(value.invariants, `${path}.invariants`, invariantCheck);
   if (invariants) return invariants;
+  if (value.tailoredQuestions !== undefined) {
+    const tailored = tailoredQuestionsCheck(value.tailoredQuestions, `${path}.tailoredQuestions`);
+    if (tailored) return tailored;
+  }
   if (!isDateTime(value.createdAt)) return `${path}.createdAt must be a date.`;
   if (!isDateTime(value.updatedAt)) return `${path}.updatedAt must be a date.`;
   return null;

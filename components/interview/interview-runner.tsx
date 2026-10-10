@@ -88,7 +88,7 @@ export function InterviewRunner({
         <p className="text-ink-2">
           This session is not stored in this browser. It may have been deleted, or started elsewhere.
         </p>
-        <Link href="/interview" className="btn btn-secondary">
+        <Link href="/review#session" className="btn btn-secondary">
           Start a new session
         </Link>
       </div>
@@ -134,7 +134,7 @@ function Live({ session, items }: { session: InterviewSession; items: (Resolved 
       <div className="sticky top-12 z-20 border-b lg:top-0 border-rule-soft bg-paper px-5 py-2.5 sm:px-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <ol
-            className="flex flex-wrap gap-0.5 rounded-[10px] bg-sunken p-[3px] shadow-[inset_0_0_0_1px_var(--rule-soft)]"
+            className="flex flex-wrap gap-0.5 rounded-[10px] bg-well p-[3px] shadow-[var(--shadow-well)]"
             aria-label="Questions"
           >
             {session.items.map((it, i) => (
@@ -317,7 +317,7 @@ function Debrief({ session, items }: { session: InterviewSession; items: (Resolv
               <p className="eyebrow">
                 Question {i + 1}: {item.section}
               </p>
-              <h2 id={`item-${i}-title`} className="mt-2 font-display text-[1.125rem] leading-snug">
+              <h2 id={`item-${i}-title`} className="mt-2 font-heading text-[1.125rem] leading-snug">
                 {resolved ? <InlineText text={resolved.title} /> : "Unavailable question"}
               </h2>
               {resolved && <p className="mt-1 text-[0.8125rem] text-ink-3">{resolved.source}</p>}
@@ -350,10 +350,10 @@ function Debrief({ session, items }: { session: InterviewSession; items: (Resolv
       </div>
 
       <div className="section flex flex-wrap gap-2">
-        <Link href="/interview" className="btn btn-primary">
+        <Link href="/review#session" className="btn btn-primary">
           Start another session
         </Link>
-        <Link href="/understanding" className="btn btn-secondary">
+        <Link href="/review" className="btn btn-secondary">
           See your understanding
         </Link>
       </div>

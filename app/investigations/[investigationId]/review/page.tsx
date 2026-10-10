@@ -250,10 +250,10 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
           <DashList items={inv.interviewVariants.map((v) => `“${v}”`)} muted />
           <p className="mt-4 text-[0.8125rem] text-ink-2">
             The{" "}
-            <Link href="/interview" className="link">
-              interview mode
+            <Link href="/review#session" className="link">
+              timed session
             </Link>{" "}
-            mixes stages from this and other investigations with concept recall and questions about your own projects.
+            in Review mixes stages from this and other systems with concept recall and questions about your own projects.
           </p>
           {lastStage && (
             <Link href={`/investigations/${inv.id}/${lastStage.id}`} className="btn btn-secondary mt-5">

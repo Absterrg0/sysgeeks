@@ -7,7 +7,7 @@ import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
   title: `About ${SITE_NAME}: How the System Design Practice Works`,
-  description: `What ${SITE_NAME} is, how each system design exercise is built, where the material comes from, and how answers are checked. Free, no signup, no AI grading.`,
+  description: `What ${SITE_NAME} is, how each system design exercise is built, where the material comes from, and how answers are checked. Practice is free without an account; AI features are optional and labelled.`,
   path: "/about",
 });
 
@@ -61,7 +61,7 @@ export default function AboutPage() {
               guide to the interview itself
             </Link>{" "}
             and a timed{" "}
-            <Link href="/interview" className="link">
+            <Link href="/review#session" className="link">
               mock interview
             </Link>
             .
@@ -102,15 +102,24 @@ export default function AboutPage() {
       <Section id="checking" title="How answers are checked">
         <div className="max-w-[66ch] space-y-4 text-[1rem] leading-relaxed text-ink-2">
           <p>
-            Nothing is graded by AI. Choices, verdicts and orderings are checked against an authored answer key. Written
-            explanations are compared by you against specific points in a reference answer, so your progress is only as
+            Choices, verdicts and orderings are checked against an authored answer key. Written explanations are
+            self-assessed: you compare them with specific points in a reference answer, so your progress is only as
             honest as your own marks, and it says so.
           </p>
           <p>
-            There are no accounts. Your answers and projects are stored in your browser, and you can export or delete
-            them from{" "}
-            <Link href="/understanding" className="link">
-              your progress
+            Signed-in users can also have a written answer assessed by an AI model against the same points. Those
+            assessments are labelled as AI-assessed, quote the sentence they relied on, and you can mark the points
+            yourself instead. The{" "}
+            <Link href="/ai" className="link">
+              AI page
+            </Link>{" "}
+            says what is sent, which models run and how long data is kept.
+          </p>
+          <p>
+            Practice works without an account. Your answers and projects are stored in your browser, and you can export
+            or delete them from{" "}
+            <Link href="/review#data" className="link">
+              Review
             </Link>
             .
           </p>

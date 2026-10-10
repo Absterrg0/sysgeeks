@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { InlineText } from "@/components/prose-core";
-import { Segmented, VERDICT_LABEL } from "@/components/ui";
+import { Segmented, VerdictBadge, VERDICT_LABEL } from "@/components/ui";
 import type { Claim } from "@/lib/domain/content";
 import { CLAIM_VERDICTS, type ClaimVerdict } from "@/lib/domain/taxonomy";
 import { shuffled } from "@/lib/domain/evaluate";
@@ -84,16 +84,16 @@ export function ClaimDrill({
 
   return (
     <div>
-      <ol className="panel divide-y divide-rule-soft">
+      <ol className="space-y-3">
         {set.map((d, i) => {
           const key = keyOf(d);
           const mine = verdicts[key];
           const right = mine === d.claim.verdict;
           return (
-            <li key={key} className="px-4 py-3">
+            <li key={key} className="panel p-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
                 <div className="flex-1 min-w-0">
-                  <p className="text-[0.875rem] leading-relaxed">
+                  <p className="text-h3 font-semibold leading-snug">
                     <span className="mr-2.5 font-mono text-[0.625rem] tabular-nums text-ink-3">{String(i + 1).padStart(2, "0")}</span>
                     <InlineText text={d.claim.statement} />
                   </p>
@@ -115,12 +115,12 @@ export function ClaimDrill({
                 />
               </div>
               {checked && (
-                <div className="mt-3 ml-7 rounded-lg bg-well px-3.5 py-3 shadow-[inset_0_0_0_1px_var(--rule-soft)]">
+                <div className="well-sm mt-3 ml-7 px-3.5 py-3">
                   <p
-                    className={`inline-flex items-center gap-2 text-[0.8125rem] font-medium ${right ? "text-signal-strong" : "text-signal-gap"}`}
+                    className={`flex flex-wrap items-center gap-2 text-[0.8125rem] font-medium ${right ? "text-signal-strong" : "text-signal-gap"}`}
                   >
                     <span className={`led ${right ? "led-strong" : "led-gap"} size-1.5`} aria-hidden="true" />
-                    {right ? "Right:" : "Not quite:"} it {VERDICT_LABEL[d.claim.verdict].toLowerCase()}.
+                    {right ? "Right." : "Not quite."} The answer is <VerdictBadge verdict={d.claim.verdict} />
                   </p>
                   <div className="mt-1 text-ink-2">{explanations[key]}</div>
                 </div>

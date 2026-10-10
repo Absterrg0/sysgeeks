@@ -1,183 +1,184 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import type { ReactNode } from "react";
+import { SystemThumb } from "@/components/system-thumb";
 import { SignalMeter } from "@/components/ui";
-import { exampleProject } from "@/lib/domain/example-project";
+import { useAccount } from "@/lib/client/account";
 import { exerciseKey, type Project } from "@/lib/domain/learner";
-import { uniqueSlug } from "@/lib/domain/layout";
+import { autoLayout } from "@/lib/domain/layout";
+import { creditCost } from "@/lib/domain/pricing";
 import { projectQuestions } from "@/lib/domain/project-questions";
 import { latestEvidence } from "@/lib/domain/understanding";
-import { saveProject, useLearnerState } from "@/lib/store/learner-store";
+import { useLearnerState } from "@/lib/store/learner-store";
 
-function newProject(name: string, summary: string, taken: string[]): Project {
-  const now = new Date().toISOString();
-  return {
-    id: uniqueSlug(name, taken),
-    name: name.trim(),
-    summary: summary.trim(),
-    source: { type: "manual" },
-    components: [],
-    flows: [],
-    invariants: [],
-    createdAt: now,
-    updatedAt: now,
-  };
+const SOURCE_LABEL: Record<Project["source"]["type"], string> = {
+  manual: "Drawn by hand",
+  description: "AI-drafted",
+  repository: "From GitHub",
+};
+
+function updatedOn(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
 
-export function ProjectList() {
+/** A tile that starts something, drawn as a dashed slot in the grid. */
+function StartTile({
+  href,
+  icon,
+  title,
+  body,
+  primary = false,
+  disabled = false,
+}: {
+  href: string;
+  icon: ReactNode;
+  title: string;
+  body: ReactNode;
+  primary?: boolean;
+  disabled?: boolean;
+}) {
+  const inner = (
+    <>
+      <span
+        className={`grid size-10 place-items-center rounded-xl ${
+          primary ? "bg-accent-solid text-accent-ink shadow-[var(--shadow-accent)]" : "text-ink-2 shadow-[inset_0_0_0_1px_var(--rule-strong)]"
+        }`}
+      >
+        {icon}
+      </span>
+      <span className="text-[0.875rem] font-semibold">{title}</span>
+      <span className="max-w-[30ch] text-[0.8125rem] leading-snug text-ink-3">{body}</span>
+    </>
+  );
+  const className =
+    "flex h-full min-h-40 flex-col items-center justify-center gap-2.5 rounded-xl p-5 sm:min-h-52 text-center shadow-[inset_0_0_0_1px_var(--rule-strong)] [background:repeating-linear-gradient(135deg,transparent_0_10px,color-mix(in_srgb,var(--ink)_1.5%,transparent)_10px_11px)]";
+  if (disabled) {
+    return (
+      <div aria-disabled="true" className={`${className} opacity-60`}>
+        {inner}
+      </div>
+    );
+  }
+  return (
+    <Link href={href} className={`${className} transition-shadow hover:shadow-[inset_0_0_0_1px_var(--ink-3)]`}>
+      {inner}
+    </Link>
+  );
+}
+
+const PLUS = (
+  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+    <path d="M8 2.5v11M2.5 8h11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+const BRANCH = (
+  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4">
+    <circle cx="4.5" cy="4" r="1.7" />
+    <circle cx="4.5" cy="12" r="1.7" />
+    <circle cx="11.5" cy="6.5" r="1.7" />
+    <path d="M4.5 5.7v4.6M11.5 8.2c0 2.2-2.6 2.2-5.6 3" />
+  </svg>
+);
+
+/** Your systems as a gallery, with starting a new one as the first tile, then the curated examples. */
+export function ProjectList({ examples }: { examples?: ReactNode }) {
   const state = useLearnerState();
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [summary, setSummary] = useState("");
+  const { data } = useAccount();
+  const aiOff = data?.features.ai === false;
+  const importCost = `${creditCost("intake", { source: "readme" })}–${creditCost("intake", { source: "repository" })} credits`;
 
-  if (!state) return <div className="section"><div className="h-48 well" aria-busy="true" /></div>;
-
-  const taken = state.projects.map((p) => p.id);
-  const latest = latestEvidence(state.attempts);
-  const hasExample = state.projects.some((p) => p.name === "Subscription SaaS (example)");
-
-  const create = (project: Project) => {
-    saveProject(project);
-    router.push(`/projects/${project.id}`);
-  };
+  const latest = state ? latestEvidence(state.attempts) : null;
+  const projects = state?.projects ?? [];
 
   return (
-    <div className="grid gap-x-14 lg:grid-cols-[minmax(0,1fr)_26rem]">
-      <section aria-labelledby="your-projects" className="section min-w-0">
-        <div className="mb-5 flex items-baseline gap-2.5">
-          <span className="font-mono text-[0.625rem] tabular-nums text-ink-3">01</span>
-          <h2 id="your-projects" className="font-display text-[1.0625rem] leading-tight">
-            Your projects
-          </h2>
-        </div>
-        {state.projects.length === 0 ? (
-          <div className="tint px-5 py-6 text-[0.875rem] leading-relaxed text-ink">
-            <p>
-              No projects yet. Describe one you have built: its components, how requests and messages flow between them,
-              and what must always be true. You will get questions about <em>your</em> system, the kind an interviewer
-              asks when they say &ldquo;tell me about something you built&rdquo;.
-            </p>
-            {!hasExample && (
-              <button
-                type="button"
-                className="btn btn-secondary mt-5"
-                onClick={() => create(exampleProject(uniqueSlug("subscription-saas", taken), new Date().toISOString()))}
-              >
-                Explore an example project first
-              </button>
-            )}
+    <div className="mt-6 space-y-10">
+      <section aria-label="Your systems">
+        {!state ? (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true">
+            <div className="sheet min-h-52" />
           </div>
         ) : (
-          <ul className="space-y-2">
-            {state.projects.map((p) => {
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <li>
+              <StartTile
+                href="/projects/new?method=blank"
+                primary
+                icon={PLUS}
+                title="New system"
+                body="Draw its parts and how they talk. Free, and saved in this browser."
+              />
+            </li>
+            {projects.map((p) => {
               const questions = projectQuestions(p);
               const counts = { strong: 0, partial: 0, gap: 0 };
               for (const q of questions) {
-                const e = latest.get(
-                  exerciseKey({
-                    kind: "project-question",
-                    projectId: p.id,
-                    questionId: q.id,
-                  }),
-                );
+                const e = latest?.get(exerciseKey({ kind: "project-question", projectId: p.id, questionId: q.id }));
                 if (e) counts[e.evidence.signal]++;
               }
               const answered = counts.strong + counts.partial + counts.gap;
+              const placed = autoLayout(p.components, p.flows);
               return (
                 <li key={p.id}>
-                  <Link
-                    href={`/projects/${p.id}`}
-                    className="tile group grid gap-x-8 gap-y-3 p-4 sm:grid-cols-[minmax(0,1fr)_14rem]"
-                  >
-                    <span className="min-w-0">
-                      <span className="block font-display text-[1rem] leading-tight group-hover:text-accent">
-                        {p.name}
-                      </span>
-                      {p.summary && (
-                        <span className="mt-1 block text-[0.8125rem] text-ink-2 line-clamp-2">{p.summary}</span>
+                  <Link href={`/projects/${p.id}`} className="sheet group flex h-full flex-col overflow-hidden">
+                    <span className="dotgrid flex h-32 items-center justify-center border-b border-rule-soft px-6 py-4">
+                      {p.components.length > 0 ? (
+                        <SystemThumb
+                          components={placed}
+                          flows={p.flows}
+                          given={new Set(p.components.map((c) => c.id))}
+                          className="max-h-full"
+                        />
+                      ) : (
+                        <span className="text-[0.75rem] text-ink-3">No parts drawn yet</span>
                       )}
-                      <span className="mt-3 flex flex-wrap gap-1.5">
-                        <span className="chip-flat">{p.components.length} components</span>
-                        <span className="chip-flat">{p.flows.length} flows</span>
-                        <span className="chip-flat">{p.invariants.length} invariants</span>
-                      </span>
                     </span>
-                    <span className="space-y-2 text-[0.8125rem] sm:pt-1">
-                      <span className="block font-mono text-[0.6875rem] text-ink-2">
-                        {answered} of {questions.length} questions answered
+                    <span className="flex flex-1 flex-col px-4 pt-3 pb-3.5">
+                      <span className="truncate text-[0.875rem] font-medium group-hover:text-accent">{p.name}</span>
+                      <span className="mt-0.5 truncate text-[0.75rem] text-ink-3">
+                        {SOURCE_LABEL[p.source.type]} · updated {updatedOn(p.updatedAt)}
                       </span>
-                      {answered > 0 && <SignalMeter counts={counts} label={`${p.name} answers`} />}
+                      <span className="mt-auto pt-3">
+                        {answered > 0 ? (
+                          <SignalMeter counts={counts} label={`${p.name} answers`} />
+                        ) : (
+                          <span className="flex justify-between text-[0.75rem] text-ink-3">
+                            <span>
+                              {p.components.length} part{p.components.length === 1 ? "" : "s"}
+                            </span>
+                            <span>
+                              {questions.length > 0 ? `${questions.length} questions waiting` : "Draw it to get questions"}
+                            </span>
+                          </span>
+                        )}
+                      </span>
                     </span>
                   </Link>
                 </li>
               );
             })}
+            <li>
+              <StartTile
+                href="/projects/new"
+                icon={BRANCH}
+                title="Import from a README or GitHub"
+                body={aiOff ? `${importCost} · AI is switched off on this site` : `AI drafts the model for you to check · ${importCost}`}
+                disabled={aiOff}
+              />
+            </li>
+            {projects.length === 0 && (
+              <li className="sheet flex flex-col justify-center gap-1.5 p-5">
+                <p className="text-[0.875rem] font-semibold">What you get</p>
+                <p className="text-[0.8125rem] leading-relaxed text-ink-3">
+                  Questions about your own system: what survives a crash, what happens when a dependency is slow, where
+                  it breaks at ten times the load. Then a mock interview that ends on it.
+                </p>
+              </li>
+            )}
           </ul>
         )}
-        {state.projects.length > 0 && !hasExample && (
-          <button
-            type="button"
-            className="btn btn-ghost mt-5 -ml-3"
-            onClick={() => create(exampleProject(uniqueSlug("subscription-saas", taken), new Date().toISOString()))}
-          >
-            Add the example project
-          </button>
-        )}
       </section>
-
-      <section aria-labelledby="new-project" className="section">
-        <div className="mb-5 flex items-baseline gap-2.5">
-          <span className="font-mono text-[0.625rem] tabular-nums text-ink-3">02</span>
-          <h2 id="new-project" className="font-display text-[1.0625rem] leading-tight">
-            Describe a project
-          </h2>
-        </div>
-        <form
-          className="panel max-w-xl space-y-4 p-5"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (name.trim()) create(newProject(name, summary, taken));
-          }}
-        >
-          <div>
-            <label htmlFor="project-name" className="eyebrow mb-2 block">
-              Name
-            </label>
-            <input
-              id="project-name"
-              className="field"
-              value={name}
-              maxLength={120}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Course marketplace backend"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="project-summary" className="eyebrow mb-2 block">
-              What does it do?
-            </label>
-            <textarea
-              id="project-summary"
-              className="field resize-y"
-              rows={3}
-              maxLength={2000}
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              placeholder="One or two sentences about what it does and who uses it."
-            />
-          </div>
-          <button type="submit" className="btn btn-primary" disabled={!name.trim()}>
-            Create and describe its architecture
-          </button>
-        </form>
-        <p className="mt-3 max-w-xl text-[0.75rem] leading-relaxed text-ink-3">
-          Today you describe the model by hand. Connecting a repository to build it from code is planned; it will fill
-          the same model, so your answers will carry over.
-        </p>
-      </section>
+      {examples}
     </div>
   );
 }

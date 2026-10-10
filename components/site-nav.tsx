@@ -11,43 +11,57 @@ export function isActive(pathname: string, href: string) {
 
 export function Brand({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <Link href="/" prefetch={false} onClick={onNavigate} className="flex w-fit shrink-0 items-center gap-2.5 rounded-lg">
-      <PixelMark size={26} />
-      <span className="font-pixel text-[1.0625rem] leading-none">
+    <Link
+      href="/"
+      prefetch={false}
+      onClick={onNavigate}
+      className="flex w-fit shrink-0 items-center gap-2.5 rounded-md"
+    >
+      <PixelMark size={24} />
+      <span className="font-pixel text-[1.125rem] leading-none tracking-[0.01em] text-ink">
         sys<span className="text-ink-3">geeks</span>
       </span>
     </Link>
   );
 }
 
-/** The top bar's links on wide screens: the library on the left of the bar, your own work on the right. */
-export function DesktopNav() {
+function TopLink({ item, label = item.label }: { item: NavItem; label?: string }) {
   const pathname = usePathname();
-  const link = (item: NavItem, label = item.label) => (
-    <li key={item.href}>
-      <Link href={item.href} prefetch={false} aria-current={isActive(pathname, item.href) ? "page" : undefined} className="nav-link">
+  return (
+    <li>
+      <Link
+        href={item.href}
+        prefetch={false}
+        aria-current={isActive(pathname, item.href) ? "page" : undefined}
+        className="nav-link"
+      >
         {label}
       </Link>
     </li>
   );
-  const [interview, projects, progress] = YOURS as [NavItem, NavItem, NavItem];
+}
 
+/** The library on wide screens, straight after the brand. */
+export function DesktopNav() {
   return (
-    <nav aria-label="Primary" className="hidden min-w-0 flex-1 items-center justify-between gap-6 lg:flex">
-      <ul className="flex items-center gap-0.5">{LEARN.map((item) => link(item))}</ul>
+    <nav aria-label="Primary" className="hidden lg:block">
       <ul className="flex items-center gap-0.5">
-        {link(projects, "Projects")}
-        {link(progress, "Progress")}
-        <li className="ml-2">
-          <Link
-            href={interview.href}
-            prefetch={false}
-            aria-current={isActive(pathname, interview.href) ? "page" : undefined}
-            className="btn btn-primary h-8 min-h-0 px-3.5"
-          >
-            Mock interview
-          </Link>
-        </li>
+        {LEARN.map((item) => (
+          <TopLink key={item.href} item={item} />
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+/** Your own work, on the right of the bar on wide screens, before the account menu. */
+export function DesktopLinks() {
+  return (
+    <nav aria-label="Yours" className="hidden lg:block">
+      <ul className="flex items-center gap-0.5">
+        {YOURS.map((item) => (
+          <TopLink key={item.href} item={item} />
+        ))}
       </ul>
     </nav>
   );
@@ -69,8 +83,8 @@ export function MobileNav({ onNavigate }: { onNavigate: () => void }) {
                 prefetch={false}
                 aria-current={active ? "page" : undefined}
                 onClick={onNavigate}
-                className={`flex items-start gap-3 rounded-xl px-3 py-3 transition-colors ${
-                  active ? "bg-hover" : "hover:bg-hover"
+                className={`flex items-start gap-3 rounded-xl px-3 py-3 transition-[background-color,box-shadow] ${
+                  active ? "bg-raised shadow-[var(--shadow-btn)]" : "hover:bg-hover"
                 }`}
               >
                 <span className={`mt-0.5 ${active ? "text-ink" : "text-ink-3"}`}>{item.icon}</span>

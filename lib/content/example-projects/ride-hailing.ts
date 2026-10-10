@@ -1,0 +1,133 @@
+import type { ExampleProjectInput } from "@/lib/domain/content";
+
+export const rideHailing: ExampleProjectInput = {
+  id: "ride-hailing",
+  name: "Ride hailing dispatch (example)",
+  category: "mobility",
+  summary:
+    "Riders request trips, nearby drivers get 15-second offers, and trips move through a state machine until the rider is charged. Redis GEO indexes driver positions, Postgres holds trips, and Kafka carries trip events.",
+  scale: "50k active drivers pinging every 4 s; 300 trip requests/s at peak",
+  focusConceptIds: [
+    "state-machines",
+    "leases-and-fencing",
+    "concurrency-control",
+    "soft-state",
+    "partitioning",
+    "server-push",
+    "idempotency",
+    "timeouts",
+  ],
+  relatedInvestigationIds: ["notification-system"],
+  components: [
+    { id: "rider", label: "Rider app", kind: "client", responsibility: "Requests trips and shows their status." },
+    { id: "driver", label: "Driver app", kind: "client", responsibility: "Sends GPS pings and accepts trip offers." },
+    {
+      id: "gateway",
+      label: "API gateway",
+      kind: "edge",
+      responsibility: "Terminates API calls from the rider app and routes ride requests to dispatch.",
+    },
+    {
+      id: "location",
+      label: "Location service",
+      kind: "service",
+      responsibility: "Ingests driver GPS pings and writes each position to the geo index.",
+    },
+    {
+      id: "geo",
+      label: "Redis GEO",
+      kind: "cache",
+      responsibility: "Holds the latest position of each available driver and answers nearby-driver queries.",
+      durableState: "None that matters: positions expire after 30 s and the next ping rebuilds them",
+    },
+    {
+      id: "dispatch",
+      label: "Dispatch service",
+      kind: "service",
+      responsibility: "Finds nearby drivers for a trip and sends each one a timed offer.",
+    },
+    {
+      id: "pricing",
+      label: "Pricing service",
+      kind: "service",
+      responsibility: "Computes the fare and surge multiplier for a trip.",
+    },
+    { id: "maps", label: "Maps provider", kind: "external", responsibility: "Returns routes and ETAs." },
+    {
+      id: "trips",
+      label: "Trip service",
+      kind: "service",
+      responsibility: "Moves each trip through its states and records every transition.",
+    },
+    {
+      id: "trips-db",
+      label: "Postgres",
+      kind: "database",
+      responsibility: "Stores trips, riders and drivers.",
+      durableState: "trips (state, driver id, offer id), riders, drivers",
+    },
+    {
+      id: "events",
+      label: "Kafka",
+      kind: "stream",
+      responsibility: "Keeps the ordered log of trip events for downstream consumers.",
+      durableState: "trip events",
+    },
+    {
+      id: "notifier",
+      label: "Notification worker",
+      kind: "worker",
+      responsibility: "Turns trip events into rider and driver notifications.",
+    },
+    {
+      id: "push",
+      label: "Push provider",
+      kind: "external",
+      responsibility: "Delivers push notifications to phones through APNs and FCM.",
+    },
+    {
+      id: "payments",
+      label: "Payment provider",
+      kind: "external",
+      responsibility: "Charges the rider's card for the fare.",
+    },
+  ],
+  flows: [
+    { id: "ping", from: "driver", to: "location", label: "Send GPS ping", kind: "request" },
+    { id: "index", from: "location", to: "geo", label: "Update position", kind: "request" },
+    { id: "request", from: "rider", to: "gateway", label: "Request ride", kind: "request" },
+    { id: "route", from: "gateway", to: "dispatch", label: "Find a driver", kind: "request" },
+    { id: "nearby", from: "dispatch", to: "geo", label: "Nearby drivers", kind: "request" },
+    { id: "quote", from: "dispatch", to: "pricing", label: "Price trip", kind: "request" },
+    { id: "eta", from: "dispatch", to: "maps", label: "ETA", kind: "request" },
+    { id: "offer", from: "dispatch", to: "driver", label: "Offer trip", kind: "push" },
+    { id: "accept", from: "driver", to: "trips", label: "Accept offer", kind: "request" },
+    { id: "save", from: "trips", to: "trips-db", label: "Transition trip", kind: "request" },
+    { id: "publish", from: "trips", to: "events", label: "Trip events", kind: "async" },
+    { id: "consume", from: "notifier", to: "events", label: "Consume events", kind: "request" },
+    { id: "notify", from: "notifier", to: "push", label: "Notify", kind: "request" },
+    { id: "charge", from: "trips", to: "payments", label: "Charge fare", kind: "request" },
+  ],
+  invariants: [
+    {
+      id: "one-driver-per-trip",
+      statement: "A trip has one driver and a driver one active trip",
+      enforcedBy: ["trips", "trips-db"],
+      mechanism:
+        "UPDATE trips SET driver_id = $d, state = 'accepted' WHERE id = $t AND state = 'offered' AND offer_id = $o, plus a partial unique index on trips(driver_id) WHERE state IN ('accepted','in_progress').",
+    },
+    {
+      id: "offer-expires",
+      statement: "A stale offer cannot be accepted",
+      enforcedBy: ["dispatch", "trips"],
+      mechanism:
+        "Offers are 15 s leases with an offer id; acceptance checks the id (fencing) and state; dispatch re-offers after expiry.",
+    },
+    {
+      id: "charge-once",
+      statement: "A trip is charged once",
+      enforcedBy: ["trips", "payments"],
+      mechanism: "Charge on the completed→charged transition with idempotency key = trip id.",
+    },
+  ],
+};

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { SystemThumb } from "@/components/system-thumb";
+import { visibleAfter } from "@/lib/domain/visibility";
 import { getInvestigation, listCompanies, writeupsByCompany } from "@/lib/content";
 import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 
@@ -38,19 +40,35 @@ export default function CompaniesPage() {
         One idea per company, from what their engineers published about it. Each page explains the idea, links to the
         original writing, and has an investigation to practise it.
       </PageHeader>
-      <section aria-label="All companies" className="section pt-2 sm:pt-2">
-        <ul className="grid gap-x-16 lg:grid-cols-2">
+      <section aria-label="All companies" className="mt-6 pb-10">
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {companies.map(({ company, practise }) => (
-            <li key={company.id} className="border-t border-rule">
-              <Link href={`/companies/${company.id}`} className="group block py-6">
-                <span className="text-[0.875rem] font-medium text-ink-2">{company.name}</span>
-                <span className="mt-1 block font-display text-[1.3125rem] leading-snug transition-colors group-hover:text-accent">
-                  {company.topic}
-                </span>
-                <span className="mt-2 block max-w-[60ch] text-[0.9375rem] leading-relaxed text-ink-2">{company.summary}</span>
+            <li key={company.id} className="min-w-0">
+              <Link href={`/companies/${company.id}`} className="sheet group flex h-full flex-col overflow-hidden">
                 {practise[0] && (
-                  <span className="mt-3 block text-[0.8125rem] text-ink-3">Practise it in {practise[0].searchTitle}</span>
+                  <span className="dotgrid flex h-24 items-center justify-center border-b border-rule-soft px-6 py-3" aria-hidden="true">
+                    <SystemThumb
+                      className="max-h-full"
+                      components={practise[0].system.components}
+                      flows={practise[0].system.flows}
+                      given={visibleAfter(practise[0], 0).components}
+                    />
+                  </span>
                 )}
+                <span className="flex flex-1 flex-col px-4 pt-3 pb-3.5">
+                  <span className="text-[0.75rem] font-medium text-ink-3">{company.name}</span>
+                  <span className="mt-0.5 text-[0.9375rem] font-medium leading-snug transition-colors group-hover:text-accent">
+                    {company.topic}
+                  </span>
+                  <span className="mt-1.5 line-clamp-3 text-[0.8125rem] leading-relaxed text-ink-2">{company.summary}</span>
+                  {practise[0] && (
+                    <span className="mt-auto block pt-3">
+                      <span className="block truncate border-t border-rule-soft pt-2.5 text-[0.75rem] text-ink-3">
+                        Practise it: <span className="text-ink-2">{practise[0].title}</span>
+                      </span>
+                    </span>
+                  )}
+                </span>
               </Link>
             </li>
           ))}

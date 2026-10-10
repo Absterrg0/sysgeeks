@@ -1,0 +1,136 @@
+import type { ExampleProjectInput } from "@/lib/domain/content";
+
+export const mlInferenceApi: ExampleProjectInput = {
+  id: "ml-inference-api",
+  name: "Model inference API (example)",
+  category: "ml",
+  summary:
+    "Customers call a REST API with API keys. Requests are batched onto GPU workers that load model weights by version hash, and usage is aggregated and billed monthly. Redis holds rate limits, Postgres holds the registry, and Kafka carries usage events.",
+  scale: "400 customers, 300 req/s, p95 under 800 ms for small inputs",
+  focusConceptIds: [
+    "backpressure",
+    "rate-limiting",
+    "load-shedding",
+    "message-queues",
+    "delivery-guarantees",
+    "idempotency",
+    "caching",
+  ],
+  relatedInvestigationIds: ["api-rate-limiter", "job-queue"],
+  components: [
+    {
+      id: "sdk",
+      label: "Customer SDK",
+      kind: "client",
+      responsibility: "Customer applications and the SDK that send inference requests.",
+    },
+    {
+      id: "gateway",
+      label: "API gateway",
+      kind: "edge",
+      responsibility: "Terminates TLS, authenticates API keys and enforces rate limits.",
+    },
+    {
+      id: "limits",
+      label: "Rate limit store",
+      kind: "cache",
+      responsibility: "Token buckets for each API key.",
+      durableState: "none (rebuildable; buckets reset to full after a loss)",
+    },
+    {
+      id: "api",
+      label: "Inference API",
+      kind: "service",
+      responsibility: "Validates requests, enqueues them and waits for results.",
+    },
+    {
+      id: "registry",
+      label: "Model registry",
+      kind: "database",
+      responsibility: "Resolves API keys and model versions for each request.",
+      durableState: "customers, API keys, model versions",
+    },
+    {
+      id: "requests",
+      label: "Request queues",
+      kind: "queue",
+      responsibility: "Holds admitted requests in one queue per model.",
+      durableState: "pending requests",
+    },
+    {
+      id: "gpu",
+      label: "GPU workers",
+      kind: "worker",
+      responsibility: "Batches pending requests for each model and runs inference.",
+    },
+    {
+      id: "weights",
+      label: "Weights store",
+      kind: "object-store",
+      responsibility: "Holds model weights for each version.",
+      durableState: "immutable weights keyed by version hash",
+    },
+    {
+      id: "results",
+      label: "Results cache",
+      kind: "cache",
+      responsibility: "Holds each result until the caller collects it.",
+      durableState: "results, 10-minute TTL",
+    },
+    {
+      id: "usage",
+      label: "Usage stream",
+      kind: "stream",
+      responsibility: "Kafka topic with one usage event per served request.",
+      durableState: "usage events, 7 days",
+    },
+    {
+      id: "billing-worker",
+      label: "Billing worker",
+      kind: "worker",
+      responsibility: "Aggregates usage into hourly totals per customer.",
+    },
+    {
+      id: "billing",
+      label: "Metered billing",
+      kind: "external",
+      responsibility: "Turns reported usage into monthly invoices.",
+    },
+  ],
+  flows: [
+    { id: "call", from: "sdk", to: "gateway", label: "Run inference", kind: "request" },
+    { id: "limit", from: "gateway", to: "limits", label: "Take a token", kind: "request" },
+    { id: "forward", from: "gateway", to: "api", label: "Forward request", kind: "request" },
+    { id: "auth", from: "api", to: "registry", label: "Resolve key and model version", kind: "request" },
+    { id: "enqueue", from: "api", to: "requests", label: "Enqueue", kind: "async" },
+    { id: "batch", from: "gpu", to: "requests", label: "Pull a batch", kind: "request" },
+    { id: "load", from: "gpu", to: "weights", label: "Load weights", kind: "data" },
+    { id: "store", from: "gpu", to: "results", label: "Write result", kind: "request" },
+    { id: "await", from: "api", to: "results", label: "Wait for result", kind: "request" },
+    { id: "meter", from: "gpu", to: "usage", label: "Emit usage", kind: "async" },
+    { id: "aggregate", from: "billing-worker", to: "usage", label: "Consume usage", kind: "request" },
+    { id: "report", from: "billing-worker", to: "billing", label: "Report usage", kind: "request" },
+  ],
+  invariants: [
+    {
+      id: "bill-once",
+      statement: "Each request is billed once",
+      enforcedBy: ["billing-worker"],
+      mechanism:
+        "Usage events carry the request id; the (customer, hour) aggregate update and an insert into processed_requests(request_id) run in one transaction; the primary key rejects a duplicate and aborts the update.",
+    },
+    {
+      id: "rate-limit-atomic",
+      statement: "A key never exceeds its rate",
+      enforcedBy: ["gateway", "limits"],
+      mechanism:
+        "Check and decrement run as one Redis Lua script, so two concurrent requests cannot take the same last token.",
+    },
+    {
+      id: "version-pinned",
+      statement: "A request is served by the model version it was admitted with",
+      enforcedBy: ["api", "gpu"],
+      mechanism: "Version hash recorded at admission; weights stored under immutable keys; never overwritten in place.",
+    },
+  ],
+};

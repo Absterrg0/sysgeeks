@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ConceptStanding } from "@/components/concept-standing";
-import { PageHeader, Section } from "@/components/page-header";
+import { ConceptBrowser, type BrowserConcept } from "@/components/concepts/concept-browser";
 import { conceptsByDomain, listConcepts, stagesUsingConcept } from "@/lib/content";
 import { CONCEPT_DOMAINS, DOMAIN_LABELS } from "@/lib/domain/content";
 import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
@@ -16,6 +14,22 @@ export const metadata: Metadata = pageMetadata({
 export default function ConceptsPage() {
   const groups = conceptsByDomain();
   const domains = CONCEPT_DOMAINS.filter((d) => (groups.get(d) ?? []).length > 0);
+  const concepts: BrowserConcept[] = domains.flatMap((domain) =>
+    (groups.get(domain) ?? []).map((c) => {
+      const uses = stagesUsingConcept(c.id);
+      const systems = [...new Map(uses.map((u) => [u.investigation.id, u.investigation.title])).entries()];
+      return {
+        id: c.id,
+        title: c.title,
+        summary: c.summary,
+        domain,
+        checks: (c.lesson ?? []).filter((step) => step.kind !== "read" && step.kind !== "simulation").length,
+        claims: c.claims.length,
+        systems: systems.map(([id, title]) => ({ id, title })),
+        stages: uses.length,
+      };
+    }),
+  );
   return (
     <div>
       <script
@@ -29,50 +43,7 @@ export default function ConceptsPage() {
           ),
         }}
       />
-      <PageHeader title="System design concepts">
-        The mechanisms the investigations depend on. Each one starts from the problem it solves, explains how it actually
-        works, and ends with how it fails, not with a product name.
-      </PageHeader>
-      {domains.map((domain) => {
-        const concepts = groups.get(domain) ?? [];
-        return (
-          <Section
-            key={domain}
-            id={`domain-${domain}`}
-            title={DOMAIN_LABELS[domain]}
-          >
-            <ul className="grid gap-x-10 gap-y-px md:grid-cols-2">
-              {concepts.map((c) => {
-                const uses = stagesUsingConcept(c.id);
-                const investigations = new Set(uses.map((u) => u.investigation.id)).size;
-                const where =
-                  uses.length > 0
-                    ? `${uses.length} stage${uses.length === 1 ? "" : "s"} in ${investigations} investigation${investigations === 1 ? "" : "s"}`
-                    : "Background concept";
-                return (
-                  <li key={c.id}>
-                    <Link
-                      href={`/concepts/${c.id}`}
-                      className="group -mx-3 flex items-baseline gap-4 rounded-lg px-3 py-2.5 transition-colors hover:bg-hover"
-                    >
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-[0.9375rem] font-medium text-ink">{c.title}</span>
-                        <span className="mt-0.5 block text-[0.875rem] leading-relaxed text-ink-2">{c.summary}</span>
-                      </span>
-                      <span className="hidden shrink-0 items-center gap-2 sm:flex">
-                        <ConceptStanding conceptId={c.id} />
-                        <span className="w-20 text-right text-[0.75rem] tabular-nums text-ink-3" title={where}>
-                          {uses.length > 0 ? `${uses.length} stage${uses.length === 1 ? "" : "s"}` : "background"}
-                        </span>
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </Section>
-        );
-      })}
+      <ConceptBrowser concepts={concepts} domains={domains.map((d) => ({ id: d, label: DOMAIN_LABELS[d] }))} />
     </div>
   );
 }

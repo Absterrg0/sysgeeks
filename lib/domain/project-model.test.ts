@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { exampleProject } from "./example-project";
+import { getExampleProject } from "@/lib/content/example-projects";
+import { instantiateExample } from "./example-project";
 import { LEARNER_STATE_VERSION } from "./learner";
 import { parseLearnerState } from "./learner-state";
 import { modelOf, modelProblems, removeComponent } from "./project-model";
 
 describe("project model editing", () => {
-  const example = exampleProject("example", "2026-01-01T00:00:00.000Z");
+  const example = instantiateExample(getExampleProject("subscription-saas")!, "example", "2026-01-01T00:00:00.000Z");
 
   it("ships a valid example", () => {
     const stored = JSON.stringify({

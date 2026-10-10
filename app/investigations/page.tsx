@@ -35,8 +35,8 @@ export default function InvestigationsPage() {
         </Link>
         .
       </PageHeader>
-      <section aria-label="All investigations" className="section pt-2 sm:pt-2">
-        <InvestigationIndex investigations={investigations} />
+      <section aria-label="All investigations" className="pt-8 pb-10">
+        <InvestigationIndex investigations={investigations} grouped />
       </section>
     </div>
   );

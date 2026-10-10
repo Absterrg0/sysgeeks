@@ -6,17 +6,18 @@ import { checkedParts, responseMatches, rubricForResponse } from "@/lib/domain/e
 import { exerciseKey, type Attempt, type AttemptContext, type Response } from "@/lib/domain/learner";
 import { daysAgo, dueReview, type ReviewItem } from "@/lib/domain/review";
 import { latestAttempt } from "@/lib/domain/understanding";
-import { assessAttempt, submitAttempt, useLearnerState } from "@/lib/store/learner-store";
+import { submitAttempt, useLearnerState } from "@/lib/store/learner-store";
 import { useHydrated } from "@/lib/use-hydrated";
 import { useNow } from "@/lib/use-now";
 import { SIGNAL_LABEL } from "@/components/ui";
+import { WritingAssessment } from "./ai-assessment";
 import { EvidenceSummary } from "./evidence";
 import { ClaimsFeedback, ClaimsInput } from "./interactions/claims";
 import { DecisionFeedback, DecisionInput } from "./interactions/decision";
 import { DiagnosisFeedback, DiagnosisInput } from "./interactions/diagnosis";
 import { OrderingFeedback, OrderingInput } from "./interactions/ordering";
 import { ImplementationFeedback, ImplementationInput, OpenFeedback, OpenInput } from "./interactions/written";
-import { RubricAssessment, RubricResult, type Written } from "./rubric";
+import type { Written } from "./rubric";
 import type { ExerciseSpec, InteractionSlots } from "./types";
 
 type Props = {
@@ -283,29 +284,7 @@ function AttemptReview({
 
       {rubric && written && (
         <Section title="Assess your writing">
-          {attempt.selfAssessment && attempt.evidence ? (
-            <RubricResult
-              rubric={rubric}
-              marks={attempt.selfAssessment}
-              citations={attempt.citations}
-              written={written}
-            />
-          ) : (
-            <RubricAssessment
-              rubric={rubric}
-              written={written}
-              name={`assess-${attempt.id}`}
-              onSubmit={(marks, citations) =>
-                assessAttempt({
-                  attempt,
-                  interaction,
-                  tags: spec.tags,
-                  selfAssessment: marks,
-                  citations,
-                })
-              }
-            />
-          )}
+          <WritingAssessment key={attempt.id} attempt={attempt} spec={spec} rubric={rubric} written={written} />
         </Section>
       )}
 

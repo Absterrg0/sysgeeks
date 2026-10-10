@@ -7,8 +7,9 @@
  * crossed a trust boundary (browser storage, imported files) is
  * `learner-state.ts`'s job, and it validates as it parses.
  */
-import type { ArchitectureComponent, ArchitectureFlow, CodeLocation } from "./content";
+import type { ArchitectureComponent, ArchitectureFlow, CodeLocation, RubricPoint } from "./content";
 import type { DesignRound } from "./design-round";
+import type { QuestionGroup } from "./project-questions";
 import { isSlug, type ClaimVerdict, type Dimension } from "./taxonomy";
 
 // ---------------------------------------------------------------------------
@@ -19,6 +20,8 @@ export const RUBRIC_MARKS = ["covered", "partial", "missed"] as const;
 export const SIGNALS = ["strong", "partial", "gap"] as const;
 export const ATTEMPT_CONTEXTS = ["investigation", "practice", "interview"] as const;
 export const LEARNER_STATE_VERSION = 1;
+export const MAX_PROJECT_CONTEXT = 4_000;
+export const MAX_TAILORED_QUESTIONS = 24;
 
 /**
  * Project question ids are `<template>` for whole-system questions or
@@ -93,6 +96,18 @@ export type SelfAssessment = Record<string, RubricMark>;
 /** For each rubric point marked covered or partly: the passage of the answer that shows it. */
 export type Citations = Record<string, string>;
 
+/** An AI's rubric assessment of a written answer, kept alongside the attempt it judged. */
+export type AiAssessment = {
+  runId: string;
+  model: string;
+  assessedAt: string;
+  marks: SelfAssessment;
+  citations: Citations;
+  /** Per rubric point: why the mark was given. */
+  notes: Record<string, string>;
+  summary: string;
+};
+
 // ---------------------------------------------------------------------------
 // Evidence
 // ---------------------------------------------------------------------------
@@ -102,14 +117,15 @@ export type Signal = (typeof SIGNALS)[number];
 /**
  * checked: compared against an authored answer key.
  * self-assessed: the learner compared their own writing against a rubric.
- * mixed: both kinds of part contributed.
+ * ai-assessed: an AI compared the writing against the rubric, and the learner accepted it.
+ * mixed: more than one kind of part contributed.
  */
-export type Basis = "checked" | "self-assessed" | "mixed";
+export type Basis = "checked" | "self-assessed" | "ai-assessed" | "mixed";
 
 export type EvidencePart = {
   label: string;
   signal: Signal;
-  basis: "checked" | "self-assessed";
+  basis: "checked" | "self-assessed" | "ai-assessed";
 };
 
 export type Evidence = {
@@ -132,6 +148,10 @@ export type Attempt = {
   selfAssessment: SelfAssessment | null;
   /** Absent on attempts assessed before citations existed. */
   citations?: Citations;
+  /** Who produced the rubric marks. Absent on attempts assessed before AI assessment existed. */
+  assessor?: "self" | "ai";
+  /** The AI's assessment, kept even when the learner marks the answer themselves instead. */
+  aiAssessment?: AiAssessment;
   /** Null until every part has been checked or self-assessed. */
   evidence: Evidence | null;
 };
@@ -151,6 +171,24 @@ export type ProjectInvariant = {
 };
 
 /**
+ * A question an AI wrote about one project's own design. Answering it is an
+ * ordinary attempt, under the exercise id `ai.<id>`.
+ */
+export type TailoredQuestion = {
+  id: string;
+  group: QuestionGroup;
+  title: string;
+  prompt: string;
+  rubric: RubricPoint[];
+  reference: string;
+  dimensions: Dimension[];
+  conceptIds: string[];
+  componentIds: string[];
+  generatedAt: string;
+  runId: string;
+};
+
+/**
  * A project's architecture model. Today it is described by hand; repository
  * analysis will later fill the same shape (with code evidence) and the
  * question templates in `project-questions.ts` will work unchanged. Answers to
@@ -160,10 +198,16 @@ export type Project = {
   id: string;
   name: string;
   summary: string;
-  source: { type: "manual" } | { type: "repository"; url: string; analyzedAt: string };
+  source:
+    | { type: "manual" }
+    | { type: "repository"; url: string; analyzedAt: string; commit?: string; runId?: string }
+    | { type: "description"; draftedAt: string; runId?: string };
+  /** Scale and constraints, used by AI. */
+  context?: string;
   components: ArchitectureComponent[];
   flows: ArchitectureFlow[];
   invariants: ProjectInvariant[];
+  tailoredQuestions?: TailoredQuestion[];
   createdAt: string;
   updatedAt: string;
 };
