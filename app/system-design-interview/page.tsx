@@ -14,7 +14,7 @@ const MODIFIED = "2026-10-11";
 export const metadata: Metadata = pageMetadata({
   title: "System Design Interview: How It Works and How to Prepare",
   description:
-    "What a system design interview tests, how to spend the 45 minutes, the mistakes that sink candidates, and real systems to practise on. Free, no signup.",
+    "Learn what a system design interview tests, use a 45-minute plan, avoid common mistakes, and practise alone with real questions. Free, no signup.",
   path: PATH,
 });
 
