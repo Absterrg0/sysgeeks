@@ -5,9 +5,9 @@ import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-mock-interview";
-const TITLE = "Free System Design Mock Interview Practice";
+const TITLE = "Free Solo System Design Mock Interview Practice";
 const DESCRIPTION =
-  "Free timed system design mock interviews. Practise design and failure questions before the debrief. Choose 30, 45, or 60 minutes. No account needed.";
+  "Practice system design interviews alone for free. Choose 30, 45, or 60 minutes, answer first, then review the references. No partner needed.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
