@@ -38,6 +38,18 @@ export default function InvestigationsPage() {
       <section aria-label="All investigations" className="pt-8 pb-10">
         <InvestigationIndex investigations={investigations} grouped />
       </section>
+      <section aria-labelledby="youtube-walkthrough" className="max-w-[66ch] border-t border-rule py-8">
+        <h2 id="youtube-walkthrough" className="font-display text-[1.25rem] leading-tight">
+          Design YouTube: a video streaming system design answer
+        </h2>
+        <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
+          Work through the upload path, transcoding pipeline, adaptive playback, CDN caching and failure cases in a
+          separate interview walkthrough.
+        </p>
+        <Link href="/system-design-interview/design-youtube" className="mt-3 inline-block text-[0.875rem] font-medium text-accent hover:underline">
+          Read the YouTube system design walkthrough →
+        </Link>
+      </section>
     </div>
   );
 }

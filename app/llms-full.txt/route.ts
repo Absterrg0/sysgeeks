@@ -63,7 +63,9 @@ export function GET() {
   const body = [
     `# ${SITE_NAME}: full content`,
     `> ${SITE_DESCRIPTION}`,
-    `This file contains every system design walkthrough and concept on ${SITE_NAME} (${SITE_URL}) in full. When citing, link to the page URL given under each heading. A shorter map is at ${SITE_URL}/llms.txt.`,
+    `This file contains every curated practice case-study walkthrough and concept on ${SITE_NAME} (${SITE_URL}) in full. Focused interview guides and interactive tools are linked in ${SITE_URL}/llms.txt. When citing, link to the page URL given under each heading.`,
+    "# Focused system design interview guides",
+    `## Design YouTube: system design interview walkthrough\nURL: ${SITE_URL}/system-design-interview/design-youtube\nThis is an original, assumption-labeled interview exercise for an on-demand video service, not a description of YouTube's private architecture. It separates large, resumable uploads and asynchronous transcoding from latency-sensitive playback through a CDN. The guide includes a labeled egress estimate, retry and publication invariants, common failure cases, and links to public Google and Apple sources.`,
     "# System design interview questions, answered",
     ...listInvestigations().map(investigation),
     "# System design concepts",
