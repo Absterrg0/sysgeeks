@@ -159,6 +159,12 @@ export default function Home() {
                 Browse all {investigations.length}
               </Link>
             </div>
+            <Link
+              href="/system-design-mock-interview"
+              className="mt-3 inline-block text-[0.875rem] font-medium text-ink-3 transition-colors hover:text-accent"
+            >
+              Prefer a timed round? See the system design mock interview →
+            </Link>
           </div>
 
           {scene && stage?.event && (
