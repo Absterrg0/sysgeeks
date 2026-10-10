@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
 import { ImageResponse } from "next/og";
 import { PIXEL_MARK_GRID } from "@/components/icons";
 import type { ArchitectureFlow, PlacedComponent } from "@/lib/domain/content";
@@ -29,17 +29,25 @@ export type Tone = "accent" | "gap" | "partial" | "strong";
 const TONE: Record<Tone, string> = { accent: C.accent, gap: C.gap, partial: C.partial, strong: C.strong };
 
 const font = (file: string) => readFile(join(process.cwd(), "assets/fonts", file));
+// The site's own faces: Funnel Display for titles, Funnel Sans for text, Geist Mono labels, Geist Pixel lit words.
 const fonts = Promise.all([
   font("GeistPixel-Regular.woff"),
-  font("Geist-Regular-Latin.woff"),
-  font("Geist-SemiBold-Latin.woff"),
+  font("FunnelDisplay-Medium-Latin.woff"),
+  font("FunnelSans-Regular-Latin.woff"),
+  font("FunnelSans-Medium-Latin.woff"),
   font("GeistMono-Medium.woff"),
-]).then(([pixel, sans, sansBold, mono]) => [
+]).then(([pixel, display, sans, sansMedium, mono]) => [
   { name: "Pixel", data: pixel, weight: 400 as const, style: "normal" as const },
+  { name: "Display", data: display, weight: 500 as const, style: "normal" as const },
   { name: "Sans", data: sans, weight: 400 as const, style: "normal" as const },
-  { name: "Sans", data: sansBold, weight: 600 as const, style: "normal" as const },
+  { name: "Sans", data: sansMedium, weight: 500 as const, style: "normal" as const },
   { name: "Mono", data: mono, weight: 500 as const, style: "normal" as const },
 ]);
+
+/** Render a card with the site's fonts. */
+export async function render(node: ReactElement) {
+  return new ImageResponse(node, { ...OG_SIZE, fonts: await fonts });
+}
 
 /** Strip inline markdown, then cut at a word boundary so the text fits a fixed number of lines. */
 export function clip(markdown: string, max: number): string {
@@ -172,98 +180,95 @@ export async function card({
   aside?: ReactNode;
   facts?: string[];
 }) {
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-          height: "100%",
-          padding: "56px 64px",
-          background: C.paper,
-          color: C.ink,
-          fontFamily: "Sans",
-          backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.07) 1px, transparent 0)",
-          backgroundSize: "28px 28px",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <Mark size={48} />
-            <div style={{ display: "flex", fontFamily: "Pixel", fontSize: 36 }}>
-              <span>sys</span>
-              <span style={{ color: C.ink3 }}>geeks</span>
-            </div>
+  return render(
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        height: "100%",
+        padding: "56px 64px",
+        background: C.paper,
+        color: C.ink,
+        fontFamily: "Sans",
+        backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.07) 1px, transparent 0)",
+        backgroundSize: "28px 28px",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <Mark size={48} />
+          <div style={{ display: "flex", fontFamily: "Pixel", fontSize: 36 }}>
+            <span>sys</span>
+            <span style={{ color: C.ink3 }}>geeks</span>
           </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            padding: "10px 18px",
+            borderRadius: 999,
+            border: `2px solid ${C.rule}`,
+            background: C.raised,
+            fontFamily: "Mono",
+            fontSize: 18,
+            letterSpacing: 2,
+            textTransform: "uppercase",
+            color: C.ink2,
+          }}
+        >
+          <div style={{ width: 12, height: 12, borderRadius: 999, background: TONE[tone] }} />
+          {label}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 48 }}>
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 22 }}>
+          <div style={{ display: "flex", fontFamily: "Display", fontWeight: 500, fontSize: aside ? 56 : 68, lineHeight: 1.05, letterSpacing: -2 }}>
+            {title}
+          </div>
+          {body && (
+            <div style={{ display: "flex", fontSize: 26, lineHeight: 1.4, color: C.ink2 }}>{body}</div>
+          )}
+        </div>
+        {aside && (
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 12,
-              padding: "10px 18px",
-              borderRadius: 999,
+              justifyContent: "center",
+              width: 440,
+              height: 300,
+              borderRadius: 20,
               border: `2px solid ${C.rule}`,
-              background: C.raised,
-              fontFamily: "Mono",
-              fontSize: 18,
-              letterSpacing: 2,
-              textTransform: "uppercase",
-              color: C.ink2,
+              background: "rgba(17,17,18,0.9)",
             }}
           >
-            <div style={{ width: 12, height: 12, borderRadius: 999, background: TONE[tone] }} />
-            {label}
+            {aside}
           </div>
-        </div>
-
-        <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 48 }}>
-          <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 22 }}>
-            <div style={{ display: "flex", fontFamily: "Sans", fontWeight: 600, fontSize: aside ? 56 : 68, lineHeight: 1.05, letterSpacing: -2 }}>
-              {title}
-            </div>
-            {body && (
-              <div style={{ display: "flex", fontSize: 26, lineHeight: 1.4, color: C.ink2 }}>{body}</div>
-            )}
-          </div>
-          {aside && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 440,
-                height: 300,
-                borderRadius: 20,
-                border: `2px solid ${C.rule}`,
-                background: "rgba(17,17,18,0.9)",
-              }}
-            >
-              {aside}
-            </div>
-          )}
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            fontFamily: "Mono",
-            fontSize: 20,
-            letterSpacing: 1.5,
-            textTransform: "uppercase",
-            color: C.ink3,
-          }}
-        >
-          <div style={{ display: "flex", gap: 28 }}>
-            {facts.map((f) => (
-              <span key={f}>{f}</span>
-            ))}
-          </div>
-          <span style={{ color: C.ink2 }}>{SITE_HOST}</span>
-        </div>
+        )}
       </div>
-    ),
-    { ...OG_SIZE, fonts: await fonts },
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          fontFamily: "Mono",
+          fontSize: 20,
+          letterSpacing: 1.5,
+          textTransform: "uppercase",
+          color: C.ink3,
+        }}
+      >
+        <div style={{ display: "flex", gap: 28 }}>
+          {facts.map((f) => (
+            <span key={f}>{f}</span>
+          ))}
+        </div>
+        <span style={{ color: C.ink2 }}>{SITE_HOST}</span>
+      </div>
+    </div>,
   );
 }

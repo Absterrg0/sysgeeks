@@ -1,0 +1,75 @@
+/* Shared by the X profile assets: the site's dark tokens, fonts and the pieces of the live system. */
+@font-face { font-family: "Funnel Display"; font-weight: 500; src: url("../../assets/fonts/FunnelDisplay-Medium-Latin.woff"); }
+@font-face { font-family: "Funnel Sans"; font-weight: 400; src: url("../../assets/fonts/FunnelSans-Regular-Latin.woff"); }
+@font-face { font-family: "Funnel Sans"; font-weight: 500; src: url("../../assets/fonts/FunnelSans-Medium-Latin.woff"); }
+@font-face { font-family: "Geist Mono"; font-weight: 400; src: url("../../assets/fonts/GeistMono-Latin.woff2"); }
+@font-face { font-family: "Geist Pixel"; font-weight: 400; src: url("../../assets/fonts/GeistPixel-Regular.woff"); }
+
+:root {
+  --paper: #07080a;
+  --raised: #121318;
+  --ink: #eceef2;
+  --ink-2: #b0b5bf;
+  --ink-3: #8a909b;
+  --edge: rgb(255 255 255 / 0.09);
+  --accent: #00bbff;
+  --glow: rgb(0 187 255 / 0.45);
+  --gap: #f4606a;
+  --gap-text: #ff8086;
+}
+
+* { box-sizing: border-box; margin: 0; }
+html, body { background: var(--paper); color: var(--ink); overflow: hidden; }
+body { font-family: "Funnel Sans", sans-serif; -webkit-font-smoothing: antialiased; }
+
+.canvas { position: relative; overflow: hidden; background: var(--paper); isolation: isolate; }
+.layer { position: absolute; inset: 0; pointer-events: none; }
+
+.grain {
+  z-index: 10; opacity: 0.07; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.mono { font-family: "Geist Mono", monospace; text-transform: uppercase; letter-spacing: 0.08em; }
+.display { font-family: "Funnel Display", sans-serif; font-weight: 500; letter-spacing: -0.03em; }
+.lit {
+  font-family: "Geist Pixel", monospace; font-weight: 400; letter-spacing: 0; color: var(--accent);
+  text-shadow: 0 0 0.35em var(--glow), 0 0 1.2em var(--glow);
+}
+.led { display: inline-block; width: 8px; height: 8px; border-radius: 99px; background: var(--gap); box-shadow: 0 0 8px var(--gap); }
+
+/* A part of the system, as the site draws it. */
+.node {
+  position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  border-radius: 10px; text-align: center;
+  background: linear-gradient(#16171c, #101116);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07), 0 0 0 1px var(--edge), 0 14px 30px -14px rgb(0 0 0 / 0.9);
+}
+.node .kind { font-family: "Geist Mono", monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.node .name { font-weight: 500; font-size: 15px; line-height: 1.15; color: var(--ink); }
+.node.down {
+  background: repeating-linear-gradient(135deg, rgb(244 96 106 / 0.13) 0 2px, transparent 2px 7px), linear-gradient(#24121a, #1a0e12);
+  box-shadow: inset 0 0 0 1.5px var(--gap), 0 0 40px -6px rgb(244 96 106 / 0.55);
+}
+.node.down .kind { color: var(--gap-text); }
+.node.down::after {
+  content: ""; position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; border-radius: 99px;
+  background: var(--gap); box-shadow: 0 0 8px var(--gap);
+}
+
+/* The incident: dark glass edged in the failure's red, the log carved into it. */
+.ticket {
+  position: absolute; border-radius: 16px; padding: 16px 18px 16px;
+  background: linear-gradient(#141519, #101115);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 0 0 1px rgb(244 96 106 / 0.3),
+    0 30px 60px -30px rgb(0 0 0 / 0.9), 0 0 70px -24px rgb(244 96 106 / 0.5);
+}
+.ticket-head { display: flex; justify-content: space-between; font-size: 11px; }
+.ticket-title { margin-top: 8px; font-family: "Funnel Display", sans-serif; font-weight: 500; font-size: 19px; letter-spacing: -0.01em; }
+.ticket-log {
+  margin-top: 10px; border-radius: 10px; padding: 9px 12px; background: #0a0b0d;
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.8), inset 0 0 0 1px rgb(255 255 255 / 0.04);
+  font-family: "Geist Mono", monospace; font-size: 11.5px; line-height: 1.75; color: var(--ink-3);
+}
+.ticket-log .t { color: var(--ink-2); }
+.ticket-log .fail, .ticket-log .fail .t { color: var(--gap-text); }

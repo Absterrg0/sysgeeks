@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+  The X (Twitter) profile photo: the pixel mark (PIXEL_MARK_GRID in components/icons.tsx), lit on the
+  display's dark. X crops it to a circle, so the 8x8 grid is inset to keep its corner cells whole.
+  Render with scripts/brand/render.sh.
+-->
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="brand.css" />
+<style>
+  .canvas { width: 500px; height: 500px; background: #0a0a0a; }
+  .glow { background: radial-gradient(circle at 50% 50%, rgb(0 187 255 / 0.10), transparent 62%); }
+  .grid { position: absolute; left: 50%; top: 50%; display: grid; transform: translate(-50%, -50%); }
+  .grid i { display: block; border-radius: 12%; }
+  .off { background: rgb(255 255 255 / 0.07); }
+  .flow { background: rgb(0 187 255 / 0.55); }
+  .on { background: #00bbff; box-shadow: 0 0 22px rgb(0 187 255 / 0.4); }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="layer glow"></div>
+  <div class="grid" id="grid"></div>
+  <div class="layer grain"></div>
+</div>
+<script>
+  const MARK = ["11100000", "11122200", "11100200", "00000200", "00000200", "00000111", "00000111", "00000111"];
+  const cell = 44; // 8 cells span 352px of the 500px circle, so the lit corners stay inside it.
+  const grid = document.getElementById("grid");
+  grid.style.gridTemplateColumns = `repeat(8, ${cell}px)`;
+  for (const row of MARK) {
+    for (const v of row) {
+      const i = document.createElement("i");
+      i.className = v === "1" ? "on" : v === "2" ? "flow" : "off";
+      i.style.width = i.style.height = `${cell * 0.84}px`;
+      i.style.margin = `${cell * 0.08}px`;
+      grid.append(i);
+    }
+  }
+</script>
+</body>
+</html>

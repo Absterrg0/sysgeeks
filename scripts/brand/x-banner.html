@@ -1,0 +1,103 @@
+<!doctype html>
+<!--
+  The X (Twitter) header, 1500x500: the home page's hero in a strip. The headline sits top left because
+  the profile photo covers the bottom left; the running system and its failure take the right.
+  Render with scripts/brand/render.sh.
+-->
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="brand.css" />
+<style>
+  .canvas { width: 1500px; height: 500px; }
+  .cool { background: radial-gradient(700px 420px at 22% 30%, rgb(0 150 255 / 0.075), transparent 70%); }
+  .bloom { background: radial-gradient(300px 200px at 1150px 381px, rgb(244 96 106 / 0.2), transparent 72%); }
+  .matrix {
+    background-image:
+      radial-gradient(circle at center, rgb(255 255 255 / 0.2) 1.15px, transparent 1.5px),
+      radial-gradient(circle at center, rgb(255 255 255 / 0.11) 0.95px, transparent 1.25px);
+    background-size: 120px 120px, 24px 24px;
+    background-position: 0 0, 0 0;
+    -webkit-mask-image: radial-gradient(ellipse 560px 300px at 1060px 300px, #000 22%, rgb(0 0 0 / 0.35) 62%, transparent 100%);
+  }
+  .copy { position: absolute; left: 96px; top: 86px; }
+  .kicker { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--ink-3); }
+  h1 { margin-top: 20px; font-size: 58px; line-height: 1.02; }
+  .host { position: absolute; right: 80px; bottom: 46px; font-size: 12px; color: var(--ink-3); }
+  svg { position: absolute; inset: 0; }
+  .flow { fill: none; stroke: #3a3e47; stroke-width: 1.6; }
+  .packet { fill: none; stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; filter: drop-shadow(0 0 4px var(--accent)); }
+  .broken { fill: none; stroke: var(--gap); stroke-width: 1.8; stroke-dasharray: 4 4; opacity: 0.85; }
+  .lead { fill: none; stroke: var(--gap); stroke-width: 1.4; stroke-dasharray: 3 4; opacity: 0.8; }
+  .head { fill: #6b707b; }
+  .head.red { fill: var(--gap); }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="layer cool"></div>
+  <div class="layer matrix"></div>
+  <div class="layer bloom"></div>
+
+  <div class="copy">
+    <p class="kicker mono"><span class="led"></span>Live · video-processing-pipeline · stage 07 of 14</p>
+    <h1 class="display">Every system breaks.<br />Learn <span class="lit">why</span> before<br />the interviewer asks.</h1>
+  </div>
+
+  <svg width="1500" height="500" viewBox="0 0 1500 500">
+    <defs>
+      <linearGradient id="in" gradientUnits="userSpaceOnUse" x1="560" x2="674" y1="0" y2="0">
+        <stop offset="0" stop-color="#3a3e47" stop-opacity="0" />
+        <stop offset="1" stop-color="#3a3e47" />
+      </linearGradient>
+    </defs>
+    <!-- Traffic in from the uploader, off the edge. -->
+    <path d="M560 381 H674" fill="none" stroke="url(#in)" stroke-width="1.6" />
+    <path class="head" d="M680 381 l-7 -4 v8 z" />
+    <path class="packet" d="M626 381 h22" />
+    <!-- Video API to object storage and to Postgres. -->
+    <path class="flow" d="M750 352 V291 Q750 281 760 281 H873" />
+    <path class="head" d="M880 281 l-7 -4 v8 z" />
+    <path class="packet" d="M750 336 v-20" />
+    <path class="packet" d="M800 281 h24" />
+    <path class="flow" d="M820 381 H873" />
+    <path class="head" d="M880 381 l-7 -4 v8 z" />
+    <path class="packet" d="M836 381 h16" />
+    <!-- The CDN pulls from object storage; the student pulls from the CDN. -->
+    <path class="flow" d="M1280 270 H1027" />
+    <path class="head" d="M1020 270 l7 -4 v8 z" />
+    <path class="packet" d="M1236 270 h24" />
+    <path class="packet" d="M1058 270 h24" />
+    <path class="flow" d="M1350 352 V317" />
+    <path class="head" d="M1350 310 l-4 7 h8 z" />
+    <!-- The dead workers' flows. -->
+    <path class="broken" d="M1080 381 H1027" />
+    <path class="head red" d="M1020 381 l7 -4 v8 z" />
+    <path class="broken" d="M1098 352 V302 Q1098 292 1088 292 H1027" />
+    <path class="head red" d="M1020 292 l7 -4 v8 z" />
+    <!-- The lead from the failure up to its ticket. -->
+    <path class="lead" d="M1150 352 V214" />
+  </svg>
+
+  <div class="node" style="left:680px; top:352px; width:140px; height:58px"><span class="kind">Service</span><span class="name">Video API</span></div>
+  <div class="node" style="left:880px; top:252px; width:140px; height:58px"><span class="kind">Object store</span><span class="name">Object storage</span></div>
+  <div class="node" style="left:880px; top:352px; width:140px; height:58px"><span class="kind">Database</span><span class="name">Postgres</span></div>
+  <div class="node down" style="left:1080px; top:352px; width:140px; height:58px"><span class="kind">Worker · down</span><span class="name">Transcode workers</span></div>
+  <div class="node" style="left:1280px; top:252px; width:140px; height:58px"><span class="kind">Edge</span><span class="name">CDN</span></div>
+  <div class="node" style="left:1280px; top:352px; width:140px; height:58px"><span class="kind">Client</span><span class="name">Student player</span></div>
+
+  <aside class="ticket" style="left:1010px; top:40px; width:410px">
+    <p class="ticket-head mono"><span style="color: var(--gap-text)">Failure · stage 07</span><span style="color: var(--ink-3)">12:05:01</span></p>
+    <p class="ticket-title">Deploy kills a worker mid-transcode</p>
+    <div class="ticket-log">
+      <div><span class="t">12:04:31</span> worker-3 SIGTERM, 30 s grace</div>
+      <div class="fail"><span class="t">12:05:01</span> worker-3 killed</div>
+      <div><span class="t">12:05:01</span> job 812 running · owner=worker-3</div>
+    </div>
+  </aside>
+
+  <p class="host mono">www.sysgeeks.com</p>
+  <div class="layer grain"></div>
+</div>
+</body>
+</html>

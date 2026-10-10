@@ -14,7 +14,7 @@ import { listInvestigations } from "@/lib/content";
 import { publicFeatures } from "@/lib/config";
 import { themeInitScript } from "@/lib/domain/theme";
 import { jsonLd, TITLE_SUFFIX } from "@/lib/metadata";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_REPO_URL, SITE_TITLE, SITE_URL } from "@/lib/site";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_REPO_URL, SITE_TITLE, SITE_URL, SITE_X_HANDLE, SITE_X_URL } from "@/lib/site";
 import "./globals.css";
 
 // Funnel Sans for reading and the interface; Funnel Display for titles.
@@ -60,7 +60,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
   },
-  twitter: { card: "summary_large_image", title: SITE_TITLE, description: SITE_DESCRIPTION },
+  twitter: {
+    card: "summary_large_image",
+    site: SITE_X_HANDLE,
+    creator: SITE_X_HANDLE,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
   // Search Console and Bing Webmaster Tools can verify by meta tag, as an alternative to a DNS record.
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
@@ -147,7 +153,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 url: SITE_URL,
                 description: SITE_DESCRIPTION,
                 logo: { "@type": "ImageObject", url: `${SITE_URL}/apple-icon`, width: 180, height: 180 },
-                sameAs: [SITE_REPO_URL],
+                sameAs: [SITE_REPO_URL, SITE_X_URL],
               },
             ],
           }),
