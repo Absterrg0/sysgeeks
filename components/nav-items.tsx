@@ -32,8 +32,8 @@ export const PRICING: NavItem = {
 export const EXAMPLES: NavItem = {
   href: "/projects/examples",
   label: "Examples",
-  icon: null,
-  description: "Finished projects to read",
+  icon: <ProjectsIcon />,
+  description: "See worked system designs and their components",
 };
 
 export const COMPANIES: NavItem = {
@@ -51,6 +51,7 @@ export const LEARN: NavItem[] = [
     icon: <InvestigationsIcon />,
     description: "Real systems to learn, play with and break",
   },
+  EXAMPLES,
   { href: "/concepts", label: "Concepts", icon: <ConceptsIcon />, description: "The mechanisms, and how they fail" },
   {
     href: "/review",
