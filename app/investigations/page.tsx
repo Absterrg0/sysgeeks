@@ -155,17 +155,33 @@ export default function InvestigationsPage() {
       <section aria-label="All investigations" className="pt-8 pb-10">
         <InvestigationIndex investigations={investigations} grouped />
       </section>
-      <section aria-labelledby="youtube-walkthrough" className="max-w-[66ch] border-t border-rule py-8">
-        <h2 id="youtube-walkthrough" className="font-display text-[1.25rem] leading-tight">
-          Design YouTube: a video streaming system design answer
+      <section aria-labelledby="focused-walkthroughs" className="max-w-[66ch] border-t border-rule py-8">
+        <h2 id="focused-walkthroughs" className="font-display text-[1.25rem] leading-tight">
+          More system design interview walkthroughs
         </h2>
-        <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
-          Work through the upload path, transcoding pipeline, adaptive playback, CDN caching and failure cases in a
-          separate interview walkthrough.
-        </p>
-        <Link href="/system-design-interview/design-youtube" className="mt-3 inline-block text-[0.875rem] font-medium text-accent hover:underline">
-          Read the YouTube system design walkthrough →
-        </Link>
+        <ul className="mt-3 divide-y divide-rule border-y border-rule">
+          <li className="py-4">
+            <h3 className="text-[0.9375rem] font-medium">
+              <Link href="/system-design-interview/design-youtube" className="transition-colors hover:text-accent">
+                Design YouTube: a video streaming system
+              </Link>
+            </h3>
+            <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+              Work through uploads, transcoding, adaptive playback, CDN caching and failure cases.
+            </p>
+          </li>
+          <li className="py-4">
+            <h3 className="text-[0.9375rem] font-medium">
+              <Link href="/system-design-interview/design-llm-inference" className="transition-colors hover:text-accent">
+                Design an LLM inference service
+              </Link>
+            </h3>
+            <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+              Estimate token throughput, control GPU admission, balance continuous batching with latency, and handle
+              streaming failures.
+            </p>
+          </li>
+        </ul>
       </section>
     </div>
   );
