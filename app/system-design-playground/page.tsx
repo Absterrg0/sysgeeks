@@ -6,9 +6,9 @@ import { PLAYGROUNDS } from "@/lib/content/playground";
 import { breadcrumbs, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 
 const PATH = "/system-design-playground";
-const TITLE = "Interactive System Design Playgrounds";
+const TITLE = "Interactive System Design Interview Practice";
 const DESCRIPTION =
-  "Explore interactive system design simulations for a URL shortener, rate limiter, news feed, payment system, and more. Change components and traffic, then see where the design breaks. Free, no signup.";
+  `Practice system design interviews with ${Object.keys(PLAYGROUNDS).length} free simulations. Change components, raise traffic, test failures, and compare architectures in your browser. No signup.`;
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
@@ -27,10 +27,10 @@ export default function SystemDesignPlaygroundPage() {
             "@graph": [
               breadcrumbs([
                 { name: "System design interview questions", path: "/investigations" },
-                { name: "Interactive system design playgrounds", path: PATH },
+                { name: "Interactive system design interview practice", path: PATH },
               ]),
               itemList(
-                "Interactive system design playgrounds",
+                "Interactive system design interview practice",
                 playgrounds.map(({ investigation }) => ({
                   name: investigation.searchTitle,
                   path: `/investigations/${investigation.id}/playground`,
@@ -42,7 +42,7 @@ export default function SystemDesignPlaygroundPage() {
       />
 
       <PageHeader
-        title="Interactive system design playgrounds"
+        title="Interactive system design interview practice"
         meta={`${playgrounds.length} simulations · Free · No account needed`}
         actions={
           <Link href="/investigations" className="btn btn-secondary">
@@ -50,9 +50,9 @@ export default function SystemDesignPlaygroundPage() {
           </Link>
         }
       >
-        Change an architecture and see how the system responds. Add or remove components, turn traffic up, and inspect
-        requests failing, backlog growing, and the instances needed to keep up. Each playground is a hands-on system
-        design simulation; you can compare your changes with its reference design.
+        Practise architecture decisions with browser-based simulations. Change components or capacity, test failures,
+        and see which requests fail, where work backs up, and what it takes to keep up. These exercises build reasoning
+        between full interview rounds; they do not simulate a live interviewer.
       </PageHeader>
 
       <Section
@@ -111,12 +111,14 @@ export default function SystemDesignPlaygroundPage() {
             explore them without an account.
           </p>
           <p>
-            For the full interview exercise, start from a system&apos;s{" "}
+            For a full interview exercise, start from a system&apos;s{" "}
             <Link href="/investigations" className="link">
               design question
             </Link>
             , make decisions before reading the answer, and use the playground to test the architecture afterward. Read
-            the 45-minute guide from SysGeeks as well.
+            the <Link href="/system-design-interview" className="link">45-minute interview guide</Link> as well. To rehearse
+            a timed round on your own, use the{" "}
+            <Link href="/system-design-mock-interview" className="link">system design mock interview practice</Link>.
           </p>
         </div>
       </Section>

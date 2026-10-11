@@ -165,7 +165,7 @@ export default function Home() {
                 Browse all {investigations.length} systems →
               </Link>
               <Link href="/system-design-playground" className="transition-colors hover:text-accent">
-                Interactive system design playgrounds →
+                Practise system design interviews with interactive simulations →
               </Link>
               <Link href="/system-design-interview" className="transition-colors hover:text-accent">
                 How to prepare for a system design interview →

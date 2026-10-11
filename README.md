@@ -10,7 +10,7 @@
 - **[Free system design interview worksheet](https://www.sysgeeks.com/system-design-interview/worksheet?utm_source=github&utm_medium=referral&utm_campaign=repository_readme)**: a printable two-page guide with a 45-minute plan, capacity formulas, and a readiness checklist.
 - **[All system design interview questions](https://www.sysgeeks.com/investigations?utm_source=github&utm_medium=referral&utm_campaign=repository_readme)**, from foundational to advanced.
 - **[System design concepts](https://www.sysgeeks.com/concepts?utm_source=github&utm_medium=referral&utm_campaign=repository_readme)**: each one taught as a mechanism, with its failure modes and a short check.
-- **[Interactive system design playgrounds](https://www.sysgeeks.com/system-design-playground?utm_source=github&utm_medium=referral&utm_campaign=repository_readme)**: explore 13 live simulations; change components, raise traffic, and see where a URL shortener, rate limiter, news feed, payment system and more start to fail.
+- **[Interactive system design interview practice](https://www.sysgeeks.com/system-design-playground?utm_source=github&utm_medium=referral&utm_campaign=repository_readme)**: explore 13 live simulations; change components, raise traffic, and see where a URL shortener, rate limiter, news feed, payment system and more start to fail.
 
 ## System design interview questions
 
