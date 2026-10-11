@@ -34,6 +34,142 @@ const FAQ = [
   },
 ];
 
+const READ_PATH_NODES = [
+  { x: 24, title: "Viewer", detail: "feed request + cursor" },
+  { x: 190, title: "Feed API", detail: "authorize + start read" },
+  { x: 356, title: "Candidate merge", detail: "followed + suggested" },
+  { x: 522, title: "Eligibility", detail: "privacy + deletions" },
+  { x: 688, title: "Staged ranking", detail: "shortlist → deeper rank" },
+  { x: 854, title: "Hydrate + paginate", detail: "post data + media URLs" },
+  { x: 1020, title: "Feed page", detail: "ordered items + cursor" },
+];
+
+const WRITE_PATH_NODES = [
+  { x: 24, title: "Publish post", detail: "store before delivery" },
+  { x: 190, title: "Post store", detail: "source of truth" },
+  { x: 356, title: "Durable queue", detail: "retryable fan-out job" },
+  { x: 522, title: "Fan-out workers", detail: "active followers only" },
+  { x: 688, title: "Timeline cache", detail: "derived post IDs" },
+];
+
+function DiagramNode({ x, y, title, detail }: { x: number; y: number; title: string; detail: string }) {
+  const width = 136;
+  const center = x + width / 2;
+  return (
+    <g>
+      <rect x={x} y={y} width={width} height="74" rx="9" fill="var(--raised)" stroke="var(--rule-strong)" />
+      <text x={center} y={y + 29} textAnchor="middle" fill="var(--ink)" fontSize="13" fontWeight="600">
+        {title}
+      </text>
+      <text x={center} y={y + 51} textAnchor="middle" fill="var(--ink-2)" fontSize="10.5">
+        {detail}
+      </text>
+    </g>
+  );
+}
+
+function InstagramFeedDiagram() {
+  return (
+    <figure
+      className="screen relative left-1/2 mt-6 w-screen max-w-[76rem] -translate-x-1/2 overflow-hidden p-4 sm:p-6"
+      aria-labelledby="feed-diagram-caption"
+    >
+      <div className="overflow-x-auto">
+        <svg
+          viewBox="0 0 1180 500"
+          className="h-auto min-w-[68rem] w-full"
+          role="img"
+          aria-labelledby="instagram-feed-diagram-title instagram-feed-diagram-desc"
+        >
+          <title id="instagram-feed-diagram-title">Instagram home feed system design</title>
+          <desc id="instagram-feed-diagram-desc">
+            The read path merges followed and recommended candidates, checks privacy and deletion state, ranks in
+            stages, then hydrates and paginates posts. A separate asynchronous write path fans new post IDs out to
+            active followers, while the post store remains the source of truth.
+          </desc>
+          <defs>
+            <marker id="instagram-feed-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--ink-3)" />
+            </marker>
+          </defs>
+          <text x="24" y="30" fill="var(--ink-3)" fontSize="11" fontWeight="600" letterSpacing="1.2">
+            READ PATH · BUILD A PAGE FROM CANDIDATES
+          </text>
+          {READ_PATH_NODES.map((node, index) => (
+            <g key={node.title}>
+              {index < READ_PATH_NODES.length - 1 && (
+                <line
+                  x1={node.x + 138}
+                  y1="91"
+                  x2={READ_PATH_NODES[index + 1]!.x - 5}
+                  y2="91"
+                  stroke="var(--ink-3)"
+                  strokeWidth="1.5"
+                  markerEnd="url(#instagram-feed-arrow)"
+                />
+              )}
+              <DiagramNode x={node.x} y={54} title={node.title} detail={node.detail} />
+            </g>
+          ))}
+          <path
+            d="M 345 200 C 345 170, 390 162, 390 128"
+            fill="none"
+            stroke="var(--accent)"
+            strokeWidth="1.5"
+            markerEnd="url(#instagram-feed-arrow)"
+          />
+          <path
+            d="M 565 200 C 565 170, 458 162, 458 128"
+            fill="none"
+            stroke="var(--accent)"
+            strokeWidth="1.5"
+            markerEnd="url(#instagram-feed-arrow)"
+          />
+          <DiagramNode x={250} y={200} title="Followed accounts" detail="graph + recent timelines" />
+          <DiagramNode x={482} y={200} title="Recommendations" detail="retrieval from activity" />
+
+          <text x="24" y="342" fill="var(--ink-3)" fontSize="11" fontWeight="600" letterSpacing="1.2">
+            WRITE PATH · KEEP PUBLISHING INDEPENDENT OF DELIVERY
+          </text>
+          {WRITE_PATH_NODES.map((node, index) => (
+            <g key={node.title}>
+              {index < WRITE_PATH_NODES.length - 1 && (
+                <line
+                  x1={node.x + 138}
+                  y1="403"
+                  x2={WRITE_PATH_NODES[index + 1]!.x - 5}
+                  y2="403"
+                  stroke="var(--ink-3)"
+                  strokeWidth="1.5"
+                  strokeDasharray="5 4"
+                  markerEnd="url(#instagram-feed-arrow)"
+                />
+              )}
+              <DiagramNode x={node.x} y={366} title={node.title} detail={node.detail} />
+            </g>
+          ))}
+          <path
+            d="M 756 366 V 316 H 345 V 274"
+            fill="none"
+            stroke="var(--ink-3)"
+            strokeWidth="1.5"
+            strokeDasharray="5 4"
+            markerEnd="url(#instagram-feed-arrow)"
+          />
+          <rect x="450" y="301" width="206" height="26" rx="6" fill="var(--paper)" />
+          <text x="553" y="318" textAnchor="middle" fill="var(--ink-2)" fontSize="10.5">
+            precompute active followers; merge huge accounts at read time
+          </text>
+        </svg>
+      </div>
+      <figcaption id="feed-diagram-caption" className="mt-4 text-[0.8125rem] leading-relaxed text-ink-2">
+        Keep candidate sources separate. The read path filters and ranks them; the write path prepares follower
+        timelines asynchronously, while the post store remains authoritative.
+      </figcaption>
+    </figure>
+  );
+}
+
 export default function DesignInstagramFeedPage() {
   return (
     <article className="measure">
@@ -104,6 +240,7 @@ export default function DesignInstagramFeedPage() {
       </Section>
 
       <Section id="architecture" title="A practical feed architecture">
+        <InstagramFeedDiagram />
         <ol className="max-w-[72ch] divide-y divide-rule border-y border-rule">
           <li className="py-4">
             <h3 className="text-[0.9375rem] font-medium">1. Store the post and media separately</h3>
