@@ -342,26 +342,12 @@ export default function Home() {
                     className={`dotgrid flex items-center justify-center border-b border-rule-soft px-6 py-4 ${i === 0 ? "h-56" : "h-28"}`}
                     aria-hidden="true"
                   >
-                    {i === 0 ? (
-                      <div className="w-full max-w-[34rem]">
-                        <SystemMap
-                          bare
-                          compact
-                          live
-                          hideDetails
-                          label={`${system.title}: the finished architecture`}
-                          components={system.system.components}
-                          flows={system.system.flows}
-                        />
-                      </div>
-                    ) : (
-                      <SystemThumb
-                        className="max-h-full"
-                        components={system.system.components}
-                        flows={system.system.flows}
-                        given={visibleAfter(system, 0).components}
-                      />
-                    )}
+                    <SystemThumb
+                      className={`max-h-full ${i === 0 ? "w-full max-w-[34rem]" : ""}`}
+                      components={system.system.components}
+                      flows={system.system.flows}
+                      given={visibleAfter(system, 0).components}
+                    />
                   </div>
                 )}
                 <div className={`flex flex-1 flex-col ${i === 0 ? "p-6" : "px-4 pt-3.5 pb-4"}`}>

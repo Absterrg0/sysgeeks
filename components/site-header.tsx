@@ -69,7 +69,7 @@ export function SiteHeader({
                 prefetch={false}
                 className="btn btn-accent btn-sm ml-1.5 hidden sm:inline-flex"
               >
-                Start
+                Practice system design
               </Link>
             )}
             <button
