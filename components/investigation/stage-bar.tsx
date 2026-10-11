@@ -11,6 +11,8 @@ export type StageBarInvestigation = {
   stages: StageLink[];
   /** "Foundational", "Intermediate" or "Advanced". */
   level?: string;
+  /** Whether an interactive architecture playground exists for this system. */
+  hasPlayground: boolean;
   /** Where each part sits, for the system's outline in the workspace bar. */
   outline?: { col: number; row: number; store: boolean }[];
 };

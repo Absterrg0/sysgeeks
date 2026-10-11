@@ -9,6 +9,7 @@ import { SiteAnalytics } from "@/components/site-analytics";
 import { StorageNotice } from "@/components/storage-notice";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import type { StageBarInvestigation } from "@/components/investigation/stage-bar";
+import { PLAYGROUNDS } from "@/lib/content/playground";
 import { listInvestigations } from "@/lib/content";
 import { publicFeatures } from "@/lib/config";
 import { themeInitScript } from "@/lib/domain/theme";
@@ -104,6 +105,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     title: inv.title,
     stages: inv.stages.map((s) => ({ id: s.id, title: s.title, phase: s.phase })),
     level: DIFFICULTY[inv.difficulty],
+    hasPlayground: Boolean(PLAYGROUNDS[inv.id]),
     outline: inv.system.components.map((c) => ({
       col: c.position.col,
       row: c.position.row,

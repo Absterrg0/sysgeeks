@@ -12,6 +12,7 @@ export type ExplorerSystem = {
   meta: string;
   minutes: number;
   firstStageId: string;
+  hasPlayground: boolean;
   components: PlacedComponent[];
   flows: ArchitectureFlow[];
 };
@@ -87,9 +88,11 @@ export function SystemExplorer({ systems }: { systems: ExplorerSystem[] }) {
               <Link href={`/investigations/${active.id}/${active.firstStageId}`} className="btn btn-accent btn-sm">
                 Learn it
               </Link>
-              <Link href={`/investigations/${active.id}/playground`} className="btn btn-secondary btn-sm">
-                Play with it
-              </Link>
+              {active.hasPlayground && (
+                <Link href={`/investigations/${active.id}/playground`} className="btn btn-secondary btn-sm">
+                  Play with it
+                </Link>
+              )}
             </div>
           </div>
         </div>

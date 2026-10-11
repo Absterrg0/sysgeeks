@@ -1,6 +1,7 @@
 import { listCompanies, listConcepts, listInvestigations } from "@/lib/content";
 import { proseToPlainText } from "@/lib/prose";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { PLAYGROUNDS } from "@/lib/content/playground";
 
 export const dynamic = "force-static";
 
@@ -65,7 +66,17 @@ export function GET() {
     "## Practice",
     "",
     `- [Review](${SITE_URL}/review): A timed mock interview session drawn from the systems and concepts above, answers due for review, and a claim check of common engineering statements ("adding Redis makes it faster") judged as holds, fails or depends, with the reason.`,
-    `- Every system also has a playground at /investigations/{id}/playground: change its architecture, turn up the traffic and break parts to see what each change buys and costs.`,
+    "## Architecture playgrounds",
+    "",
+    ...investigations
+      .filter((inv) => PLAYGROUNDS[inv.id])
+      .map((inv) =>
+        line(
+          `${inv.searchTitle}: architecture playground`,
+          `/investigations/${inv.id}/playground`,
+          "Change the architecture, increase traffic, and test failures to see the costs and benefits of each design choice.",
+        ),
+      ),
     "",
   ].join("\n");
 

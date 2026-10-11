@@ -14,6 +14,7 @@ import { getConcept, getInvestigation, listCompanies, listInvestigations, writeu
 import { visibleAfter } from "@/lib/domain/visibility";
 import { itemList, jsonLd } from "@/lib/metadata";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { PLAYGROUNDS } from "@/lib/content/playground";
 
 type LogLine = { at: string; who: string; what: string; failed?: boolean };
 
@@ -277,6 +278,7 @@ export default function Home() {
             meta: `${DIFFICULTY[inv.difficulty].toLowerCase()} · ${inv.estimatedMinutes} min · ${inv.stages.length} stages`,
             minutes: inv.estimatedMinutes,
             firstStageId: inv.stages[0]?.id ?? "",
+            hasPlayground: Boolean(PLAYGROUNDS[inv.id]),
             components: inv.system.components,
             flows: inv.system.flows,
           }))}

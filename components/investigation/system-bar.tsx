@@ -128,7 +128,11 @@ export function SystemBar({ investigation, path }: { investigation: StageBarInve
       glyph={<SystemGlyph outline={investigation.outline} />}
       href={base}
       label={`${investigation.title}: workspace`}
-      tabs={MODES.map((m) => ({ label: m.label, href: `${base}${m.path}`, current: mode === m.mode }))}
+      tabs={MODES.filter((m) => m.mode !== "play" || investigation.hasPlayground).map((m) => ({
+        label: m.label,
+        href: `${base}${m.path}`,
+        current: mode === m.mode,
+      }))}
       end={
         stageId ? (
           <StageControls investigation={investigation} current={stageId} />

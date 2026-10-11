@@ -11,6 +11,7 @@ import { getCompany, getConcept, getInvestigation, listInvestigations, writeupsF
 import { DESIGN_ROUND_MINUTES } from "@/lib/domain/design-round";
 import { breadcrumbs, clip, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
+import { PLAYGROUNDS } from "@/lib/content/playground";
 
 export function generateStaticParams() {
   return listInvestigations().map((inv) => ({ investigationId: inv.id }));
@@ -109,9 +110,11 @@ export default async function InvestigationPage(props: PageProps<"/investigation
               title={`${inv.searchTitle} · ${SITE_NAME}`}
               text={`${inv.searchTitle}, worked through like a real system design interview.`}
             />
-            <Link href={`/investigations/${inv.id}/playground`} className="btn btn-secondary">
-              Break it in the playground
-            </Link>
+            {PLAYGROUNDS[inv.id] && (
+              <Link href={`/investigations/${inv.id}/playground`} className="btn btn-secondary">
+                Break it in the playground
+              </Link>
+            )}
             <ContinueLink investigationId={inv.id} stages={stages} />
           </>
         }
