@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ContentUsefulness } from "@/components/content-usefulness";
 import { PageHeader, Section } from "@/components/page-header";
 import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
@@ -258,6 +259,7 @@ export default function FailureScenariosPage() {
           ))}
         </dl>
       </Section>
+      <ContentUsefulness />
     </article>
   );
 }

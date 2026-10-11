@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ContentUsefulness } from "@/components/content-usefulness";
 import { ShareButton } from "@/components/share";
 import { PageHeader, Section } from "@/components/page-header";
 import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
@@ -262,6 +263,7 @@ export default function SystemDesignMockInterviewPage() {
           ))}
         </dl>
       </Section>
+      <ContentUsefulness />
     </article>
   );
 }

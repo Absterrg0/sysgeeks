@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ContentUsefulness } from "@/components/content-usefulness";
 import { ShareButton } from "@/components/share";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { DashList, PageHeader, Section } from "@/components/page-header";
@@ -568,6 +569,7 @@ export default function SystemDesignInterviewPage() {
           </Link>
         </div>
       </section>
+      <ContentUsefulness />
     </article>
   );
 }

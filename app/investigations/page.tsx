@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ContentUsefulness } from "@/components/content-usefulness";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { PageHeader } from "@/components/page-header";
 import { ShareButton } from "@/components/share";
@@ -216,6 +217,7 @@ export default function InvestigationsPage() {
           </li>
         </ul>
       </section>
+      <ContentUsefulness />
     </div>
   );
 }
