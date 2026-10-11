@@ -21,11 +21,11 @@ const STEPS = [
 ] as const;
 
 const QUESTIONS = [
-  ["Design a URL shortener", "Identifiers, read-heavy traffic, cache invalidation and analytics."],
-  ["Design an API rate limiter", "Burst handling, shared counters and failure policy."],
-  ["Design a news feed", "Fan-out, celebrity accounts, inactive readers and deletes."],
-  ["Design a payment system", "Retries, idempotency and out-of-order provider events."],
-  ["Design a distributed job queue", "Durable work, duplicate delivery, worker crashes and backlogs."],
+  ["Design a URL shortener", "Identifiers, read-heavy traffic, cache invalidation and analytics.", "url-shortener"],
+  ["Design an API rate limiter", "Burst handling, shared counters and failure policy.", "api-rate-limiter"],
+  ["Design a news feed", "Fan-out, celebrity accounts, inactive readers and deletes.", "news-feed"],
+  ["Design a payment system", "Retries, idempotency and out-of-order provider events.", "payment-workflow"],
+  ["Design a distributed job queue", "Durable work, duplicate delivery, worker crashes and backlogs.", "job-queue"],
 ] as const;
 
 export default function SystemDesignWorksheetPage() {
@@ -120,12 +120,22 @@ export default function SystemDesignWorksheetPage() {
           Five questions to practise
         </h2>
         <ul className="mt-4 max-w-[66ch] divide-y divide-rule border-y border-rule">
-          {QUESTIONS.map(([question, focus], index) => (
+          {QUESTIONS.map(([question, focus, investigationId], index) => (
             <li key={question} className="grid gap-x-4 gap-y-1 py-3 sm:grid-cols-[1.5rem_minmax(0,1fr)]">
               <span className="text-[0.8125rem] text-ink-3">{index + 1}.</span>
-              <p className="text-[0.875rem] leading-relaxed">
-                <span className="font-medium">{question}.</span> <span className="text-ink-2">{focus}</span>
-              </p>
+              <div>
+                <p className="text-[0.875rem] leading-relaxed">
+                  <span className="font-medium">{question}.</span> <span className="text-ink-2">{focus}</span>
+                </p>
+                <div className="mt-1 flex flex-wrap gap-x-4 text-[0.8125rem] font-medium">
+                  <Link href={`/investigations/${investigationId}`} className="text-accent hover:underline">
+                    Try the exercise →
+                  </Link>
+                  <Link href={`/investigations/${investigationId}/review`} className="text-ink-3 hover:text-ink hover:underline">
+                    Read the worked answer
+                  </Link>
+                </div>
+              </div>
             </li>
           ))}
         </ul>
