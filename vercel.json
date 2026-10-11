@@ -1,0 +1,3 @@
+{
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- app components lib public assets scripts db package.json pnpm-lock.yaml next.config.ts proxy.ts postcss.config.mjs tsconfig.json eslint.config.mjs vitest.config.mts"
+}
