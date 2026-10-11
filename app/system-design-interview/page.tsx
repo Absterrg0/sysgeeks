@@ -12,9 +12,9 @@ const PUBLISHED = "2026-10-06";
 const MODIFIED = "2026-10-11";
 
 export const metadata: Metadata = pageMetadata({
-  title: "System Design Interview Prep: 45-Minute Plan",
+  title: "System Design Interview Framework: 45-Minute Plan",
   description:
-    "Prepare for a system design or high-level design (HLD) interview with a 45-minute plan, common mistakes, and solo practice questions. Free, no signup.",
+    "A practical system design interview framework: how to use 45 minutes, common mistakes, and solo practice questions. Free, no signup.",
   path: PATH,
 });
 
