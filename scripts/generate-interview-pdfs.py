@@ -234,7 +234,7 @@ def build_scorecard(path):
 
 def answers_page(canvas, doc):
     canvas.saveState()
-    canvas.setTitle("14 System Design Interview Questions and Answers")
+    canvas.setTitle(doc.title)
     canvas.setAuthor("SysGeeks")
     canvas.setSubject("Free printable system design interview answer outlines")
     canvas.setStrokeColor(RULE)
@@ -250,16 +250,17 @@ def answers_page(canvas, doc):
 def build_answers(path):
     answers_path = ROOT / "lib" / "content" / "system-design-answers.json"
     answers = json.loads(answers_path.read_text(encoding="utf-8"))
+    question_count = len(answers)
     doc = SimpleDocTemplate(
         str(path), pagesize=A4, leftMargin=LEFT, rightMargin=RIGHT, topMargin=TOP, bottomMargin=BOTTOM,
-        title="14 System Design Interview Questions and Answers", author="SysGeeks",
+        title=f"{question_count} System Design Interview Questions and Answers", author="SysGeeks",
         subject="Free printable system design interview answer outlines",
     )
     story = [
         P("SYSTEM DESIGN INTERVIEW | FREE PRINTABLE GUIDE", "Kicker"),
-        P("14 questions and answers", "TitleCustom"),
+        P(f"{question_count} questions and answers", "TitleCustom"),
         P(
-            "Fourteen original system design prompts with concise answer outlines and links to full worked walkthroughs. "
+            f"{question_count} original system design prompts with concise answer outlines and links to full worked walkthroughs. "
             "Free to download, with no account or email required.",
             "Sub",
         ),

@@ -1,6 +1,7 @@
 import type { InvestigationInput } from "@/lib/domain/content";
 import { chatMessageStore } from "./chat-message-store";
 import { distributedCache } from "./distributed-cache";
+import { fileStorageSync } from "./file-storage-sync";
 import { jobQueue } from "./job-queue";
 import { liveQueries } from "./live-queries";
 import { newsFeed } from "./news-feed";
@@ -18,6 +19,7 @@ import { videoPipeline } from "./video-pipeline";
 export const allInvestigations: InvestigationInput[] = [
   urlShortener,
   videoPipeline,
+  fileStorageSync,
   rateLimiter,
   newsFeed,
   jobQueue,

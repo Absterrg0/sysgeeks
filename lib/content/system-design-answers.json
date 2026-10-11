@@ -42,6 +42,12 @@
     "focus": "Separate upload, durable job state and transcoding so each can recover from failures independently."
   },
   {
+    "id": "file-storage-sync",
+    "title": "Design a Dropbox-Style File Sync Service",
+    "answer": "Split files into verified immutable blocks and publish versions through conditional metadata manifests. Let devices recover from an ordered change journal using durable cursors; preserve concurrent offline edits as conflict copies, authorize block reads against current permissions, and garbage-collect unreferenced blocks only after a safety delay.",
+    "focus": "Keep large uploads resumable and file versions complete while devices reconnect, conflict, lose access and restore deleted data."
+  },
+  {
     "id": "product-analytics",
     "title": "Design a Product Analytics System",
     "answer": "Append validated events to a durable stream before acknowledging them, then batch them into a column store for queries by team, event and time. Stable event IDs make retries safe; an identity override table handles anonymous-to-known user merges without rewriting the event history.",

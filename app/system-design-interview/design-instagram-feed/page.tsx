@@ -354,7 +354,7 @@ export default function DesignInstagramFeedPage() {
 
       <p className="max-w-[72ch] border-t border-rule pt-6 text-[0.8125rem] leading-relaxed text-ink-3">
         Sources describe public engineering work from Meta. The proposed design is an interview exercise, and it does
-        not reproduce Instagram&apos;s private system. More practice: <Link href="/investigations" className="link">14 system design questions and worked answers</Link>.
+        not reproduce Instagram&apos;s private system. More practice: <Link href="/investigations" className="link">system design questions and worked answers</Link>.
         {" "}By {SITE_NAME}.
       </p>
     </article>

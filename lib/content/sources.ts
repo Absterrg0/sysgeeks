@@ -12,6 +12,19 @@ import { md } from "./md";
 
 export const allCompanies: CompanyInput[] = [
   {
+    id: "dropbox",
+    name: "Dropbox",
+    topic: "Metadata and immutable file blocks",
+    summary:
+      "Dropbox's public engineering posts describe separating file metadata from immutable content blocks, syncing changes with per-namespace cursors, and reclaiming deleted data through garbage collection and compaction.",
+    context: md`
+      Dropbox has published several useful accounts of cloud-file engineering: an older sync protocol that uses a per-namespace journal and content-hashed blocks; a later block-transfer protocol that validates bytes end to end; and more recent work on reclaiming space in an immutable blob store.
+
+      Read them as case studies in different layers of the problem, not one timeless architecture diagram. The posts span a decade, focus on specific subsystems, and omit details. The file-sync investigation uses those mechanisms to motivate a generic interview design; its workload, permission contract and architecture are explicit practice assumptions, not a description of Dropbox or Google Drive's private systems.
+    `,
+    blogUrl: "https://dropbox.tech/infrastructure",
+  },
+  {
     id: "google",
     name: "Google",
     topic: "Bigtable and Spanner",
@@ -210,6 +223,55 @@ export const allCompanies: CompanyInput[] = [
 ];
 
 export const allWriteups: WriteupInput[] = [
+  // Dropbox
+  {
+    id: "dropbox-streaming-file-sync",
+    companyId: "dropbox",
+    title: "Streaming File Synchronization",
+    url: "https://dropbox.tech/infrastructure/streaming-file-synchronization",
+    authors: ["Nipunn Koorapati"],
+    published: "2014-07",
+    format: "post",
+    note: "A detailed account of namespace-relative paths, content-hashed blocks, the file journal, per-device sync cursors, and why notifications only wake clients to fetch durable changes.",
+    investigationIds: ["file-storage-sync"],
+    conceptIds: ["object-storage", "partitioning"],
+  },
+  {
+    id: "dropbox-magic-pocket",
+    companyId: "dropbox",
+    title: "Inside the Magic Pocket",
+    url: "https://dropbox.tech/infrastructure/inside-the-magic-pocket",
+    authors: ["James Cowling"],
+    published: "2016-05",
+    format: "post",
+    note: "Dropbox's overview separates file content from metadata and describes immutable encrypted blocks, durability, replication and access patterns in its own storage system.",
+    investigationIds: ["file-storage-sync"],
+    conceptIds: ["object-storage", "replication"],
+  },
+  {
+    id: "dropbox-broccoli-sync",
+    companyId: "dropbox",
+    title: "Broccoli: Syncing faster by syncing less",
+    url: "https://dropbox.tech/infrastructure/-broccoli--syncing-faster-by-syncing-less",
+    authors: ["Rishabh Jain", "Daniel Reiter Horn"],
+    published: "2020-08",
+    format: "post",
+    note: "A published block-transfer protocol shows hash verification, bounded blocks and the cost of compression on real clients; its reported measurements belong to that Dropbox rollout.",
+    investigationIds: ["file-storage-sync"],
+    conceptIds: ["object-storage", "idempotency"],
+  },
+  {
+    id: "dropbox-magic-pocket-compaction",
+    companyId: "dropbox",
+    title: "Improving storage efficiency in Magic Pocket, our immutable blob store",
+    url: "https://dropbox.tech/infrastructure/improving-storage-efficiency-in-magic-pocket-our-immutable-blob-store",
+    authors: ["Facundo Agriel"],
+    published: "2026-04",
+    format: "post",
+    note: "A recent operational account explains why immutable blocks make deletes asynchronous, and how reachability-based collection and compaction reclaim unused storage.",
+    investigationIds: ["file-storage-sync"],
+    conceptIds: ["object-storage"],
+  },
   // Google
   {
     id: "google-bigtable",

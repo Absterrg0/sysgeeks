@@ -11,9 +11,9 @@ import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
-  title: "System Design Interview Questions: 14 Answers",
+  title: `System Design Interview Questions: ${SYSTEM_DESIGN_ANSWERS.length} Answers`,
   description:
-    "Practice 14 system design interview questions with concise answers, core concepts, design tradeoffs and worked walkthroughs. Free, no signup.",
+    `Practice ${SYSTEM_DESIGN_ANSWERS.length} system design interview questions with concise answers, core concepts, design tradeoffs and worked walkthroughs. Free, no signup.`,
   path: "/investigations",
 });
 
@@ -21,6 +21,7 @@ const PRACTICE_PATH = SYSTEM_DESIGN_ANSWERS;
 
 export default function InvestigationsPage() {
   const investigations = listInvestigations();
+  const questionCount = PRACTICE_PATH.length;
   const practicePath = PRACTICE_PATH.flatMap(({ id, title, focus, answer }) => {
     const investigation = getInvestigation(id);
     return investigation ? [{ investigation, title, focus, answer }] : [];
@@ -43,12 +44,12 @@ export default function InvestigationsPage() {
         }}
       />
       <PageHeader
-        title="14 system design interview questions and answers"
+        title={`${questionCount} system design interview questions and answers`}
         actions={
           <ShareButton
             url={`${SITE_URL}/investigations`}
-            title={`14 System Design Interview Questions · ${SITE_NAME}`}
-            text="Explore 14 free system design interview questions with interactive exercises and worked answers."
+            title={`${questionCount} System Design Interview Questions · ${SITE_NAME}`}
+            text={`Explore ${questionCount} free system design interview questions with interactive exercises and worked answers.`}
           />
         }
       >
@@ -109,7 +110,7 @@ export default function InvestigationsPage() {
         </div>
         <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
           <a className="btn btn-secondary" href="/downloads/system-design-interview-questions-and-answers.pdf" download>
-            Download all 14 questions and answers (PDF)
+            Download all {questionCount} questions and answers (PDF)
           </a>
           <Link href="/system-design-playground" className="btn btn-secondary">
             Try interactive system design interview practice

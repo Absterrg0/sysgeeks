@@ -28,6 +28,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     if (PLAYGROUNDS[id]) paths.push(`/investigations/${id}/playground`);
     return paths.map((path) => [path, "2026-10-11"] as const);
   });
+  const fileStorageSync = listInvestigations().find((inv) => inv.id === "file-storage-sync");
+  const newFileStorageSyncPaths = fileStorageSync
+    ? [
+        "/investigations/file-storage-sync",
+        "/investigations/file-storage-sync/review",
+        "/investigations/file-storage-sync/design",
+        ...fileStorageSync.stages.map((stage) => `/investigations/file-storage-sync/${stage.id}`),
+      ]
+    : [];
   // Only include dates for pages with a known material edit. Avoid refreshing every
   // URL on each deploy, which would make the sitemap's update hints unreliable.
   const lastModified: Record<string, string> = {
@@ -36,21 +45,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/system-design-interview/failure-scenarios": "2026-10-12",
     "/system-design-interview/ai-system-design": "2026-10-11",
     "/system-design-interview/worksheet": "2026-10-11",
-    "/investigations": "2026-10-11",
+    "/investigations": "2026-10-12",
+    "/companies": "2026-10-12",
+    "/companies/dropbox": "2026-10-12",
+    "/concepts/object-storage": "2026-10-12",
+    "/concepts/transactions": "2026-10-12",
+    "/concepts/idempotency": "2026-10-12",
+    "/concepts/partitioning": "2026-10-12",
+    "/concepts/asynchronous-processing": "2026-10-12",
+    "/concepts/replication": "2026-10-12",
+    "/concepts/concurrency-control": "2026-10-12",
     "/system-design-mock-interview": "2026-10-11",
     "/system-design-playground": "2026-10-11",
-    "/downloads/system-design-interview-questions-and-answers.pdf": "2026-10-11",
+    "/downloads/system-design-interview-questions-and-answers.pdf": "2026-10-12",
     "/capacity-estimator": "2026-10-11",
     "/concepts/server-push": "2026-10-11",
     "/system-design-interview/design-llm-inference": "2026-10-11",
     "/system-design-interview/llm-inference-capacity": "2026-10-11",
-    "/system-design-interview/design-instagram-feed": "2026-10-11",
+    "/system-design-interview/design-instagram-feed": "2026-10-12",
     "/companies/google": "2026-10-11",
     "/companies/amazon": "2026-10-11",
     "/companies/uber": "2026-10-11",
     "/legal/privacy": "2026-10-12",
     ...Object.fromEntries(rideDispatchPaths.map((path) => [path, "2026-10-11"])),
     ...Object.fromEntries(updatedInvestigationTitles),
+    ...Object.fromEntries(newFileStorageSyncPaths.map((path) => [path, "2026-10-12"])),
   };
   const paths = [
     "/",
