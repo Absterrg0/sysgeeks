@@ -34,6 +34,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/": "2026-10-11",
     "/system-design-interview": "2026-10-11",
     "/investigations": "2026-10-11",
+    "/system-design-mock-interview": "2026-10-11",
     "/downloads/system-design-interview-questions-and-answers.pdf": "2026-10-11",
     "/capacity-estimator": "2026-10-11",
     "/concepts/server-push": "2026-10-11",

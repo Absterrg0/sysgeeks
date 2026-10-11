@@ -7,15 +7,15 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 const PATH = "/system-design-mock-interview";
 const TITLE = "Free Solo System Design Mock Interview Practice";
 const DESCRIPTION =
-  "Practice system design interviews alone for free. Choose 30, 45, or 60 minutes, answer first, then review references with a practical self-scorecard.";
+  "Practice system design interviews alone with timed 30, 45, or 60-minute mocks, self-interviewer follow-up prompts, and a practical scorecard. Free, no partner needed.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
 const FAQ = [
   {
-    question: "Can I practise a system design interview by myself?",
+    question: "How do I practise a system design interview alone?",
     answer:
-      "Yes. SysGeeks runs a self-guided mock interview from a question bank built around real systems. You answer each question before seeing its reference and debrief. It does not require a live partner.",
+      "Choose one prompt, set a timer, and explain your reasoning aloud before you look at a reference answer. Spend the round on requirements, estimates, a design choice, and one failure or change in scale. Then use a scorecard to pick one thing to improve. SysGeeks has self-guided 30, 45, and 60-minute rounds that do not need a partner.",
   },
   {
     question: "How long is the system design mock interview?",
@@ -45,6 +45,15 @@ const SCORECARD = [
   ["Change", "Can you adapt the design when traffic or a requirement shifts?"],
   ["Break", "Can you predict a concrete failure and explain recovery?"],
   ["Implement", "Can you connect a guarantee to the API, data model, or code that enforces it?"],
+] as const;
+
+const SELF_INTERVIEW_PROMPTS = [
+  ["After you set requirements", "Which requirement would change your design if it doubled? What can you leave out?"],
+  ["After you estimate scale", "Which estimate changes an architecture choice? What becomes the bottleneck if that number is wrong?"],
+  ["After you choose a component", "What does this choice make easier? What new cost or failure mode does it add?"],
+  ["After you trace a request", "What happens if it runs twice, arrives late, or succeeds while the response times out?"],
+  ["After you handle a failure", "What durable state tells recovery what completed? Which signal would alert an operator?"],
+  ["Before you finish", "What does the design guarantee, what does it leave uncertain, and where does it stop working?"],
 ] as const;
 
 export default function SystemDesignMockInterviewPage() {
@@ -165,16 +174,32 @@ export default function SystemDesignMockInterviewPage() {
         </div>
       </Section>
 
-      <Section id="prep" title="Prepare for a system design interview">
+      <Section id="solo-prompts" title="How to practise a system design interview alone">
         <p className="max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
-          Start with the <Link href="/system-design-interview" className="link">system design interview guide</Link> for a 45-minute plan, common mistakes, and a routine for practising alone. For each prompt, state the requirements, estimate the load, compare designs, and explain what changes when something fails.
+          Use the 45-minute structure in the <Link href="/system-design-interview#plan" className="link">system design interview guide</Link>.
+          After each major choice, ask yourself a follow-up before you move on. That forces you to test the reason for
+          the choice, not just name a familiar tool.
+        </p>
+        <ol className="mt-5 max-w-[72ch] divide-y divide-rule border-y border-rule">
+          {SELF_INTERVIEW_PROMPTS.map(([moment, prompt]) => (
+            <li key={moment} className="py-3.5">
+              <h3 className="text-[0.9375rem] font-medium">{moment}</h3>
+              <p className="mt-1 text-[0.9375rem] leading-relaxed text-ink-2">{prompt}</p>
+            </li>
+          ))}
+        </ol>
+        <p className="mt-4 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
+          For example, if a payment provider accepts a charge but the response times out, decide what the buyer sees,
+          whether a retry is safe, and which stored state resolves the unknown outcome. Then compare your answer with
+          the <Link href="/investigations/payment-workflow" className="link">worked payment system design</Link>.
         </p>
         <p className="mt-3 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
-          The practice sessions are free and do not need an account. The time limit is a guide. Finish when you have
-          answered the questions, then use the debrief to choose what to practise next.
+          A solo round cannot give you the pushback of a live interviewer. It can still help you practise clear
+          reasoning and find one weak spot between peer mocks. SysGeeks practice sessions are free and do not need an
+          account.
         </p>
         <Link href="/review#session" className="mt-5 inline-flex btn btn-accent">
-          Start a system design mock interview
+          Start a timed system design mock
         </Link>
       </Section>
 
