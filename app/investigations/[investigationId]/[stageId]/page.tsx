@@ -11,7 +11,7 @@ import { getConcept, getStage, listInvestigations } from "@/lib/content";
 import { PHASE_LABELS } from "@/lib/domain/content";
 import { type ExerciseRef } from "@/lib/domain/learner";
 import { visibleAfter } from "@/lib/domain/visibility";
-import { breadcrumbs, clip, jsonLd, pageMetadata } from "@/lib/metadata";
+import { breadcrumbs, clip, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 import { proseToPlainText } from "@/lib/prose";
 import { SITE_URL } from "@/lib/site";
 
@@ -32,8 +32,12 @@ export async function generateMetadata(
   const { investigation, stage } = found;
   // Lead with the question the stage asks: it is what a searcher typed.
   const question = proseToPlainText(stage.interaction.prompt);
+  const fullTitle = `${investigation.searchTitle}: ${stage.title}`;
+  const systemName = systemNameForTitle(investigation.searchTitle);
+  const suffix = ` | ${systemName}`;
+  const title = fullTitle.length <= 70 ? fullTitle : `${clip(stage.title, 70 - suffix.length)}${suffix}`;
   return pageMetadata({
-    title: `${investigation.searchTitle}: ${stage.title}`,
+    title,
     description: clip(
       stage.event
         ? `${proseToPlainText(stage.event.title)}. ${question} ${proseToPlainText(stage.event.detail)}`

@@ -9,7 +9,7 @@ import { SystemMap } from "@/components/system-map";
 import { getConcept, getInvestigation, listInvestigations } from "@/lib/content";
 import { designReference, interviewPrompt } from "@/lib/content/design-reference";
 import { DESIGN_ROUND_MINUTES, DESIGN_SECTION_IDS } from "@/lib/domain/design-round";
-import { breadcrumbs, clip, jsonLd, pageMetadata } from "@/lib/metadata";
+import { breadcrumbs, clip, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 
 export function generateStaticParams() {
   return listInvestigations().map((inv) => ({ investigationId: inv.id }));
@@ -23,8 +23,9 @@ export async function generateMetadata(
   const { investigationId } = await props.params;
   const inv = getInvestigation(investigationId);
   if (!inv) return {};
+  const fullTitle = `${inv.searchTitle}: Practice Round from a Blank Page`;
   return pageMetadata({
-    title: `${inv.searchTitle}: Practice Round from a Blank Page`,
+    title: fullTitle.length <= 70 ? fullTitle : `${systemNameForTitle(inv.searchTitle)}: Blank-Page System Design Practice`,
     description: clip(
       `A ${DESIGN_ROUND_MINUTES}-minute system design round: ${inv.premise} Write requirements, estimates, the design, deep dives and failure handling yourself, then compare with a reference design.`,
     ),

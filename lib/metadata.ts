@@ -73,6 +73,16 @@ export function clip(text: string, max = 158): string {
   return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[\s,;:.—-]+$/, "")}…`;
 }
 
+/** A compact system name for titles that pair a long stage prompt with its system. */
+export function systemNameForTitle(searchTitle: string): string {
+  return searchTitle
+    .replace(/^Design\s+(?:(?:a|an|the)\s+)?/i, "")
+    .replace(/^Shard a /i, "")
+    .replace(/ Without Downtime$/i, "")
+    .replace(/\s*\([^)]*\)/g, "")
+    .trim();
+}
+
 /**
  * A schema.org FAQPage. Every question and answer must also be visible on the page;
  * answer engines quote these pairs, and Google ignores markup that the page does not show.

@@ -8,7 +8,7 @@ import { Prose } from "@/components/prose";
 import { SystemMap } from "@/components/system-map";
 import { DashList, PageHeader, Section } from "@/components/page-header";
 import { getInvestigation, listInvestigations } from "@/lib/content";
-import { breadcrumbs, clip, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
+import { breadcrumbs, clip, faqPage, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 import { proseToPlainText } from "@/lib/prose";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -33,8 +33,9 @@ export async function generateMetadata(
   const { investigationId } = await props.params;
   const inv = getInvestigation(investigationId);
   if (!inv) return {};
+  const fullTitle = `${howTo(inv.searchTitle)}: Step-by-Step System Design`;
   return pageMetadata({
-    title: `${howTo(inv.searchTitle)}: Step-by-Step System Design`,
+    title: fullTitle.length <= 70 ? fullTitle : `${systemNameForTitle(inv.searchTitle)}: Step-by-Step System Design`,
     description: clip(
       `${howTo(inv.searchTitle)}, step by step: ${inv.system.components.map((c) => c.label).join(", ")}. ${inv.premise}`,
     ),
