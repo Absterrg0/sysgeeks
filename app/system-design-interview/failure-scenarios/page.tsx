@@ -137,6 +137,12 @@ export default function FailureScenariosPage() {
         failure, recover safely, and say what the recovery costs. These are original practice scenarios, not claims
         about questions asked by a particular employer.
       </PageHeader>
+      <p className="mt-2 max-w-[72ch] text-[0.8125rem] leading-relaxed text-ink-3">
+        This guide was drafted with AI assistance and has not yet been independently reviewed by a human.{" "}
+        <Link href="/ai" className="link">
+          How SysGeeks uses AI
+        </Link>
+      </p>
 
       <div className="mt-6 flex flex-wrap gap-2">
         <Link href="/investigations" className="btn btn-accent">
