@@ -14,12 +14,12 @@ const MODIFIED = "2026-10-11";
 export const metadata: Metadata = pageMetadata({
   title: "System Design Interview Prep: 45-Minute Plan",
   description:
-    "Learn what a system design interview tests, use a 45-minute plan, avoid common mistakes, and practise alone with real questions. Free, no signup.",
+    "Prepare for a system design or high-level design (HLD) interview with a 45-minute plan, common mistakes, and solo practice questions. Free, no signup.",
   path: PATH,
 });
 
 const LEAD =
-  "A system design interview asks you to design a large system, such as a URL shortener or a news feed, out loud in about 45 minutes. It does not test whether you can draw the expected diagram. It tests whether you can turn vague requirements into numbers, choose between designs for a stated reason, and say what happens when parts of your design fail.";
+  "A system design interview, often called high-level design (HLD), asks you to design a large system, such as a URL shortener or a news feed, out loud in about 45 minutes. It does not test whether you can draw the expected diagram. It tests whether you can turn vague requirements into numbers, choose between designs for a stated reason, and say what happens when parts of your design fail.";
 
 const PLAN = [
   {
