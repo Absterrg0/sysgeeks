@@ -503,13 +503,14 @@ export default function SystemDesignInterviewPage() {
             ),
           )}
         </div>
-        <a
-          className="btn btn-secondary mt-5"
-          href="/downloads/system-design-interview-questions-and-answers.pdf"
-          download
-        >
-          Download the {investigations.length}-question answers PDF
-        </a>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Link className="btn btn-accent" href="/system-design-interview/questions-and-answers">
+            Read the question and answer outlines
+          </Link>
+          <a className="btn btn-secondary" href="/downloads/system-design-interview-questions-and-answers.pdf" download>
+            Download the {investigations.length}-question answers PDF
+          </a>
+        </div>
         <p className="mt-6 max-w-[66ch] text-[0.9375rem] leading-relaxed text-ink-2">
           Looking for a worked answer to a classic video platform prompt? Read the separate{" "}
           <Link href="/system-design-interview/design-youtube" className="link">
