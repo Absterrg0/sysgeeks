@@ -158,6 +158,10 @@ export default function SystemDesignMockInterviewPage() {
             <Link href="/review#dimension" className="link">skill drills</Link> sort practice by dimension, and the{" "}
             <Link href="/review#session" className="link">timed mock interview</Link> gives you another round to review.
           </p>
+          <p>
+            Use the <Link href="/system-design-interview/scorecard" className="link">printable system design interview scorecard</Link> to
+            record evidence and plan your next drill.
+          </p>
         </div>
       </Section>
 
