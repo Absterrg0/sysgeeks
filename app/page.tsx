@@ -163,6 +163,9 @@ export default function Home() {
               <Link href="/investigations" className="transition-colors hover:text-accent">
                 Browse all {investigations.length} systems →
               </Link>
+              <Link href="/system-design-interview" className="transition-colors hover:text-accent">
+                How to prepare for a system design interview →
+              </Link>
               <Link href="/system-design-mock-interview" className="transition-colors hover:text-accent">
                 How timed practice works →
               </Link>
