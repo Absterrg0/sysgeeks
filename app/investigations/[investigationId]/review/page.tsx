@@ -110,6 +110,17 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
           engineer could land differently.
         </PageHeader>
 
+        <nav aria-label="Practice this system design question" className="mt-5 flex flex-wrap gap-2.5">
+          {firstStage && (
+            <Link href={`/investigations/${inv.id}/${firstStage.id}`} className="btn btn-accent">
+              Try it before reading the answer
+            </Link>
+          )}
+          <Link href={`/investigations/${inv.id}/design`} className="btn btn-secondary">
+            Design it from a blank page
+          </Link>
+        </nav>
+
         <section aria-labelledby="short-answer" className="section pt-0 sm:pt-0">
           <h2 id="short-answer" className="font-display text-[1.5rem] leading-tight">
             The short answer
