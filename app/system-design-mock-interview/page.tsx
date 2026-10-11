@@ -5,7 +5,7 @@ import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-mock-interview";
-const TITLE = "Free Solo System Design Mock Interview Practice";
+const TITLE = "Free System Design Mock Interview Practice";
 const DESCRIPTION =
   "Free system design mock interview practice: timed 30, 45 or 60-minute sessions, follow-up questions, and a self-review scorecard.";
 
