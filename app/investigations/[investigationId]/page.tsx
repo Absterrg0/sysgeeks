@@ -192,6 +192,15 @@ export default async function InvestigationPage(props: PageProps<"/investigation
                 </li>
               ))}
             </ul>
+            {inv.id === "news-feed" && (
+              <p className="mt-5 max-w-[60ch] text-[0.875rem] leading-relaxed text-ink-2">
+                For a ranked Instagram home feed, read the{" "}
+                <Link href="/system-design-interview/design-instagram-feed" className="link">
+                  source-based design walkthrough
+                </Link>
+                . This exercise focuses on the public Twitter timeline system described above.
+              </p>
+            )}
           </section>
 
           {(companies.length > 0 || prerequisites.length > 0 || related.length > 0) && (

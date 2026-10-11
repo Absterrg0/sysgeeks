@@ -453,6 +453,11 @@ export default function SystemDesignInterviewPage() {
             AI agent system design interview walkthrough
           </Link>
           , which focuses on scoped tools, idempotent actions, prompt injection, and uncertain outcomes.
+          For a source-based social feed prompt, read the{" "}
+          <Link href="/system-design-interview/design-instagram-feed" className="link">
+            Instagram feed system design interview guide
+          </Link>
+          , which separates followed content from recommendations and works through staged ranking and bounded fan-out.
         </p>
       </Section>
 

@@ -154,6 +154,16 @@ export default function InvestigationsPage() {
         <ul className="mt-3 divide-y divide-rule border-y border-rule">
           <li className="py-4">
             <h3 className="text-[0.9375rem] font-medium">
+              <Link href="/system-design-interview/design-instagram-feed" className="transition-colors hover:text-accent">
+                Design an Instagram home feed
+              </Link>
+            </h3>
+            <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+              Separate followed posts from recommendations, cap celebrity fan-out, and rank candidates in stages.
+            </p>
+          </li>
+          <li className="py-4">
+            <h3 className="text-[0.9375rem] font-medium">
               <Link href="/system-design-interview/design-youtube" className="transition-colors hover:text-accent">
                 Design YouTube: a video streaming system
               </Link>
