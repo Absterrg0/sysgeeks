@@ -21,8 +21,8 @@ export async function generateMetadata(props: PageProps<"/companies/[companyId]"
   const company = getCompany(companyId);
   if (!company) return {};
   return pageMetadata({
-    title: `${company.name}: ${company.topic}`,
-    description: `${company.name}: ${company.topic}. Read the original engineering sources, then practise the design trade-offs in a free interactive exercise.`,
+    title: `${company.name} system design: ${company.topic}`,
+    description: `${company.name} system design case study: ${company.topic}. Read original engineering sources, then practise the trade-offs in a free interactive exercise.`,
     path: `/companies/${company.id}`,
   });
 }
@@ -52,7 +52,7 @@ export default async function CompanyPage(props: PageProps<"/companies/[companyI
               ]),
               {
                 "@type": "CollectionPage",
-                name: `${company.name}: ${company.topic}`,
+                name: `${company.name} system design: ${company.topic}`,
                 description: company.summary,
                 url,
                 isPartOf: { "@type": "WebSite", name: SITE_NAME, url: SITE_URL },
@@ -84,7 +84,7 @@ export default async function CompanyPage(props: PageProps<"/companies/[companyI
         }}
       />
       <PageHeader
-        title={`${company.name}: ${company.topic.toLowerCase()}`}
+        title={`${company.name} system design: ${company.topic.toLowerCase()}`}
         eyebrow={
           <Link href="/companies" className="hover:text-ink">
             Companies
