@@ -12,7 +12,7 @@ const PUBLISHED = "2026-10-06";
 const MODIFIED = "2026-10-11";
 
 export const metadata: Metadata = pageMetadata({
-  title: "System Design Interview: How It Works and How to Prepare",
+  title: "System Design Interview Prep: 45-Minute Plan",
   description:
     "Learn what a system design interview tests, use a 45-minute plan, avoid common mistakes, and practise alone with real questions. Free, no signup.",
   path: PATH,
