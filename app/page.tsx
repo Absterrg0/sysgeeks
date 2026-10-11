@@ -188,8 +188,8 @@ export default function Home() {
               <Link href="/system-design-interview/worksheet" className="transition-colors hover:text-accent">
                 Free system design interview cheat sheet PDF →
               </Link>
-              <Link href="/system-design-interview/questions-and-answers" className="transition-colors hover:text-accent">
-                15 system design interview questions and answers →
+              <Link href="/investigations" className="transition-colors hover:text-accent">
+                System design interview questions and answers →
               </Link>
               <Link href="/system-design-interview/scorecard" className="transition-colors hover:text-accent">
                 Printable system design interview scorecard →

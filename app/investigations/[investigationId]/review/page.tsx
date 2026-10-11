@@ -277,8 +277,8 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
             in Review mixes stages from this and other systems with concept recall and questions about your own projects.
           </p>
           <p className="mt-3 text-[0.8125rem] text-ink-2">
-            For concise outlines of the other prompts, see the{" "}
-            <Link href="/system-design-interview/questions-and-answers" className="link">
+            For concise outlines of the prompts, see the{" "}
+            <Link href="/investigations" className="link">
               system design interview questions and answers
             </Link>
             .

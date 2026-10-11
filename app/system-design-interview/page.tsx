@@ -505,7 +505,7 @@ export default function SystemDesignInterviewPage() {
           )}
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
-          <Link className="btn btn-accent" href="/system-design-interview/questions-and-answers">
+          <Link className="btn btn-accent" href="/investigations">
             Read the question and answer outlines
           </Link>
           <TrackedDownloadLink

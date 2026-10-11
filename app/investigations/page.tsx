@@ -8,13 +8,17 @@ import { ShareButton } from "@/components/share";
 import { TrackedDownloadLink } from "@/components/tracked-download-link";
 import { getInvestigation, listInvestigations } from "@/lib/content";
 import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
-import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
+import { breadcrumbs, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
+const TITLE = `System Design Interview Questions: ${SYSTEM_DESIGN_ANSWERS.length} Answers`;
+const DESCRIPTION =
+  `Practice ${SYSTEM_DESIGN_ANSWERS.length} system design interview questions with concise answers, core concepts, design tradeoffs and worked walkthroughs. Download the free PDF. No signup.`;
+const PDF_PATH = "/downloads/system-design-interview-questions-and-answers.pdf";
+
 export const metadata: Metadata = pageMetadata({
-  title: `System Design Interview Questions: ${SYSTEM_DESIGN_ANSWERS.length} Answers`,
-  description:
-    `Practice ${SYSTEM_DESIGN_ANSWERS.length} system design interview questions with concise answers, core concepts, design tradeoffs and worked walkthroughs. Free, no signup.`,
+  title: TITLE,
+  description: DESCRIPTION,
   path: "/investigations",
 });
 
@@ -37,10 +41,30 @@ export default function InvestigationsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: jsonLd(
-            itemList(
-              "System design interview questions and worked answers",
-              investigations.map((inv) => ({ name: inv.searchTitle, path: `/investigations/${inv.id}` })),
-            ),
+            {
+              "@graph": [
+                breadcrumbs([{ name: "System design interview questions and answers", path: "/investigations" }]),
+                {
+                  "@type": "WebPage",
+                  name: TITLE,
+                  description: DESCRIPTION,
+                  url: `${SITE_URL}/investigations`,
+                  mainEntity: itemList(
+                    "System design interview questions and worked answers",
+                    PRACTICE_PATH.map(({ id, title }) => ({ name: title, path: `/investigations/${id}/review` })),
+                  ),
+                  hasPart: {
+                    "@type": "DigitalDocument",
+                    name: `${SYSTEM_DESIGN_ANSWERS.length} system design interview questions and answers (PDF)`,
+                    encodingFormat: "application/pdf",
+                    contentUrl: `${SITE_URL}${PDF_PATH}`,
+                    inLanguage: "en",
+                    isAccessibleForFree: true,
+                    publisher: { "@id": `${SITE_URL}/#organization` },
+                  },
+                },
+              ],
+            },
           ),
         }}
       />
@@ -112,7 +136,7 @@ export default function InvestigationsPage() {
         <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
           <TrackedDownloadLink
             className="btn btn-secondary"
-            href="/downloads/system-design-interview-questions-and-answers.pdf"
+            href={PDF_PATH}
             resource="system_design_questions_answers"
           >
             Download all {questionCount} questions and answers (PDF)

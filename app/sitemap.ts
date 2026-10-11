@@ -42,7 +42,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified: Record<string, string> = {
     "/": "2026-10-11",
     "/system-design-interview": "2026-10-12",
-    "/system-design-interview/questions-and-answers": "2026-10-12",
     "/system-design-interview/failure-scenarios": "2026-10-12",
     "/system-design-interview/ai-system-design": "2026-10-11",
     "/system-design-interview/worksheet": "2026-10-11",
@@ -75,7 +74,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
     "/",
     "/system-design-interview",
-    "/system-design-interview/questions-and-answers",
     "/system-design-interview/failure-scenarios",
     "/system-design-interview/ai-system-design",
     "/system-design-interview/worksheet",
