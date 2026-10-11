@@ -8,6 +8,7 @@ import { PHASE_LABELS } from "@/lib/domain/taxonomy";
 import type { Attempt } from "@/lib/domain/learner";
 import { exerciseStatus, type ExerciseStatus } from "@/lib/domain/understanding";
 import { useLearnerState } from "@/lib/store/learner-store";
+import { track } from "@/lib/analytics";
 
 export type StageLink = { id: string; title: string; phase: Phase };
 
@@ -146,11 +147,18 @@ export function ContinueLink({ investigationId, stages }: { investigationId: str
   const state = useLearnerState();
   const first = stages[0];
   if (!first) return null;
+  const trackStart = (action: "start" | "continue") => {
+    track("practice_started", { investigation: investigationId, action, source: "continue_link" });
+  };
   // Before hydration the server cannot know about progress, so it renders what
   // a first-time visitor needs: a working link to the first stage.
   if (!state) {
     return (
-      <Link href={`/investigations/${investigationId}/${first.id}`} className="btn btn-accent">
+      <Link
+        href={`/investigations/${investigationId}/${first.id}`}
+        className="btn btn-accent"
+        onClick={() => trackStart("start")}
+      >
         Start the investigation
       </Link>
     );
@@ -167,7 +175,11 @@ export function ContinueLink({ investigationId, stages }: { investigationId: str
   }
   const next = stages[nextIndex] as StageLink;
   return (
-    <Link href={`/investigations/${investigationId}/${next.id}`} className="btn btn-accent">
+    <Link
+      href={`/investigations/${investigationId}/${next.id}`}
+      className="btn btn-accent"
+      onClick={() => trackStart(started ? "continue" : "start")}
+    >
       {started ? `Continue at stage ${nextIndex + 1}: ${next.title}` : "Start the investigation"}
     </Link>
   );

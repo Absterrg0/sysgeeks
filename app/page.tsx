@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { WELCOME_CREDITS } from "@/lib/domain/pricing";
 import { ContinueStrip } from "@/components/continue-strip";
 import { ShareButton } from "@/components/share";
+import { PracticeStartLink } from "@/components/practice-start-link";
 import { SystemExplorer } from "@/components/home/system-explorer";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { InlineText } from "@/components/prose-core";
@@ -153,9 +154,13 @@ export default function Home() {
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-2.5">
               {first && (
-                <Link href={`/investigations/${first.id}`} className="btn btn-accent btn-lg">
+                <PracticeStartLink
+                  href={`/investigations/${first.id}`}
+                  investigationId={first.id}
+                  className="btn btn-accent btn-lg"
+                >
                   {first.id === "url-shortener" ? "Practice a URL shortener interview" : "Start the first system"}
-                </Link>
+                </PracticeStartLink>
               )}
               <Link href="/system-design-playground" className="btn btn-secondary btn-lg">
                 Try {Object.keys(PLAYGROUNDS).length} interactive simulations
