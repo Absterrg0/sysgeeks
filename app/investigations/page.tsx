@@ -7,9 +7,9 @@ import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
 import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = pageMetadata({
-  title: "14 System Design Interview Questions and Answers",
+  title: "System Design Interview Questions: 14 Answers",
   description:
-    "14 system design interview questions, grouped by difficulty, with short answers, design tradeoffs and full walkthroughs. Free, no signup.",
+    "Practice 14 system design interview questions with concise answers, core concepts, design tradeoffs and worked walkthroughs. Free, no signup.",
   path: "/investigations",
 });
 
@@ -98,6 +98,54 @@ export default function InvestigationsPage() {
           </Link>
           <span className="text-[0.8125rem] text-ink-3">Free, no signup. Includes links to full walkthroughs.</span>
         </div>
+      </section>
+      <section aria-labelledby="fundamentals" className="max-w-[66ch] border-t border-rule py-8">
+        <h2 id="fundamentals" className="font-display text-[1.25rem] leading-tight">
+          Common system design interview fundamentals
+        </h2>
+        <dl className="mt-3 divide-y divide-rule border-y border-rule">
+          <div className="py-4">
+            <dt className="text-[0.9375rem] font-medium">What should you clarify first in a system design interview?</dt>
+            <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+              Identify the users and their core actions, then agree on scale, latency, availability, consistency and
+              durability needs. Prioritize the requirements that change the architecture before drawing components.
+              See the <Link href="/system-design-interview" className="link">interview approach</Link>.
+            </dd>
+          </div>
+          <div className="py-4">
+            <dt className="text-[0.9375rem] font-medium">How do you estimate capacity for a system design?</dt>
+            <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+              Estimate peak requests per second, data written per day, retention and concurrent work from the
+              requirements. Use order-of-magnitude numbers to find likely bottlenecks, then size the parts that need
+              different scaling strategies. Learn about <Link href="/concepts/backpressure" className="link">capacity and backpressure</Link>.
+            </dd>
+          </div>
+          <div className="py-4">
+            <dt className="text-[0.9375rem] font-medium">What is the difference between replication and sharding?</dt>
+            <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+              Replication keeps copies of the same data on multiple machines, which can improve read capacity and
+              resilience. Sharding splits data across machines to spread storage and write load, but makes
+              cross-shard operations harder. Read about <Link href="/concepts/replication" className="link">replication</Link> and{" "}
+              <Link href="/concepts/partitioning" className="link">partitioning</Link>.
+            </dd>
+          </div>
+          <div className="py-4">
+            <dt className="text-[0.9375rem] font-medium">When should you add a cache?</dt>
+            <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+              Cache data when repeated reads are costly and the hit rate makes the cache faster than recomputing or
+              querying the source. Decide how stale a value may be and how writes invalidate it; caching adds
+              consistency and failure cases. See the <Link href="/concepts/caching" className="link">caching guide</Link>.
+            </dd>
+          </div>
+          <div className="py-4">
+            <dt className="text-[0.9375rem] font-medium">When does a message queue help?</dt>
+            <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+              A queue decouples a producer from slower consumers and can absorb short bursts, giving workers time to
+              process jobs asynchronously. It does not fix sustained overload: bound the queue, define retry and
+              rejection behavior, and make handlers safe to retry. See <Link href="/concepts/message-queues" className="link">message queues</Link>.
+            </dd>
+          </div>
+        </dl>
       </section>
       <section aria-labelledby="focused-walkthroughs" className="max-w-[66ch] border-t border-rule py-8">
         <h2 id="focused-walkthroughs" className="font-display text-[1.25rem] leading-tight">
