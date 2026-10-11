@@ -73,9 +73,11 @@ export default function PrivacyPage() {
               interaction metrics, along with page URL and route, network speed, browser, device, operating system and
               country. Both tools exclude sign-in and sign-up pages, account pages, saved reports, interview sessions
               and private project URLs. The site sends these explicit events to Vercel Web Analytics and, if configured,
-              PostHog: practice_started, share, answer_submitted, design_round_saved, mock_interview_started,
-              mock_interview_completed, llm_capacity_estimator_used and content_feedback. The practice_started event
-              records the exercise, whether someone started or continued it, and the public page entry point. The
+              PostHog: practice_entry_clicked, practice_started, share, answer_submitted, design_round_saved,
+              mock_interview_started, mock_interview_completed, llm_capacity_estimator_used and content_feedback.
+              The practice_entry_clicked event records which public exercise link was selected and its source label.
+              The practice_started event records the exercise, whether someone started or continued it, and the
+              short label for the start control. The
               content feedback event records only a yes/no response and public page route, not written feedback. The
               calculator event records only that the tool was used; it does not include values entered. These
               events include only the event name and limited context such as the public route, exercise, interview

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContentUsefulness } from "@/components/content-usefulness";
+import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { ShareButton } from "@/components/share";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { DashList, PageHeader, Section } from "@/components/page-header";
@@ -458,9 +459,14 @@ export default function SystemDesignInterviewPage() {
             <li key={item.mistake} className="rounded-xl border border-rule-soft bg-raised p-4">
               <h3 className="text-[0.9375rem] font-medium">{item.mistake}</h3>
               <p className="mt-2 text-[0.875rem] leading-relaxed text-ink-2">{item.drill}</p>
-              <Link href={item.href} className="mt-3 inline-block text-[0.8125rem] font-medium text-accent hover:underline">
+              <PracticeEntryLink
+                href={item.href}
+                investigationId={item.href.split("/")[2] ?? "unknown"}
+                source="interview_guide_mistake_drill"
+                className="mt-3 inline-block text-[0.8125rem] font-medium text-accent hover:underline"
+              >
                 {item.label} →
-              </Link>
+              </PracticeEntryLink>
             </li>
           ))}
         </ol>
@@ -479,9 +485,14 @@ export default function SystemDesignInterviewPage() {
                 <ul className="divide-y divide-rule border-y border-rule">
                   {items.map((inv) => (
                     <li key={inv.id} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-3">
-                      <Link href={`/investigations/${inv.id}`} className="text-[0.9375rem] font-medium hover:text-accent">
+                      <PracticeEntryLink
+                        href={`/investigations/${inv.id}`}
+                        investigationId={inv.id}
+                        source="interview_guide_question_list"
+                        className="text-[0.9375rem] font-medium hover:text-accent"
+                      >
                         {inv.searchTitle}
-                      </Link>
+                      </PracticeEntryLink>
                       <Link href={`/investigations/${inv.id}/review`} className="text-[0.8125rem] text-ink-3 hover:text-ink">
                         Read the answer
                       </Link>

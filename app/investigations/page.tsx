@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContentUsefulness } from "@/components/content-usefulness";
+import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { PageHeader } from "@/components/page-header";
 import { ShareButton } from "@/components/share";
@@ -80,9 +81,14 @@ export default function InvestigationsPage() {
                   {items.map(({ investigation, title, focus, answer }) => (
                     <li key={investigation.id} className="py-3.5">
                       <h4 className="text-[0.9375rem] font-medium">
-                        <Link href={`/investigations/${investigation.id}`} className="transition-colors hover:text-accent">
+                        <PracticeEntryLink
+                          href={`/investigations/${investigation.id}`}
+                          investigationId={investigation.id}
+                          source="question_catalog"
+                          className="transition-colors hover:text-accent"
+                        >
                           {title}
-                        </Link>
+                        </PracticeEntryLink>
                       </h4>
                       <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
                         <strong className="font-medium text-ink">Short answer: </strong>

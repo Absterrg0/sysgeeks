@@ -4,14 +4,22 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { track } from "@/lib/analytics";
 
-export function PracticeStartLink({
+export type PracticeEntrySource =
+  | "home_hero"
+  | "question_catalog"
+  | "interview_guide_mistake_drill"
+  | "interview_guide_question_list";
+
+export function PracticeEntryLink({
   href,
   investigationId,
+  source,
   children,
   className,
 }: {
   href: string;
   investigationId: string;
+  source: PracticeEntrySource;
   children: ReactNode;
   className: string;
 }) {
@@ -19,7 +27,7 @@ export function PracticeStartLink({
     <Link
       href={href}
       className={className}
-      onClick={() => track("practice_started", { investigation: investigationId, action: "start", source: "home_hero" })}
+      onClick={() => track("practice_entry_clicked", { investigation: investigationId, source })}
     >
       {children}
     </Link>
