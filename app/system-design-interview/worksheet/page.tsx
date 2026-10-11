@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { TrackedDownloadLink } from "@/components/tracked-download-link";
 import { ShareButton } from "@/components/share";
 import { breadcrumbs, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
@@ -77,9 +78,9 @@ export default function SystemDesignWorksheetPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <a className="btn btn-accent" href={PDF_PATH} download>
+          <TrackedDownloadLink className="btn btn-accent" href={PDF_PATH} resource="system_design_practice_sheet">
             Download the PDF
-          </a>
+          </TrackedDownloadLink>
           <ShareButton
             url={`${SITE_URL}${PATH}`}
             title={TITLE}
@@ -155,9 +156,9 @@ export default function SystemDesignWorksheetPage() {
           <Link href="/investigations" className="btn btn-primary">
             Practise the questions
           </Link>
-          <a className="btn btn-secondary" href={PDF_PATH} download>
+          <TrackedDownloadLink className="btn btn-secondary" href={PDF_PATH} resource="system_design_practice_sheet">
             Download the two-page worksheet
-          </a>
+          </TrackedDownloadLink>
         </div>
       </section>
 

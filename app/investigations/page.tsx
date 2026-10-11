@@ -5,6 +5,7 @@ import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { PageHeader } from "@/components/page-header";
 import { ShareButton } from "@/components/share";
+import { TrackedDownloadLink } from "@/components/tracked-download-link";
 import { getInvestigation, listInvestigations } from "@/lib/content";
 import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
 import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
@@ -109,9 +110,13 @@ export default function InvestigationsPage() {
           )}
         </div>
         <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <a className="btn btn-secondary" href="/downloads/system-design-interview-questions-and-answers.pdf" download>
+          <TrackedDownloadLink
+            className="btn btn-secondary"
+            href="/downloads/system-design-interview-questions-and-answers.pdf"
+            resource="system_design_questions_answers"
+          >
             Download all {questionCount} questions and answers (PDF)
-          </a>
+          </TrackedDownloadLink>
           <Link href="/system-design-playground" className="btn btn-secondary">
             Try interactive system design interview practice
           </Link>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { TrackedDownloadLink } from "@/components/tracked-download-link";
 import { PageHeader, Section } from "@/components/page-header";
 import { breadcrumbs, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
@@ -68,9 +69,9 @@ export default function SystemDesignScorecardPage() {
       </PageHeader>
 
       <div className="mt-6 flex flex-wrap gap-3">
-        <a className="btn btn-accent btn-lg" href={PDF_PATH} download>
+        <TrackedDownloadLink className="btn btn-accent btn-lg" href={PDF_PATH} resource="system_design_scorecard">
           Download the printable scorecard
-        </a>
+        </TrackedDownloadLink>
         <Link href="/system-design-mock-interview" className="btn btn-secondary btn-lg">
           Start a free timed mock
         </Link>
@@ -137,9 +138,13 @@ export default function SystemDesignScorecardPage() {
           The two-page worksheet has space to record your evidence, debrief the round, and plan the next mock. It is free
           to download and does not require an account.
         </p>
-        <a className="mt-4 inline-flex btn btn-accent" href={PDF_PATH} download>
+        <TrackedDownloadLink
+          className="mt-4 inline-flex btn btn-accent"
+          href={PDF_PATH}
+          resource="system_design_scorecard"
+        >
           Download the free PDF scorecard
-        </a>
+        </TrackedDownloadLink>
         <p className="mt-4 text-[0.8125rem] text-ink-3">
           Published by {SITE_NAME}. Practice scores are not hiring predictions.
         </p>

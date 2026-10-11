@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { TrackedDownloadLink } from "@/components/tracked-download-link";
 import { breadcrumbs, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -178,9 +179,9 @@ export default function SystemDesignQuestionsAndAnswersPage() {
           by the named companies or products.
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
-          <a className="btn btn-accent" href={PDF_PATH} download>
+          <TrackedDownloadLink className="btn btn-accent" href={PDF_PATH} resource="system_design_questions_answers">
             Download the free 3-page PDF
-          </a>
+          </TrackedDownloadLink>
           <Link className="btn btn-secondary" href="/investigations">
             Browse all practice systems
           </Link>
