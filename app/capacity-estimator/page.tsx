@@ -6,7 +6,7 @@ import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const PATH = "/capacity-estimator";
-const TITLE = "System Design Capacity Estimation Calculator";
+const TITLE = "System Design Capacity Calculator: QPS, Storage & Bandwidth";
 const DESCRIPTION =
   "Estimate average and peak QPS, storage, and network bandwidth for a system design interview. Free interactive calculator with clear formulas and assumptions.";
 
@@ -58,7 +58,7 @@ export default function CapacityEstimatorPage() {
           }),
         }}
       />
-      <PageHeader title={TITLE} meta="Free · No account · Inputs stay in your browser">
+      <PageHeader title="System design capacity calculator" meta="Free · No account · Inputs stay in your browser">
         Estimate average and peak QPS, retained storage, and network throughput from a few workload assumptions. Use the result to guide a system design discussion, then refine the numbers when they affect an architectural choice.
       </PageHeader>
 

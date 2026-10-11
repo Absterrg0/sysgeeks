@@ -58,7 +58,7 @@ export const LEARN: NavItem[] = [
     description: "Timed 30, 45, or 60-minute system design practice",
   },
   EXAMPLES,
-  { href: "/capacity-estimator", label: "Capacity", icon: <CapacityIcon />, description: "Estimate QPS, storage and bandwidth" },
+  { href: "/capacity-estimator", label: "Capacity calculator", icon: <CapacityIcon />, description: "Estimate QPS, storage and bandwidth" },
   { href: "/concepts", label: "Concepts", icon: <ConceptsIcon />, description: "The mechanisms, and how they fail" },
   {
     href: "/review",
