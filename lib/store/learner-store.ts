@@ -7,7 +7,7 @@
  * instead of flashing "no progress". Unreadable data is never thrown away: it
  * is copied to a quarantine key and the learner is told.
  */
-import { track } from "@vercel/analytics";
+import { track } from "@/lib/analytics";
 import { useSyncExternalStore } from "react";
 import type { Interaction } from "@/lib/domain/content";
 import type { DesignRound } from "@/lib/domain/design-round";
@@ -214,6 +214,11 @@ export function deleteProject(projectId: string) {
 
 export function startInterview(session: InterviewSession) {
   commit(transitions.startInterview(current(), session));
+  track("mock_interview_started", {
+    duration_minutes: session.durationMinutes,
+    focus: session.focus,
+    question_count: session.items.length,
+  });
 }
 
 export function linkInterviewAttempt(sessionId: string, itemIndex: number, attemptId: string) {
@@ -221,7 +226,15 @@ export function linkInterviewAttempt(sessionId: string, itemIndex: number, attem
 }
 
 export function finishInterview(sessionId: string) {
+  const session = current().interviews.find((item) => item.id === sessionId);
   commit(transitions.finishInterview(current(), sessionId, new Date().toISOString()));
+  if (!session || session.finishedAt) return;
+
+  track("mock_interview_completed", {
+    duration_minutes: session.durationMinutes,
+    focus: session.focus,
+    question_count: session.items.length,
+  });
 }
 
 export function deleteInterview(sessionId: string) {

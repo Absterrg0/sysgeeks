@@ -72,7 +72,14 @@ export default function PrivacyPage() {
               after 24 hours. Vercel Speed Insights records page performance measurements, such as loading and
               interaction metrics, along with page URL and route, network speed, browser, device, operating system and
               country. Both tools exclude sign-in and sign-up pages, account pages, saved reports, interview sessions
-              and private project URLs.
+              and private project URLs. If configured, PostHog records public-page views and the explicit events
+              share, answer_submitted, design_round_saved, mock_interview_started and mock_interview_completed. These
+              events include only the event name and limited context such as the public route, exercise, interview
+              length, focus and question count; answer text and private project content are not sent. PostHog uses
+              session storage for an anonymous identifier that lasts for the browser tab session. Autocapture and
+              session recordings are disabled, and the site does not identify visitors by account or email. PostHog
+              may process an IP address, referrer and browser/device details; its project settings can be configured
+              to discard IP addresses.
             </li>
           </ul>
         </div>
@@ -89,6 +96,9 @@ export default function PrivacyPage() {
             </li>
             <li>
               <strong>Vercel</strong> for hosting, Web Analytics, Speed Insights and the AI Gateway.
+            </li>
+            <li>
+              <strong>PostHog</strong> for anonymous product analytics, only when a project key is configured.
             </li>
             <li>
               <strong>Model providers</strong> reached through the gateway, currently Anthropic and OpenAI.
@@ -119,7 +129,11 @@ export default function PrivacyPage() {
             >
               Vercel Speed Insights privacy details
             </a>{" "}
-            for the providers’ data handling information.
+            and{" "}
+            <a href="https://posthog.com/docs/privacy" target="_blank" rel="noopener noreferrer" className="link">
+              PostHog privacy controls
+            </a>{" "}
+            for details about how these providers handle data.
           </p>
         </div>
       </Section>

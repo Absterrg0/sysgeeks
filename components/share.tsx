@@ -1,6 +1,6 @@
 "use client";
 
-import { track } from "@vercel/analytics";
+import { track } from "@/lib/analytics";
 import { useState } from "react";
 
 /** Tag a shared link with where it was posted, so referrers show up in analytics. */
@@ -37,7 +37,7 @@ function useCopy(url: string) {
     try {
       await navigator.clipboard.writeText(tagged(url, "copy"));
       setCopied(true);
-      track("share", { target: "copy", url });
+      track("share", { target: "copy" });
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Clipboard access can be refused; the address bar still has the link.
@@ -54,7 +54,7 @@ export function ShareButton({ url, title, text }: { url: string; title: string; 
     if (typeof navigator.share === "function") {
       try {
         await navigator.share({ title, text, url: tagged(url, "native") });
-        track("share", { target: "native", url });
+        track("share", { target: "native" });
       } catch {
         // Dismissing the share sheet is not an error worth surfacing.
       }
@@ -82,7 +82,7 @@ export function ShareLinks({ url, text }: { url: string; text: string }) {
           target="_blank"
           rel="noopener noreferrer"
           className="btn btn-secondary"
-          onClick={() => track("share", { target: t.id, url })}
+          onClick={() => track("share", { target: t.id })}
         >
           {t.label}
         </a>
