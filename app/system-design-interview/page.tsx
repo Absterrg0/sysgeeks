@@ -156,6 +156,11 @@ const FAQ = [
       "Sometimes, in a lighter form. They become standard from mid-level roles upwards, and for senior roles the system design round often decides the level of the offer.",
   },
   {
+    question: "How should experienced engineers prepare for a system design interview?",
+    answer:
+      "Practise scoping the problem before choosing components, defending a design against a plausible alternative, and tracing how it behaves during failure or migration. Use examples from your work to explain a decision you owned, but leave out confidential details and do not assume the interview prompt has the same scale as your production system.",
+  },
+  {
     question: "What is the difference between high-level and low-level design?",
     answer:
       "High-level design (HLD) is about services, data stores and how requests and data flow between them. Low-level design (LLD) is about the inside of one component: its classes, interfaces and data schema. Most system design interviews are high-level, with a deep dive into one component.",
@@ -345,6 +350,49 @@ export default function SystemDesignInterviewPage() {
 
       <Section id="listen" title="What do interviewers listen for?">
         <DashList items={LISTEN_FOR} />
+      </Section>
+
+      <Section id="experienced" title="How should experienced engineers prepare?">
+        <div className="max-w-[66ch] space-y-4 text-[0.9375rem] leading-relaxed text-ink-2">
+          <p>
+            At mid and senior levels, naming familiar services is not enough. Show how a requirement leads to a design
+            choice, what that choice costs, and what evidence would make you change it. Start from the prompt's scale
+            instead of copying a production architecture from memory.
+          </p>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>
+              State the constraint that drives each decision, then compare it with one workable alternative.
+            </li>
+            <li>
+              Follow the design through a failure or a change. Explain retries, recovery, migration, verification, and
+              rollback where they matter.
+            </li>
+            <li>
+              Use a work example to explain a decision you owned. Keep private company details out, and be clear about
+              what you personally decided.
+            </li>
+          </ul>
+          <p>
+            Practise with advanced prompts that require this kind of reasoning:
+          </p>
+          <ul className="flex flex-wrap gap-x-5 gap-y-2 font-medium">
+            <li>
+              <Link href="/investigations/shard-live-database" className="text-accent hover:underline">
+                Shard a live database without downtime
+              </Link>
+            </li>
+            <li>
+              <Link href="/investigations/chat-message-store" className="text-accent hover:underline">
+                Store trillions of chat messages
+              </Link>
+            </li>
+            <li>
+              <Link href="/investigations/realtime-collaboration" className="text-accent hover:underline">
+                Design a collaborative editor
+              </Link>
+            </li>
+          </ul>
+        </div>
       </Section>
 
       <Section id="mistakes" title="Which mistakes sink candidates?">
