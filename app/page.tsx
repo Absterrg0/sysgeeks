@@ -169,6 +169,9 @@ export default function Home() {
               <Link href="/system-design-interview/worksheet" className="transition-colors hover:text-accent">
                 Free system design interview worksheet →
               </Link>
+              <Link href="/system-design-interview/scorecard" className="transition-colors hover:text-accent">
+                Printable system design interview scorecard →
+              </Link>
             </div>
           </div>
 
