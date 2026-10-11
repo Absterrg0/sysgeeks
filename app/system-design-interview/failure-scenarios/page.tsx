@@ -259,6 +259,43 @@ export default function FailureScenariosPage() {
           ))}
         </dl>
       </Section>
+
+      <Section id="references" title="Primary references">
+        <p className="max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
+          The examples above describe general design choices. These vendor documents show how specific systems define
+          retry, delivery, and replication guarantees. Check the guarantees of the service you use before applying a
+          pattern to it.
+        </p>
+        <ul className="mt-4 max-w-[72ch] divide-y divide-rule border-y border-rule text-[0.875rem]">
+          <li className="py-3">
+            <a className="link" href="https://docs.stripe.com/api/idempotent_requests">
+              Stripe: Idempotent requests
+            </a>
+            <span className="text-ink-3"> — Reusing an idempotency key to retry an uncertain request.</span>
+          </li>
+          <li className="py-3">
+            <a
+              className="link"
+              href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html"
+            >
+              Amazon SQS: At-least-once delivery
+            </a>
+            <span className="text-ink-3"> — Why a standard queue can deliver a message more than once.</span>
+          </li>
+          <li className="py-3">
+            <a className="link" href="https://kafka.apache.org/40/design/design/">
+              Apache Kafka: Message delivery semantics
+            </a>
+            <span className="text-ink-3"> — Delivery guarantees and the role of consumer state.</span>
+          </li>
+          <li className="py-3">
+            <a className="link" href="https://www.postgresql.org/docs/current/high-availability.html">
+              PostgreSQL: High availability and replication
+            </a>
+            <span className="text-ink-3"> — The data-loss and latency tradeoffs between asynchronous and synchronous replication.</span>
+          </li>
+        </ul>
+      </Section>
       <ContentUsefulness />
     </article>
   );
