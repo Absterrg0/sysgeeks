@@ -7,9 +7,9 @@ import { getInvestigation, listCompanies, writeupsByCompany } from "@/lib/conten
 import { faqPage, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = pageMetadata({
-  title: "System Design Interview Practice from Real Company Systems",
+  title: "Real-World System Design Case Studies",
   description:
-    "Study published engineering designs from Google, Amazon, Meta, Stripe, Discord and more. Read the original sources, then practise the trade-offs in free interactive system design exercises.",
+    "Study system design case studies from Google, Amazon, Stripe, Discord and more. Read original engineering sources, then practise their trade-offs in free interactive exercises.",
   path: "/companies",
 });
 
@@ -32,7 +32,7 @@ export default function CompaniesPage() {
             {
               "@graph": [
                 itemList(
-                  "System design practice based on real company engineering",
+                  "Real-world system design case studies from engineering teams",
                   companies.map(({ company }) => ({ name: `${company.name}: ${company.topic}`, path: `/companies/${company.id}` })),
                 ),
                 faqPage([
@@ -47,7 +47,7 @@ export default function CompaniesPage() {
           ),
         }}
       />
-      <PageHeader title="System design interview practice from real company systems">
+      <PageHeader title="Real-world system design case studies">
         Study how engineers at Google, Amazon, Meta, Stripe, Discord, and other teams describe systems they built. Each
         case study links to its primary source and a free interactive exercise where you practise the same design
         trade-offs.
