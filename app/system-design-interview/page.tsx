@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ShareButton } from "@/components/share";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
-import { PageHeader, Section } from "@/components/page-header";
+import { DashList, PageHeader, Section } from "@/components/page-header";
 import { getConcept, listInvestigations } from "@/lib/content";
 import { DIMENSION_LABELS, DIMENSIONS } from "@/lib/domain/content";
 import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
