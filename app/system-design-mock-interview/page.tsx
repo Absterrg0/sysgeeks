@@ -227,6 +227,13 @@ export default function SystemDesignMockInterviewPage() {
           pause after each major design choice and answer the follow-up before moving on. The 45-minute plan in the{" "}
           <Link href="/system-design-interview#plan" className="link">system design interview guide</Link> gives you a place for that deeper reasoning.
         </p>
+        <p className="mt-3 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
+          For worked answers to common failure follow-ups, read the{" "}
+          <Link href="/system-design-interview/failure-scenarios" className="link">
+            system design interview failure scenarios guide
+          </Link>
+          .
+        </p>
         <ol className="mt-5 max-w-[72ch] divide-y divide-rule border-y border-rule">
           {FOLLOW_UP_PROMPTS.map(([question, answer, href, linkText]) => (
             <li key={question} className="py-3.5">
