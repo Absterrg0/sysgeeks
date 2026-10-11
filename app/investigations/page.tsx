@@ -77,6 +77,9 @@ export default function InvestigationsPage() {
           <a className="btn btn-secondary" href="/downloads/system-design-interview-questions-and-answers.pdf" download>
             Download all 14 questions and answers (PDF)
           </a>
+          <Link href="/system-design-playground" className="btn btn-secondary">
+            Explore the interactive playgrounds
+          </Link>
           <span className="text-[0.8125rem] text-ink-3">Free, no signup. Includes links to full walkthroughs.</span>
         </div>
       </section>
