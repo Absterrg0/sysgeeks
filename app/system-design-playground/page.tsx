@@ -45,9 +45,14 @@ export default function SystemDesignPlaygroundPage() {
         title="Free system design interview simulator"
         meta={`${playgrounds.length} simulations · Free · No account needed`}
         actions={
-          <Link href="/investigations" className="btn btn-secondary">
-            Browse all system design questions
-          </Link>
+          <>
+            <Link href="/investigations/url-shortener/playground" className="btn btn-accent">
+              Try the URL shortener simulator
+            </Link>
+            <Link href="/investigations" className="btn btn-secondary">
+              Browse all system design questions
+            </Link>
+          </>
         }
       >
         Practise architecture decisions with browser-based system design simulations. Change components or capacity,
