@@ -4,9 +4,9 @@ import { md } from "../md";
 export const newsFeed = {
   id: "news-feed",
   title: "A home timeline at 300,000 reads a second",
-  searchTitle: "Design a News Feed (Twitter Timeline)",
+  searchTitle: "Design Twitter’s Home Timeline (News Feed)",
   premise:
-    "Built from Twitter's own account of its home timeline: decide when the work of 'one post, many followers' happens, survive accounts with thirty million followers, and stop precomputing timelines for people who never come back.",
+    "A system design interview exercise based on Twitter's public 2012–13 account of its home timeline, not a claim about X's current production system. Decide when the work of 'one post, many followers' happens, survive accounts with thirty million followers, and stop precomputing timelines for people who never come back.",
   difficulty: "intermediate",
   estimatedMinutes: 45,
   scenario: md`

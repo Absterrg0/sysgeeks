@@ -144,7 +144,7 @@ const WEEK_PLAN = [
     day: "Day 5 · Hot keys and uneven traffic",
     goal: "Design a home timeline, then change the prompt so one publisher has millions of followers. Compare fan-out on write with fan-out on read and name the cost that makes a hybrid useful.",
     links: [
-      { label: "Practise a news feed", href: "/investigations/news-feed" },
+      { label: "Practise Twitter's home timeline", href: "/investigations/news-feed" },
       { label: "Review fan-out patterns", href: "/concepts/fan-out" },
     ],
   },

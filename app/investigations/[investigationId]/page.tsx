@@ -28,10 +28,15 @@ export async function generateMetadata(props: PageProps<"/investigations/[invest
       ? "Live Database Sharding"
       : systemNameForTitle(inv.searchTitle).replace(/ System$/, "");
   return pageMetadata({
-    title: `${systemName}: System Design Interview`,
+    title:
+      inv.id === "news-feed"
+        ? "Twitter System Design Interview: Home Timeline"
+        : `${systemName}: System Design Interview`,
     description: clip(
       inv.id === "url-shortener"
         ? "Practice a Bitly-style URL shortener system design interview: estimate traffic, choose IDs, and test caching, click analytics, and urgent takedowns."
+        : inv.id === "news-feed"
+          ? "Practice a Twitter/X system design interview: choose timeline fan-out, handle celebrity accounts, and reason through freshness, deletes, and failures."
         : `Free interactive system design practice: ${inv.searchTitle}. Make design choices, test failure cases, and read the worked answer.`,
     ),
     path: `/investigations/${inv.id}`,
