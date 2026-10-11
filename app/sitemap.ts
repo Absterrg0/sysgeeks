@@ -5,6 +5,13 @@ import { PLAYGROUNDS } from "@/lib/content/playground";
 import { SITE_URL } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  // Only include dates for pages with a known material edit. Avoid refreshing every
+  // URL on each deploy, which would make the sitemap's update hints unreliable.
+  const lastModified: Record<string, string> = {
+    "/capacity-estimator": "2026-10-11",
+    "/companies/google": "2026-10-11",
+    "/companies/amazon": "2026-10-11",
+  };
   const paths = [
     "/",
     "/system-design-interview",
@@ -39,5 +46,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/projects/examples",
     ...listExampleProjects().map((e) => `/projects/examples/${e.id}`),
   ];
-  return paths.map((path) => ({ url: `${SITE_URL}${path}` }));
+  return paths.map((path) => ({
+    url: `${SITE_URL}${path}`,
+    ...(lastModified[path] ? { lastModified: lastModified[path] } : {}),
+  }));
 }
