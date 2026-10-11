@@ -156,22 +156,19 @@ export default function Home() {
                   {first.id === "url-shortener" ? "Practice a URL shortener interview" : "Start the first system"}
                 </Link>
               )}
-              <Link href="/review#session" className="btn btn-secondary btn-lg">
-                Start a timed mock interview
+              <Link href="/system-design-playground" className="btn btn-secondary btn-lg">
+                Try {Object.keys(PLAYGROUNDS).length} interactive simulations
               </Link>
             </div>
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[0.875rem] font-medium text-ink-3">
               <Link href="/investigations" className="transition-colors hover:text-accent">
                 Browse all {investigations.length} systems →
               </Link>
-              <Link href="/system-design-playground" className="transition-colors hover:text-accent">
-                Practise system design interviews with interactive simulations →
+              <Link href="/review#session" className="transition-colors hover:text-accent">
+                Start a timed mock interview →
               </Link>
               <Link href="/system-design-interview" className="transition-colors hover:text-accent">
                 How to prepare for a system design interview →
-              </Link>
-              <Link href="/system-design-mock-interview" className="transition-colors hover:text-accent">
-                How timed practice works →
               </Link>
               <Link href="/system-design-interview/worksheet" className="transition-colors hover:text-accent">
                 Free system design interview worksheet →
