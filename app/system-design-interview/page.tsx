@@ -73,6 +73,62 @@ const MISTAKES = [
   "Going silent while thinking. The interview grades your reasoning, so it has to be audible.",
 ];
 
+const WEEK_PLAN = [
+  {
+    day: "Day 1 · Find your starting point",
+    goal: "Run a 30-minute mock before reading any answers. Score yourself 0–2 on tracing a request, explaining a mechanism, defending a trade-off, adapting to a change, diagnosing a failure, and connecting a guarantee to its implementation. Keep the lowest score for the end of the week.",
+    links: [{ label: "Start a timed mock interview", href: "/review#session" }],
+  },
+  {
+    day: "Day 2 · Requirements and estimates",
+    goal: "Use a URL shortener prompt. Write down the read and write paths, estimate average and peak QPS, then calculate retained storage. Label assumptions and note which estimate changes your design.",
+    links: [
+      { label: "Practise the URL shortener", href: "/investigations/url-shortener" },
+      { label: "Use the capacity estimator", href: "/capacity-estimator" },
+    ],
+  },
+  {
+    day: "Day 3 · Retries and correctness",
+    goal: "Trace a payment that succeeds at the provider but times out before the caller receives a response. Decide how a retry avoids a second charge, how duplicate callbacks are handled, and how an uncertain result is reconciled.",
+    links: [
+      { label: "Practise a payment workflow", href: "/investigations/payment-workflow" },
+      { label: "Review idempotency", href: "/concepts/idempotency" },
+    ],
+  },
+  {
+    day: "Day 4 · Worker failure and recovery",
+    goal: "Stop a worker halfway through a video job. Work out who can retry it, how a stale worker is prevented from publishing an old result, and which signal tells an operator that work is falling behind.",
+    links: [
+      { label: "Practise the video pipeline failure", href: "/investigations/video-processing-pipeline/worker-dies-mid-job" },
+      { label: "Review leases and fencing", href: "/concepts/leases-and-fencing" },
+    ],
+  },
+  {
+    day: "Day 5 · Hot keys and uneven traffic",
+    goal: "Design a home timeline, then change the prompt so one publisher has millions of followers. Compare fan-out on write with fan-out on read and name the cost that makes a hybrid useful.",
+    links: [
+      { label: "Practise a news feed", href: "/investigations/news-feed" },
+      { label: "Review fan-out patterns", href: "/concepts/fan-out" },
+    ],
+  },
+  {
+    day: "Day 6 · Start from a blank page",
+    goal: "Choose a system you have not studied this week. Use a 45-minute timer, talk through the design, and write requirements, estimates, APIs, the main data model, one deep dive, and one failure before comparing your answer.",
+    links: [
+      { label: "Choose a design round", href: "/investigations" },
+      { label: "Read the blank-page format", href: "/system-design-mock-interview#format" },
+    ],
+  },
+  {
+    day: "Day 7 · Review and repeat one weak area",
+    goal: "Run another timed mock and compare it with Day 1. Choose the lowest-scoring skill, repeat one related exercise, and change a requirement so you have to reason again instead of recall the same answer.",
+    links: [
+      { label: "Run the second mock", href: "/review#session" },
+      { label: "Pick a focused skill drill", href: "/review#dimension" },
+    ],
+  },
+] as const;
+
 const CONCEPT_IDS = [
   "caching",
   "message-queues",
@@ -118,6 +174,11 @@ const FAQ = [
     question: "Can I practise system design interviews alone?",
     answer:
       "Yes. Pick a prompt, talk through a timed design out loud, and compare it with a worked answer afterward. This helps you rehearse your reasoning, though it cannot replace an interviewer who asks follow-up questions.",
+  },
+  {
+    question: "How do I prepare for a system design interview in one week?",
+    answer:
+      "Practise once a day. Start with a timed baseline, then work on estimates, retries and correctness, worker failures, and uneven traffic. Do a blank-page design near the end of the week, then run a second mock and repeat the skill you scored lowest. A week is a schedule, not a guarantee of an interview result.",
   },
   {
     question: "What are five good system design interview questions to practise first?",
@@ -240,6 +301,30 @@ export default function SystemDesignInterviewPage() {
             </Link>
           </div>
         </div>
+      </Section>
+
+      <Section
+        id="week-plan"
+        title="A one-week system design interview practice plan"
+        description="Use one 30–45 minute session a day. The sequence moves from a timed baseline to estimates, correctness, failures, a blank-page design, and a second mock. It is a study schedule, not a promise of an interview result."
+      >
+        <ol className="max-w-[72ch] divide-y divide-rule border-y border-rule">
+          {WEEK_PLAN.map((item) => (
+            <li key={item.day} className="py-4">
+              <h3 className="text-[0.9375rem] font-medium">{item.day}</h3>
+              <p className="mt-1 text-[0.9375rem] leading-relaxed text-ink-2">{item.goal}</p>
+              <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[0.8125rem] font-medium">
+                {item.links.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-accent hover:underline">
+                      {link.label} →
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ol>
       </Section>
 
       <Section id="listen" title="What do interviewers listen for?">
