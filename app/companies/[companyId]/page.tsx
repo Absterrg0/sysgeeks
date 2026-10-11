@@ -21,7 +21,7 @@ export async function generateMetadata(props: PageProps<"/companies/[companyId]"
   const company = getCompany(companyId);
   if (!company) return {};
   return pageMetadata({
-    title: `${company.name} System Design Interview Practice`,
+    title: `${company.name}: ${company.topic}`,
     description: `${company.name}: ${company.topic}. Read the original engineering sources, then practise the design trade-offs in a free interactive exercise.`,
     path: `/companies/${company.id}`,
   });
