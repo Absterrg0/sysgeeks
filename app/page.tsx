@@ -170,6 +170,9 @@ export default function Home() {
               <Link href="/system-design-interview" className="transition-colors hover:text-accent">
                 How to prepare for a system design interview →
               </Link>
+              <Link href="/system-design-interview/ai-system-design" className="transition-colors hover:text-accent">
+                AI system design interview practice →
+              </Link>
               <Link href="/system-design-interview/worksheet" className="transition-colors hover:text-accent">
                 Free system design interview cheat sheet PDF →
               </Link>
