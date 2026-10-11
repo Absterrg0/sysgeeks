@@ -1,6 +1,6 @@
 # SysGeeks: free system design interview practice
 
-**[sysgeeks.com](https://www.sysgeeks.com)** · Practise system design interview questions on real systems: a URL shortener, a rate limiter, a news feed, a payment system, a distributed cache and more. Each one is worked through in stages: you make a design decision, see the engineering reasoning, break the system with a failure, change a constraint, and defend what is left. Free, no signup.
+**[sysgeeks.com](https://www.sysgeeks.com)** · Practise system design interview questions on real systems: a URL shortener, a rate limiter, a news feed, a payment system, ride-sharing dispatch, a distributed cache and more. Each one is worked through in stages: you make a design decision, see the engineering reasoning, break the system with a failure, change a constraint, and defend what is left. Free, no signup.
 
 [![SysGeeks: system design interview practice](https://www.sysgeeks.com/opengraph-image)](https://www.sysgeeks.com)
 
@@ -26,6 +26,7 @@ Every question has a stage-by-stage practice version and a full written walkthro
 | Design a Product Analytics System | [Practise it](https://www.sysgeeks.com/investigations/product-analytics) | [Full walkthrough](https://www.sysgeeks.com/investigations/product-analytics/review) |
 | Design a Notification System | [Practise it](https://www.sysgeeks.com/investigations/notification-system) | [Full walkthrough](https://www.sysgeeks.com/investigations/notification-system/review) |
 | Design a Payment System | [Practise it](https://www.sysgeeks.com/investigations/payment-workflow) | [Full walkthrough](https://www.sysgeeks.com/investigations/payment-workflow/review) |
+| Design a Ride-Sharing Service (Uber-style) | [Practise it](https://www.sysgeeks.com/investigations/ride-dispatch) | [Full walkthrough](https://www.sysgeeks.com/investigations/ride-dispatch/review) |
 | Design a Distributed Cache (Memcache) | [Practise it](https://www.sysgeeks.com/investigations/distributed-cache) | [Full walkthrough](https://www.sysgeeks.com/investigations/distributed-cache/review) |
 | Design Discord's Message Storage | [Practise it](https://www.sysgeeks.com/investigations/chat-message-store) | [Full walkthrough](https://www.sysgeeks.com/investigations/chat-message-store/review) |
 | Design a Collaborative Editor (Google Docs) | [Practise it](https://www.sysgeeks.com/investigations/realtime-collaboration) | [Full walkthrough](https://www.sysgeeks.com/investigations/realtime-collaboration/review) |
