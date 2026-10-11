@@ -18,6 +18,11 @@ const FAQ = [
       "Choose one prompt, set a timer, and explain your reasoning aloud before you look at a reference answer. Spend the round on requirements, estimates, a design choice, and one failure or change in scale. Then use a scorecard to pick one thing to improve. SysGeeks has self-guided 30, 45, and 60-minute rounds that do not need a partner.",
   },
   {
+    question: "Where can I practice system design for free?",
+    answer:
+      "SysGeeks offers free system design interview practice without an account. Work through 14 interactive system designs, make decisions before reading the explanations, then explore failure scenarios and the full walkthrough. For a timed round, choose a 30-, 45-, or 60-minute mock.",
+  },
+  {
     question: "How long is the system design mock interview?",
     answer:
       "Choose a 30, 45, or 60-minute session. Each length draws a different set of questions covering system design skills such as explaining a concept, making a design decision, reasoning about failures, and defending a design.",
