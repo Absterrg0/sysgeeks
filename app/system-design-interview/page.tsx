@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ShareButton } from "@/components/share";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
-import { DashList, PageHeader, Section } from "@/components/page-header";
+import { PageHeader, Section } from "@/components/page-header";
 import { getConcept, listInvestigations } from "@/lib/content";
 import { DIMENSION_LABELS, DIMENSIONS } from "@/lib/domain/content";
 import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
@@ -13,9 +13,9 @@ const PUBLISHED = "2026-10-06";
 const MODIFIED = "2026-10-11";
 
 export const metadata: Metadata = pageMetadata({
-  title: "45-Minute System Design Interview Framework",
+  title: "How to Prepare for a System Design Interview",
   description:
-    "A practical system design interview framework: how to use 45 minutes, common mistakes, and solo practice questions. Free, no signup.",
+    "A 45-minute interview plan, focused drills for common system design mistakes, and a one-week practice schedule. Free exercises, no signup.",
   path: PATH,
 });
 
@@ -65,14 +65,50 @@ const LISTEN_FOR = [
   "Changing the design calmly when the interviewer changes a constraint.",
 ];
 
-const MISTAKES = [
-  "Drawing boxes before agreeing on the requirements, then designing for the wrong problem.",
-  "Designing for a billion users when the question implied ten thousand.",
-  "Presenting one design as the answer, with no alternative and no reason.",
-  "Treating a cache, a queue or a retry as free: each adds a failure mode of its own.",
-  "Saying nothing about what happens when a component dies or a network call times out.",
-  "Going silent while thinking. The interview grades your reasoning, so it has to be audible.",
-];
+const MISTAKE_DRILLS = [
+  {
+    mistake: "You draw components before clarifying the requirements.",
+    drill:
+      "Before sketching anything, write down who uses the system, two things they need to do, one reliability or latency target, and the assumption you most need to confirm.",
+    href: "/investigations/video-processing-pipeline/read-the-requirements",
+    label: "Practise requirements before design",
+  },
+  {
+    mistake: "Your estimates do not change any design decision.",
+    drill:
+      "Estimate average and peak traffic, then retained storage. Name the first component the numbers put under pressure, and one part that does not need scaling yet.",
+    href: "/investigations/url-shortener/size-it",
+    label: "Practise sizing a URL shortener",
+  },
+  {
+    mistake: "You name a technology but cannot defend the trade-off.",
+    drill:
+      "For a news feed, compare fan-out on write with fan-out on read. Pick one for ordinary accounts, then say what changes for an account with millions of followers.",
+    href: "/investigations/news-feed/push-or-pull",
+    label: "Compare feed fan-out designs",
+  },
+  {
+    mistake: "You add a cache, queue, or retry without accounting for its failure modes.",
+    drill:
+      "Trace a payment that succeeds at the provider but times out before the caller gets a response. Explain how a retry avoids charging twice and how an uncertain result is resolved.",
+    href: "/investigations/payment-workflow/diagnose-the-double-charge",
+    label: "Practise a payment retry failure",
+  },
+  {
+    mistake: "You can describe the happy path but not recovery after a failure.",
+    drill:
+      "Stop a video worker halfway through a job. Decide how another worker takes ownership, how completed work is protected, and how a stale worker is kept from publishing an old result.",
+    href: "/investigations/video-processing-pipeline/worker-dies-mid-job",
+    label: "Practise worker failure recovery",
+  },
+  {
+    mistake: "You go quiet while deciding what to do next.",
+    drill:
+      "Run a timed mock and say your assumptions, the decision you are weighing, and the next check you will make. Afterward, use the scorecard to choose one skill to repeat.",
+    href: "/review#session",
+    label: "Start a timed mock interview",
+  },
+] as const;
 
 const WEEK_PLAN = [
   {
@@ -404,8 +440,22 @@ export default function SystemDesignInterviewPage() {
         </div>
       </Section>
 
-      <Section id="mistakes" title="Which mistakes sink candidates?">
-        <DashList items={MISTAKES} />
+      <Section
+        id="mistakes"
+        title="Common system design interview mistakes and a drill for each"
+        description="After a mock, note the first moment your reasoning became unclear. Pick one matching drill, practise it, then run another round."
+      >
+        <ol className="grid gap-3 sm:grid-cols-2">
+          {MISTAKE_DRILLS.map((item) => (
+            <li key={item.mistake} className="rounded-xl border border-rule-soft bg-raised p-4">
+              <h3 className="text-[0.9375rem] font-medium">{item.mistake}</h3>
+              <p className="mt-2 text-[0.875rem] leading-relaxed text-ink-2">{item.drill}</p>
+              <Link href={item.href} className="mt-3 inline-block text-[0.8125rem] font-medium text-accent hover:underline">
+                {item.label} →
+              </Link>
+            </li>
+          ))}
+        </ol>
       </Section>
 
       <Section
