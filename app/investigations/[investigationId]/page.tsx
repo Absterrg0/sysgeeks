@@ -23,8 +23,10 @@ export async function generateMetadata(props: PageProps<"/investigations/[invest
   const inv = getInvestigation(investigationId);
   if (!inv) return {};
   return pageMetadata({
-    title: `${inv.searchTitle} · System Design Interview`,
-    description: clip(inv.premise),
+    title: `${inv.searchTitle}: Interview Practice`,
+    description: clip(
+      `Free interactive system design practice: ${inv.searchTitle}. Make design choices, test failure cases, and read the worked answer.`,
+    ),
     path: `/investigations/${inv.id}`,
   });
 }
