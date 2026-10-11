@@ -66,6 +66,8 @@ function crawlerName(userAgent: string): string {
 }
 
 function crawlerCategory(name: string): string {
+  if (name === "Google-InspectionTool") return "Search Console inspection";
+
   if (["Googlebot", "Bingbot", "DuckDuckBot", "Baiduspider", "YandexBot", "Applebot"].includes(name)) {
     return "Search indexing";
   }
