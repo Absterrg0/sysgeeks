@@ -7,7 +7,7 @@ import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
   title: `About ${SITE_NAME}: How the System Design Practice Works`,
-  description: `What ${SITE_NAME} is, how each system design exercise is built, where the material comes from, and how answers are checked. Practice is free without an account; AI features are optional and labelled.`,
+  description: `Learn how ${SITE_NAME} builds and sources its system design exercises and checks answers. Practice is free without an account; optional AI features are labelled.`,
   path: "/about",
 });
 

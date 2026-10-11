@@ -8,7 +8,7 @@ import { breadcrumbs, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 const PATH = "/system-design-playground";
 const TITLE = "Interactive System Design Interview Practice";
 const DESCRIPTION =
-  `Practice system design interviews with ${Object.keys(PLAYGROUNDS).length} free simulations. Change components, raise traffic, test failures, and compare architectures in your browser. No signup.`;
+  `Explore ${Object.keys(PLAYGROUNDS).length} free system design simulations. Change components, increase traffic, test failures, and compare architectures. No signup.`;
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 

@@ -9,7 +9,7 @@ import { faqPage, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = pageMetadata({
   title: "Real-World System Design Case Studies",
   description:
-    "Study system design case studies from Google, Amazon, Stripe, Discord and more. Read original engineering sources, then practise their trade-offs in free interactive exercises.",
+    "Study system design case studies from Google, Amazon, Stripe, and Discord. Trace decisions to original engineering sources, then practise the trade-offs.",
   path: "/companies",
 });
 

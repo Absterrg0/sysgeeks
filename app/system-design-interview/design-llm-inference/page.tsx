@@ -7,7 +7,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 const PATH = "/system-design-interview/design-llm-inference";
 const TITLE = "LLM Inference System Design: Interview Walkthrough";
 const DESCRIPTION =
-  "A practical LLM system design interview answer: token-aware capacity estimates, GPU admission control, continuous batching, streaming, tenant fairness, and failure handling.";
+  "Practice LLM inference system design: estimate token throughput, schedule GPU batches, stream responses, balance tenant workloads, and handle failures.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 

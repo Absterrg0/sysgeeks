@@ -7,7 +7,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 const PATH = "/system-design-mock-interview";
 const TITLE = "Free Solo System Design Mock Interview Practice";
 const DESCRIPTION =
-  "Practice system design interviews alone with timed 30, 45, or 60-minute mocks, self-interviewer follow-up prompts, and a practical scorecard. Free, no partner needed.";
+  "Practice system design alone with timed 30, 45, or 60-minute mocks, follow-up prompts, and a self-review scorecard. Free, no partner needed.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 

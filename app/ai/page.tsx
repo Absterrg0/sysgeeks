@@ -16,7 +16,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 export const metadata: Metadata = pageMetadata({
   title: `How ${SITE_NAME} uses AI`,
   description:
-    "Which parts of SysGeeks use AI, what is sent to model providers, which models run, how long data is kept, how AI output is labelled, and when credits are refunded.",
+    `See what ${SITE_NAME} shares with AI providers, which models it uses, how long data is kept, how outputs are labelled, and when credits are refunded.`,
   path: "/ai",
 });
 
