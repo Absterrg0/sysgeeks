@@ -5,7 +5,7 @@ import type { PostHog } from "posthog-js";
 
 const PRIVATE_PATHS = ["/account", "/reports", "/interview", "/sign-in", "/sign-up"];
 const CANONICAL_HOST = "www.sysgeeks.com";
-const INTERNAL_UTM_SOURCE = "codex";
+const INTERNAL_UTM_VALUES = new Set(["codex", "posthog-setup"]);
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 
@@ -17,7 +17,9 @@ export function shouldTrack(url: string): boolean {
   try {
     const { hostname, pathname, searchParams } = new URL(url, window.location.origin);
     if (hostname !== CANONICAL_HOST) return false;
-    if (searchParams.get("utm_source") === INTERNAL_UTM_SOURCE) return false;
+    if ([searchParams.get("utm_source"), searchParams.get("utm_medium")].some((value) =>
+      value !== null && INTERNAL_UTM_VALUES.has(value.toLowerCase()),
+    )) return false;
     if (PRIVATE_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))) return false;
     const isPrivateProject =
       pathname.startsWith("/projects/") &&
