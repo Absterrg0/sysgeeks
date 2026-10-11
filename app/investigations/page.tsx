@@ -6,7 +6,7 @@ import { getInvestigation, listInvestigations } from "@/lib/content";
 import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = pageMetadata({
-  title: "System Design Interview Questions and Answers",
+  title: "14 System Design Interview Questions and Answers",
   description:
     "14 system design interview questions with short answers, design tradeoffs and full interactive walkthroughs. Free practice, no signup.",
   path: "/investigations",
@@ -118,7 +118,7 @@ export default function InvestigationsPage() {
           ),
         }}
       />
-      <PageHeader title="System design interview questions and answers">
+      <PageHeader title="14 system design interview questions and answers">
         Practice each question as a full interview exercise. Set requirements, estimate capacity, make the design
         decisions, then test failures and changed constraints before comparing your reasoning with the worked answer.
         New to the format? Start with{" "}
