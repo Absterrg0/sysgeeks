@@ -152,7 +152,7 @@ export default function Home() {
             <div className="mt-7 flex flex-wrap items-center gap-2.5">
               {first && (
                 <Link href={`/investigations/${first.id}`} className="btn btn-accent btn-lg">
-                  Start the first system
+                  {first.id === "url-shortener" ? "Practice a URL shortener interview" : "Start the first system"}
                 </Link>
               )}
               <Link href="/review#session" className="btn btn-secondary btn-lg">
