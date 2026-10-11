@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ContentUsefulness } from "@/components/content-usefulness";
 import { ShareButton } from "@/components/share";
 import { PageHeader, Section } from "@/components/page-header";
+import { listInvestigations } from "@/lib/content";
 import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -11,6 +12,7 @@ const TITLE = "Free System Design Mock Interview Practice";
 const SEARCH_TITLE = "How to Practice System Design Interviews Alone";
 const DESCRIPTION =
   "Practice system design interviews alone with a free 30-, 45-, or 60-minute timed mock, follow-up prompts, a six-skill scorecard, and a post-round debrief.";
+const PRACTICE_COUNT = listInvestigations().length;
 
 export const metadata: Metadata = pageMetadata({ title: SEARCH_TITLE, description: DESCRIPTION, path: PATH });
 
@@ -23,7 +25,7 @@ const FAQ = [
   {
     question: "Where can I practice system design for free?",
     answer:
-      "SysGeeks offers free system design interview practice without an account. Work through 14 interactive system designs, make decisions before reading the explanations, then explore failure scenarios and the full walkthrough. For a timed round, choose a 30-, 45-, or 60-minute mock.",
+      `SysGeeks offers free system design interview practice without an account. Work through ${PRACTICE_COUNT} interactive system designs, make decisions before reading the explanations, then explore failure scenarios and the full walkthrough. For a timed round, choose a 30-, 45-, or 60-minute mock.`,
   },
   {
     question: "How long is the system design mock interview?",
@@ -142,6 +144,9 @@ export default function SystemDesignMockInterviewPage() {
           text="A free, self-guided system design mock interview with timed rounds and a practical scorecard."
         />
       </div>
+      <p className="mt-3 max-w-[72ch] text-[0.8125rem] leading-relaxed text-ink-3">
+        Your answers and progress stay in this browser. No account or AI assessment is required for a practice round.
+      </p>
 
       <Section id="format" title="How the mock interview works">
         <ol className="max-w-[72ch] divide-y divide-rule border-y border-rule">
