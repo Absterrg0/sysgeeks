@@ -5,6 +5,7 @@
 [![SysGeeks: system design interview practice](https://www.sysgeeks.com/opengraph-image)](https://www.sysgeeks.com?utm_source=github&utm_medium=referral&utm_campaign=repository_readme)
 
 - **[How to prepare for a system design interview](https://www.sysgeeks.com/system-design-interview?utm_source=github&utm_medium=referral&utm_campaign=repository_readme)**: what the interview tests, how to spend the 45 minutes, and the common mistakes.
+- **[System design capacity calculator](https://www.sysgeeks.com/capacity-estimator?utm_source=github&utm_medium=referral&utm_campaign=repository_readme)**: estimate peak QPS, retained storage, bandwidth, and an assumed cache working set with clear formulas.
 - **[Design an LLM inference service](https://www.sysgeeks.com/system-design-interview/design-llm-inference?utm_source=github&utm_medium=referral&utm_campaign=repository_readme)**: a detailed walkthrough of token-aware capacity, GPU scheduling, continuous batching, streaming, and failure handling.
 - **[Design a RAG system](https://www.sysgeeks.com/system-design-interview/design-rag-system?utm_source=github&utm_medium=referral&utm_campaign=repository_readme)**: a walkthrough of private-document ingestion, permission-scoped retrieval, citations, freshness, and evaluation.
 - **[Free system design interview worksheet](https://www.sysgeeks.com/system-design-interview/worksheet?utm_source=github&utm_medium=referral&utm_campaign=repository_readme)**: a printable two-page guide with a 45-minute plan, capacity formulas, and a readiness checklist.

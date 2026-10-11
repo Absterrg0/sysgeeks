@@ -6,9 +6,9 @@ import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const PATH = "/capacity-estimator";
-const TITLE = "System Design Capacity Calculator: QPS and Storage";
+const TITLE = "System Design Capacity Calculator: QPS, Storage, Cache";
 const DESCRIPTION =
-  "Estimate average and peak QPS, storage, and network bandwidth for a system design interview. Free interactive calculator with clear formulas and assumptions.";
+  "Estimate average and peak QPS, retained storage, network bandwidth, and cache working set for a system design interview. Free calculator with clear formulas.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
@@ -27,6 +27,11 @@ const FAQ = [
     question: "Does this calculator size the servers or database?",
     answer:
       "No. It estimates workload, storage, and network volume from your assumptions. Server and database sizing also depends on measured per-instance capacity, query shape, latency targets, redundancy, and operational headroom.",
+  },
+  {
+    question: "How do you estimate a cache working set?",
+    answer:
+      "Estimate the share of retained logical data that is accessed often enough to stay hot in cache, then multiply that share by logical storage. The result is a single-copy data estimate before cache metadata, replication, and memory overhead; real cache sizing should use observed access patterns and freshness requirements.",
   },
   {
     question: `Is this ${SITE_NAME} capacity calculator free?`,
@@ -59,13 +64,13 @@ export default function CapacityEstimatorPage() {
         }}
       />
       <PageHeader title="System design capacity calculator" meta="Free · No account · Inputs stay in your browser">
-        Estimate average and peak QPS, retained storage, and network throughput from a few workload assumptions. Use the result to guide a system design discussion, then refine the numbers when they affect an architectural choice.
+        Estimate average and peak QPS, retained storage, network throughput, and an assumed cache working set. Use the result to guide a system design discussion, then refine the numbers when they affect an architectural choice.
       </PageHeader>
 
-      <Section id="calculator" title="Estimate QPS, storage, and bandwidth">
+      <Section id="calculator" title="Estimate QPS, storage, bandwidth, and cache working set">
         <CapacityEstimator />
         <p className="mt-4 max-w-[72ch] text-[0.8125rem] leading-relaxed text-ink-3">
-          This is a workload estimate, not a server or database sizing recommendation. Real capacity depends on measured per-instance throughput, query patterns, latency targets, redundancy, and operational headroom.
+          These are workload estimates, not server or database sizing recommendations. The cache working set is the assumed share of logical retained data that stays hot; real capacity depends on access patterns, freshness targets, measured per-instance throughput, redundancy, and operational headroom. Read the <Link href="/concepts/caching" className="link">cache design guide</Link> for invalidation and failure tradeoffs.
         </p>
       </Section>
 
@@ -80,6 +85,7 @@ export default function CapacityEstimatorPage() {
             ["Logical storage", "Raw retained storage × (1 + index and metadata overhead)"],
             ["Physical storage", "Logical storage × stored copies, including the primary"],
             ["Peak network throughput", "Peak operations per second × average request or response bytes"],
+            ["Estimated cache working set", "Logical retained data × assumed hot-data fraction; single copy before cache overhead"],
           ].map(([term, definition]) => (
             <div key={term} className="grid gap-1 py-3 sm:grid-cols-[13rem_minmax(0,1fr)] sm:gap-5">
               <dt className="text-[0.9375rem] font-medium">{term}</dt>
@@ -88,7 +94,7 @@ export default function CapacityEstimatorPage() {
           ))}
         </dl>
         <p className="mt-4 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
-          The calculator uses decimal units (1 kB = 1,000 bytes; 1 GB = 1,000,000,000 bytes), a 365-day year, and constant daily activity across the selected retention period. The peak factor is applied to average reads and writes independently.
+          The calculator uses decimal units (1 kB = 1,000 bytes; 1 GB = 1,000,000,000 bytes), a 365-day year, and constant daily activity across the selected retention period. The peak factor is applied to average reads and writes independently. The cache estimate applies your hot-data fraction to logical retained storage; it does not assume a universal cache hit rate.
         </p>
       </Section>
 
@@ -97,7 +103,7 @@ export default function CapacityEstimatorPage() {
           Suppose 10 million people use the service daily, each creates two short links, and each link is followed 100 times. That is 20 million writes and 2 billion reads a day: about 231 average write QPS and 23,148 average read QPS. With a 3× peak factor, design discussions should start around 694 write QPS and 69,444 read QPS at peak.
         </p>
         <p className="mt-3 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
-          At 500 bytes per link record for five years, raw storage is about 18.3 TB. Adding 50% for indexes and metadata gives about 27.4 TB logical; three stored copies bring that to about 82.1 TB physical. These are planning estimates: real record sizes, deletion policy, compression, and replica placement change the result.
+          At 500 bytes per link record for five years, raw storage is about 18.3 TB. Adding 50% for indexes and metadata gives about 27.4 TB logical; three stored copies bring that to about 82.1 TB physical. If 10% of the retained logical data is hot, the estimated single-copy cache working set is about 2.74 TB before cache overhead and replication. These are planning estimates: real record sizes, deletion policy, compression, access patterns, and replica placement change the result.
         </p>
         <p className="mt-4 text-[0.9375rem] leading-relaxed">
           Continue with the <Link href="/investigations/url-shortener/review" className="font-medium text-accent hover:underline">URL shortener system design walkthrough</Link> or use the <Link href="/system-design-interview" className="font-medium text-accent hover:underline">system design interview guide</Link> to place estimates in a 45-minute interview plan.

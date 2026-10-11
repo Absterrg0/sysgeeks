@@ -13,6 +13,7 @@ const STARTING_VALUES = {
   writeRequestKb: "0.25",
   storageOverheadPercent: "50",
   storedCopies: "3",
+  hotDataPercent: "10",
 };
 
 type FieldName = keyof typeof STARTING_VALUES;
@@ -28,6 +29,7 @@ const URL_FIELDS: Record<FieldName, string> = {
   writeRequestKb: "writeKb",
   storageOverheadPercent: "overhead",
   storedCopies: "copies",
+  hotDataPercent: "hotData",
 };
 
 function readValuesFromSearch(search: string) {
@@ -38,7 +40,14 @@ function readValuesFromSearch(search: string) {
     const value = params.get(key);
     const parsed = Number(value);
     const minimum = field === "peakFactor" || field === "storedCopies" ? 1 : 0;
-    if (value !== null && value.trim() !== "" && Number.isFinite(parsed) && parsed >= minimum) {
+    const maximum = field === "hotDataPercent" ? 100 : Number.POSITIVE_INFINITY;
+    if (
+      value !== null &&
+      value.trim() !== "" &&
+      Number.isFinite(parsed) &&
+      parsed >= minimum &&
+      parsed <= maximum
+    ) {
       next[field] = value;
     }
   }
@@ -76,6 +85,7 @@ function NumberField({
   unit,
   help,
   min = "0",
+  max,
   step = "1",
   onChange,
 }: {
@@ -85,6 +95,7 @@ function NumberField({
   unit: string;
   help: string;
   min?: string;
+  max?: string;
   step?: string;
   onChange: (value: string) => void;
 }) {
@@ -99,6 +110,7 @@ function NumberField({
           type="number"
           inputMode="decimal"
           min={min}
+          max={max}
           step={step}
           value={value}
           onChange={(event) => onChange(event.currentTarget.value)}
@@ -129,7 +141,12 @@ export function CapacityEstimator() {
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
 
   const update = (key: FieldName, value: string) => {
-    setOverride({ search, values: { ...values, [key]: value } });
+    const parsed = Number(value);
+    const nextValue =
+      key === "hotDataPercent" && value.trim() !== "" && Number.isFinite(parsed)
+        ? String(Math.min(100, Math.max(0, parsed)))
+        : value;
+    setOverride({ search, values: { ...values, [key]: nextValue } });
     setCopyState("idle");
   };
   const copyEstimateLink = async () => {
@@ -161,6 +178,7 @@ export function CapacityEstimator() {
   const writeRequestBytes = positive("writeRequestKb") * 1_000;
   const storageOverhead = 1 + positive("storageOverheadPercent") / 100;
   const storedCopies = Math.max(1, positive("storedCopies"));
+  const hotDataPercent = Math.min(100, positive("hotDataPercent"));
 
   const writesPerDay = activeUsers * writesPerUserPerDay;
   const readsPerDay = writesPerDay * readsPerWrite;
@@ -171,6 +189,7 @@ export function CapacityEstimator() {
   const rawStorage = writesPerDay * recordBytes * 365 * retentionYears;
   const logicalStorage = rawStorage * storageOverhead;
   const physicalStorage = logicalStorage * storedCopies;
+  const cacheWorkingSet = logicalStorage * (hotDataPercent / 100);
   const peakIngress = peakWriteQps * writeRequestBytes;
   const peakEgress = peakReadQps * readResponseBytes;
 
@@ -292,6 +311,17 @@ export function CapacityEstimator() {
             step="any"
             onChange={(value) => update("storedCopies", value)}
           />
+          <NumberField
+            id="capacity-hot-data"
+            label="Hot data fraction"
+            value={values.hotDataPercent}
+            unit="%"
+            help="Assumed share of retained data frequently read enough to keep in cache; refine from access patterns."
+            min="0"
+            max="100"
+            step="any"
+            onChange={(value) => update("hotDataPercent", value)}
+          />
         </div>
       </div>
 
@@ -324,6 +354,12 @@ export function CapacityEstimator() {
               </output>
             </div>
             <div className="rounded-xl border border-rule-soft bg-raised p-4">
+              <p className="text-[0.75rem] text-ink-3">Estimated cache working set</p>
+              <output className="mt-1 block font-display text-[1.625rem] leading-tight tabular-nums">
+                {formatBytes(cacheWorkingSet)}
+              </output>
+            </div>
+            <div className="rounded-xl border border-rule-soft bg-raised p-4">
               <p className="text-[0.75rem] text-ink-3">Peak read egress</p>
               <output className="mt-1 block font-display text-[1.625rem] leading-tight tabular-nums">
                 {formatBytes(peakEgress)}/s
@@ -351,7 +387,11 @@ export function CapacityEstimator() {
               <EstimateLine label="Raw retained data" value={formatBytes(rawStorage)} />
               <EstimateLine label="With index / metadata overhead" value={formatBytes(logicalStorage)} />
               <EstimateLine label="Across all stored copies" value={formatBytes(physicalStorage)} />
+              <EstimateLine label={`Hot data (${formatNumber(hotDataPercent)}%, single copy)`} value={formatBytes(cacheWorkingSet)} />
             </dl>
+            <p className="mt-2 text-[0.75rem] leading-snug text-ink-3">
+              This is a logical hot-data estimate before cache metadata, replicas, and memory overhead.
+            </p>
           </div>
           <div className="mt-4">
             <h3 className="kicker mb-1">Peak network throughput</h3>

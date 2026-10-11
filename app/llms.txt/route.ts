@@ -35,7 +35,7 @@ export function GET() {
     `- [Instagram feed system design interview: worked guide](${SITE_URL}/system-design-interview/design-instagram-feed): A public-source-based proposal for a photo and video home feed, not Instagram's private architecture. It separates followed-account and recommendation candidates, checks privacy and deletions, ranks in stages, and bounds fan-out for accounts with very large followings.`,
     `- [Design YouTube: system design interview walkthrough](${SITE_URL}/system-design-interview/design-youtube): A sourced, assumption-labeled design for video uploads, transcoding, playback, and CDN delivery.`,
     `- [Design an LLM inference service](${SITE_URL}/system-design-interview/design-llm-inference): An original interview walkthrough for token-aware capacity estimates, GPU scheduling, continuous batching, streaming, tenant fairness, and failures.`,
-    `- [System design capacity estimator](${SITE_URL}/capacity-estimator): Estimate average and peak QPS, storage, and network throughput from explicit workload assumptions.`,
+    `- [System design capacity calculator](${SITE_URL}/capacity-estimator): Estimate average and peak QPS, retained storage, network throughput, and a cache working set from explicit workload assumptions.`,
     `- [About ${SITE_NAME}](${SITE_URL}/about): How the exercises are built, where the material comes from, and how answers are checked.`,
     `- [How ${SITE_NAME} uses AI](${SITE_URL}/ai): Which features use AI, what is sent to model providers, which models run, how long data is kept, and how AI output is labelled.`,
     "",
