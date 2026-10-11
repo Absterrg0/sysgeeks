@@ -10,7 +10,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-interview";
 const PUBLISHED = "2026-10-06";
-const MODIFIED = "2026-10-11";
+const MODIFIED = "2026-10-12";
 
 export const metadata: Metadata = pageMetadata({
   title: "How to Prepare for a System Design Interview",
@@ -326,6 +326,13 @@ export default function SystemDesignInterviewPage() {
             </li>
           ))}
         </ol>
+        <p className="mt-6 max-w-[66ch] text-[0.9375rem] leading-relaxed text-ink-2">
+          Want more practice with retries, worker crashes, database failover, or stale data? Use the{" "}
+          <Link href="/system-design-interview/failure-scenarios" className="link">
+            system design interview failure scenarios guide
+          </Link>{" "}
+          for a five-step answer method and seven focused drills.
+        </p>
       </Section>
 
       <Section id="practice-alone" title="How to practise system design alone">

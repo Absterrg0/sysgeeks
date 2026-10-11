@@ -32,7 +32,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // URL on each deploy, which would make the sitemap's update hints unreliable.
   const lastModified: Record<string, string> = {
     "/": "2026-10-11",
-    "/system-design-interview": "2026-10-11",
+    "/system-design-interview": "2026-10-12",
+    "/system-design-interview/failure-scenarios": "2026-10-12",
     "/system-design-interview/ai-system-design": "2026-10-11",
     "/system-design-interview/worksheet": "2026-10-11",
     "/investigations": "2026-10-11",
@@ -53,6 +54,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
     "/",
     "/system-design-interview",
+    "/system-design-interview/failure-scenarios",
     "/system-design-interview/ai-system-design",
     "/system-design-interview/worksheet",
     "/downloads/system-design-interview-practice-sheet.pdf",
