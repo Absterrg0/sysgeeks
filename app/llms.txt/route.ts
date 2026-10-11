@@ -28,6 +28,7 @@ export function GET() {
     "",
     `- [How to prepare for a system design interview](${SITE_URL}/system-design-interview): What the interview tests, how to spend the 45 minutes, common mistakes, and which systems to practise.`,
     `- [Printable system design interview practice sheet](${SITE_URL}/system-design-interview/worksheet): A free two-page PDF with a 45-minute plan, sizing formulas, five questions, and a readiness checklist. Download: ${SITE_URL}/downloads/system-design-interview-practice-sheet.pdf`,
+    `- [System design interview questions and answers PDF](${SITE_URL}/investigations): A free guide with 14 original question prompts, concise answer outlines, and links to complete worked walkthroughs. Download: ${SITE_URL}/downloads/system-design-interview-questions-and-answers.pdf`,
     `- [System design interview scorecard](${SITE_URL}/system-design-interview/scorecard): A free printable self-review rubric. Score six observable skills from 0 to 2, record evidence from a mock, and choose one focused drill. Download: ${SITE_URL}/downloads/system-design-interview-scorecard.pdf`,
     `- [Free system design mock interview practice](${SITE_URL}/system-design-mock-interview): Choose a timed 30, 45, or 60-minute self-guided interview and review the answers after you finish.`,
     `- [Design YouTube: system design interview walkthrough](${SITE_URL}/system-design-interview/design-youtube): A sourced, assumption-labeled design for video uploads, transcoding, playback, and CDN delivery.`,

@@ -1,5 +1,7 @@
 from pathlib import Path
 from shutil import copyfile
+from html import escape
+import json
 import reportlab
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT
@@ -8,7 +10,7 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import KeepTogether, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "output" / "pdf"
@@ -46,6 +48,10 @@ styles.add(ParagraphStyle(name="Cell", fontName="SysGeeksSans", fontSize=7.7, le
 styles.add(ParagraphStyle(name="CellBold", fontName="SysGeeksSans-Bold", fontSize=7.7, leading=10, textColor=INK))
 styles.add(ParagraphStyle(name="Dimension", fontName="SysGeeksSans-Bold", fontSize=8.3, leading=10.5, textColor=INK))
 styles.add(ParagraphStyle(name="ScoreCell", fontName="SysGeeksSans-Bold", fontSize=9, leading=11, textColor=TEAL, alignment=TA_LEFT))
+styles.add(ParagraphStyle(name="AnswerTitle", fontName="SysGeeksSans-Bold", fontSize=11, leading=14, textColor=INK, spaceAfter=4, keepWithNext=True))
+styles.add(ParagraphStyle(name="AnswerBody", fontName="SysGeeksSans", fontSize=8.8, leading=12, textColor=INK_2, spaceAfter=4))
+styles.add(ParagraphStyle(name="AnswerFocus", fontName="SysGeeksSans", fontSize=8.2, leading=10.5, textColor=INK_3, spaceAfter=3))
+styles.add(ParagraphStyle(name="AnswerLink", fontName="SysGeeksSans-Bold", fontSize=7.8, leading=10, textColor=TEAL, spaceAfter=7))
 
 
 def P(value, style="BodyCustom"):
@@ -225,11 +231,72 @@ def build_scorecard(path):
     story += [make_table(drills, [31 * mm, WIDTH - 31 * mm]), Spacer(1, 3 * mm), P("Next mock", "SectionCustom"), blank_lines("Prompt / system:", 1), Spacer(1, 1 * mm), blank_lines("Changed requirement:", 1), Spacer(1, 3 * mm), P("A practice aid, not an employer rubric", "SectionCustom"), P("This scorecard helps you notice specific behaviors in your own practice. The scores do not predict a hiring outcome and are not a universal standard used by employers.", "BodyCustom"), Spacer(1, 2 * mm), P("Start another free timed round at sysgeeks.com/system-design-mock-interview", "SmallCustom")]
     doc.build(story, onFirstPage=lambda c, d: page(c, d, "System Design Interview Self-Scorecard", "Printable self-scorecard for a system design mock interview"), onLaterPages=lambda c, d: page(c, d, "System Design Interview Self-Scorecard", "Printable self-scorecard for a system design mock interview"))
 
+
+def answers_page(canvas, doc):
+    canvas.saveState()
+    canvas.setTitle("14 System Design Interview Questions and Answers")
+    canvas.setAuthor("SysGeeks")
+    canvas.setSubject("Free printable system design interview answer outlines")
+    canvas.setStrokeColor(RULE)
+    canvas.setLineWidth(0.5)
+    canvas.line(LEFT, 12 * mm, PAGE_W - RIGHT, 12 * mm)
+    canvas.setFont("SysGeeksSans", 7.3)
+    canvas.setFillColor(INK_3)
+    canvas.drawString(LEFT, 8.4 * mm, "SysGeeks | Free system design interview questions and answers")
+    canvas.drawRightString(PAGE_W - RIGHT, 8.4 * mm, f"Page {canvas.getPageNumber()}")
+    canvas.restoreState()
+
+
+def build_answers(path):
+    answers_path = ROOT / "lib" / "content" / "system-design-answers.json"
+    answers = json.loads(answers_path.read_text(encoding="utf-8"))
+    doc = SimpleDocTemplate(
+        str(path), pagesize=A4, leftMargin=LEFT, rightMargin=RIGHT, topMargin=TOP, bottomMargin=BOTTOM,
+        title="14 System Design Interview Questions and Answers", author="SysGeeks",
+        subject="Free printable system design interview answer outlines",
+    )
+    story = [
+        P("SYSTEM DESIGN INTERVIEW | FREE PRINTABLE GUIDE", "Kicker"),
+        P("14 questions and answers", "TitleCustom"),
+        P(
+            "Fourteen original system design prompts with concise answer outlines and links to full worked walkthroughs. "
+            "Free to download, with no account or email required.",
+            "Sub",
+        ),
+        P(
+            "Use each outline as a starting point. In an interview, clarify requirements and scale first; a sound design "
+            "depends on the constraints you agree on.",
+            "BodyCustom",
+        ),
+        Spacer(1, 4 * mm),
+    ]
+    for index, item in enumerate(answers, start=1):
+        url = f"https://www.sysgeeks.com/investigations/{item['id']}/review"
+        card = [
+            P(escape(item["title"], quote=False), "AnswerTitle"),
+            P(f"<b>Answer outline.</b> {escape(item['answer'], quote=False)}", "AnswerBody"),
+            P(f"<b>Practice focus.</b> {escape(item['focus'], quote=False)}", "AnswerFocus"),
+            P(f'<a href="{url}" color="#14655E">Read the full worked answer</a>', "AnswerLink"),
+        ]
+        story.append(KeepTogether(card))
+        if index in {5, 10}:
+            story.append(PageBreak())
+    story += [
+        Spacer(1, 2 * mm),
+        P("Continue practising", "SectionCustom"),
+        P("Try the interactive questions and complete walkthroughs at sysgeeks.com/investigations.", "BodyCustom"),
+    ]
+    doc.build(story, onFirstPage=answers_page, onLaterPages=answers_page)
+
 worksheet_out = OUTPUT / "system-design-interview-practice-sheet.pdf"
 scorecard_out = OUTPUT / "system-design-interview-scorecard.pdf"
+answers_out = OUTPUT / "system-design-interview-questions-and-answers.pdf"
 build_worksheet(worksheet_out)
 build_scorecard(scorecard_out)
+build_answers(answers_out)
 copyfile(worksheet_out, PUBLIC / worksheet_out.name)
 copyfile(scorecard_out, PUBLIC / scorecard_out.name)
+copyfile(answers_out, PUBLIC / answers_out.name)
 print(worksheet_out)
 print(scorecard_out)
+print(answers_out)

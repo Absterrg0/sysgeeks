@@ -48,6 +48,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/system-design-interview",
     "/system-design-interview/worksheet",
     "/downloads/system-design-interview-practice-sheet.pdf",
+    "/downloads/system-design-interview-questions-and-answers.pdf",
     "/system-design-interview/scorecard",
     "/downloads/system-design-interview-scorecard.pdf",
     "/system-design-interview/design-youtube",
