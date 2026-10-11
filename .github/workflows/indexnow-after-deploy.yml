@@ -19,6 +19,9 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Wait for the production sitemap to reach the edge
+        run: sleep 15
+
       - name: Submit the production sitemap to IndexNow
         env:
           SITE_URL: https://www.sysgeeks.com
