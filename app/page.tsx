@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { WELCOME_CREDITS } from "@/lib/domain/pricing";
 import { ContinueStrip } from "@/components/continue-strip";
+import { ShareButton } from "@/components/share";
 import { SystemExplorer } from "@/components/home/system-explorer";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { InlineText } from "@/components/prose-core";
@@ -159,6 +160,11 @@ export default function Home() {
               <Link href="/system-design-playground" className="btn btn-secondary btn-lg">
                 Try {Object.keys(PLAYGROUNDS).length} interactive simulations
               </Link>
+              <ShareButton
+                url={SITE_URL}
+                title={`${SITE_NAME} · System design interview practice`}
+                text="Free system design interview practice on real systems, with interactive exercises and worked answers."
+              />
             </div>
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[0.875rem] font-medium text-ink-3">
               <Link href="/investigations" className="transition-colors hover:text-accent">

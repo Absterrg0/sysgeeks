@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { PageHeader } from "@/components/page-header";
+import { ShareButton } from "@/components/share";
 import { getInvestigation, listInvestigations } from "@/lib/content";
 import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
 import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
   title: "System Design Interview Questions: 14 Answers",
@@ -38,7 +40,16 @@ export default function InvestigationsPage() {
           ),
         }}
       />
-      <PageHeader title="14 system design interview questions and answers">
+      <PageHeader
+        title="14 system design interview questions and answers"
+        actions={
+          <ShareButton
+            url={`${SITE_URL}/investigations`}
+            title={`14 System Design Interview Questions · ${SITE_NAME}`}
+            text="Explore 14 free system design interview questions with interactive exercises and worked answers."
+          />
+        }
+      >
         Practice each question as a full interview exercise. Set requirements, estimate capacity, make the design
         decisions, then test failures and changed constraints before comparing your reasoning with the worked answer.
         New to the format? Start with{" "}
