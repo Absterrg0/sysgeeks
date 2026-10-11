@@ -6,9 +6,9 @@ import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-interview/failure-scenarios";
-const TITLE = "System Design Interview Failure Scenarios: 7 Practice Drills";
+const TITLE = "System Design Interview Failure Scenarios with Answers";
 const DESCRIPTION =
-  "Practise system design failure scenarios with a five-step answer method, worked examples, and seven free interactive drills.";
+  "Practise seven system design interview failure scenarios with worked answers, a five-step method, and free interactive drills.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
@@ -132,7 +132,7 @@ export default function FailureScenariosPage() {
         }}
       />
 
-      <PageHeader title="System design interview failure scenarios: 7 practice drills">
+      <PageHeader title="7 system design interview failure scenarios with answers">
         Failure questions test whether your design still meets its promises after a component, request, or dependency
         behaves unexpectedly. Practise the reasoning in order: name the impact, protect the invariant, contain the
         failure, recover safely, and say what the recovery costs. These are original practice scenarios, not claims
