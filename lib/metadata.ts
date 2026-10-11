@@ -21,9 +21,10 @@ export function pageMetadata({
   /** For pages that only show the visitor's own browser data: followed, never listed. */
   noindex?: boolean;
 }): Metadata {
+  const absoluteTitle = title.length > 68 ? clip(title, 68) : title;
   return {
     // Keep title text concise enough that the important words fit after HTML escaping and result decoration.
-    title: `${title}${TITLE_SUFFIX}`.length > 55 ? { absolute: title } : title,
+    title: `${title}${TITLE_SUFFIX}`.length > 55 ? { absolute: absoluteTitle } : title,
     description,
     alternates: { canonical: path },
     openGraph: { title, description, url: path, siteName: SITE_NAME, type: "website", locale: "en_US" },

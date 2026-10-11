@@ -19,6 +19,8 @@ const nextConfig: NextConfig = {
       { source: "/pricing", destination: "/#pricing", permanent: true },
       { source: "/practice", destination: "/review#claims", permanent: true },
       { source: "/interview", destination: "/review#session", permanent: true },
+      // An old Bing-discovered URL for a ride-dispatch playground that no longer exists.
+      { source: "/investigations/ride-dispatch/playground", destination: "/investigations/ride-dispatch", permanent: true },
     ];
   },
 };
