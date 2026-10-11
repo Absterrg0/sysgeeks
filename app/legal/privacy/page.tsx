@@ -79,7 +79,11 @@ export default function PrivacyPage() {
               session storage for an anonymous identifier that lasts for the browser tab session. Autocapture and
               session recordings are disabled, and the site does not identify visitors by account or email. PostHog
               may process an IP address, referrer and browser/device details; its project settings can be configured
-              to discard IP addresses.
+              to discard IP addresses. The site also sends PostHog a request event when a public page is requested
+              with a user-agent string matching a known search or AI crawler. That event contains the public path,
+              hostname, request method and user-agent string; it omits query strings, referrer, the crawler&apos;s IP
+              address, cookies and account data, and is configured not to create a person profile or GeoIP data.
+              User-agent matching is a heuristic and can be spoofed.
             </li>
           </ul>
         </div>
