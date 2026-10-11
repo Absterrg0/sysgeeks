@@ -9,6 +9,7 @@ import { paymentWorkflow } from "./payment-workflow";
 import { productAnalytics } from "./product-analytics";
 import { rateLimiter } from "./rate-limiter";
 import { realtimeCollaboration } from "./realtime-collaboration";
+import { rideDispatch } from "./ride-dispatch";
 import { shardLiveDatabase } from "./shard-live-database";
 import { urlShortener } from "./url-shortener";
 import { videoPipeline } from "./video-pipeline";
@@ -23,6 +24,7 @@ export const allInvestigations: InvestigationInput[] = [
   productAnalytics,
   notificationSystem,
   paymentWorkflow,
+  rideDispatch,
   distributedCache,
   chatMessageStore,
   realtimeCollaboration,

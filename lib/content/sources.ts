@@ -404,6 +404,18 @@ export const allWriteups: WriteupInput[] = [
     investigationIds: ["notification-system"],
     conceptIds: ["server-push", "persistent-connections", "ordering", "delivery-guarantees"],
   },
+  {
+    id: "uber-h3",
+    companyId: "uber",
+    title: "H3: Uber's Hexagonal Hierarchical Spatial Index",
+    url: "https://www.uber.com/gb/en/blog/h3/",
+    authors: ["Isaac Brodsky"],
+    published: "2018-06",
+    format: "post",
+    note: "How a hierarchical hexagonal grid groups city events for marketplace analysis and dispatch-related decisions, and the tradeoffs behind its cells.",
+    investigationIds: ["ride-dispatch"],
+    conceptIds: ["partitioning"],
+  },
 
   // Stripe
   {

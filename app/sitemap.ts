@@ -5,12 +5,23 @@ import { PLAYGROUNDS } from "@/lib/content/playground";
 import { SITE_URL } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const rideDispatch = listInvestigations().find((investigation) => investigation.id === "ride-dispatch");
+  const rideDispatchPaths = rideDispatch
+    ? [
+        "/investigations/ride-dispatch",
+        "/investigations/ride-dispatch/review",
+        "/investigations/ride-dispatch/design",
+        ...rideDispatch.stages.map((stage) => `/investigations/ride-dispatch/${stage.id}`),
+      ]
+    : [];
   // Only include dates for pages with a known material edit. Avoid refreshing every
   // URL on each deploy, which would make the sitemap's update hints unreliable.
   const lastModified: Record<string, string> = {
     "/capacity-estimator": "2026-10-11",
     "/companies/google": "2026-10-11",
     "/companies/amazon": "2026-10-11",
+    "/companies/uber": "2026-10-11",
+    ...Object.fromEntries(rideDispatchPaths.map((path) => [path, "2026-10-11"])),
   };
   const paths = [
     "/",
