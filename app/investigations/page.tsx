@@ -8,7 +8,7 @@ import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = pageMetadata({
   title: "System Design Interview Questions and Answers",
   description:
-    "13 system design interview questions with short answers, design tradeoffs and full interactive walkthroughs. Free practice, no signup.",
+    "14 system design interview questions with short answers, design tradeoffs and full interactive walkthroughs. Free practice, no signup.",
   path: "/investigations",
 });
 
@@ -30,6 +30,12 @@ const PRACTICE_PATH = [
     answer:
       "Build most feeds by writing new posts into followers’ timelines, then fetch posts on read for very large publishers. A hybrid avoids making celebrity posts fan out to millions of inboxes while keeping ordinary reads fast.",
     focus: "Choose between write fan-out and read fan-out when a few accounts have millions of followers.",
+  },
+  {
+    id: "ride-dispatch",
+    answer:
+      "Use a short-lived spatial index to find fresh, available drivers near a pickup, then rank a small candidate set by road ETA. Reserve the driver and ride with a conditional, versioned state transition before sending an offer; leases and idempotent replies make retries safe.",
+    focus: "Design Uber-style dispatch: match nearby drivers quickly without stale locations or double assignments, then isolate a stadium hotspot.",
   },
   {
     id: "payment-workflow",

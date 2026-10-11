@@ -8,7 +8,7 @@ import { md } from "../md";
 export const rideDispatch: InvestigationInput = {
   id: "ride-dispatch",
   title: "Matching riders and drivers across a busy city",
-  searchTitle: "Design a Ride-Sharing Service (Uber-style)",
+  searchTitle: "Design an Uber-Style Ride-Sharing System",
   premise:
     "Design the dispatch path for a ride-sharing marketplace: find nearby eligible drivers quickly, avoid assigning one driver twice, and recover when location data or notifications arrive late.",
   difficulty: "intermediate",

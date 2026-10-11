@@ -18,6 +18,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // URL on each deploy, which would make the sitemap's update hints unreliable.
   const lastModified: Record<string, string> = {
     "/": "2026-10-11",
+    "/system-design-interview": "2026-10-11",
+    "/investigations": "2026-10-11",
     "/capacity-estimator": "2026-10-11",
     "/companies/google": "2026-10-11",
     "/companies/amazon": "2026-10-11",
