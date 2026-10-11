@@ -39,7 +39,12 @@ export async function generateMetadata(
       ? "Database Sharding"
       : systemNameForTitle(inv.searchTitle).replace(/ System$/, "");
   return pageMetadata({
-    title: fullTitle.length <= 55 ? fullTitle : `System Design Walkthrough: ${systemName}`,
+    title:
+      inv.id === "url-shortener"
+        ? "URL Shortener System Design: Full Walkthrough"
+        : fullTitle.length <= 55
+          ? fullTitle
+          : `System Design Walkthrough: ${systemName}`,
     description: clip(
       `${howTo(inv.searchTitle)}, step by step: ${inv.system.components.map((c) => c.label).join(", ")}. ${inv.premise}`,
     ),
