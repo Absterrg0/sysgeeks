@@ -22,12 +22,14 @@ const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 const CANONICAL_HOST = "www.sysgeeks.com";
 const CRAWLER_USER_AGENT =
-  /(?:Googlebot|GoogleOther|Google-Extended|Google-InspectionTool|bingbot|BingPreview|DuckDuckBot|Baiduspider|YandexBot|GPTBot|OAI-SearchBot|ChatGPT-User|ClaudeBot|Claude-SearchBot|Claude-User|PerplexityBot|Perplexity-User|Applebot(?:-Extended)?|Amazonbot|CCBot|Bytespider|cohere-ai|meta-external(?:agent|fetcher))/i;
+  /(?:Googlebot|GoogleOther|Google-InspectionTool|Google-GeminiNotebook|Google-Agent|Google-CloudVertexBot|bingbot|BingPreview|DuckDuckBot|Baiduspider|YandexBot|GPTBot|OAI-SearchBot|ChatGPT-User|ClaudeBot|Claude-SearchBot|Claude-User|PerplexityBot|Perplexity-User|Applebot|Amazonbot|CCBot|Bytespider|cohere-ai|meta-external(?:agent|fetcher))/i;
 const CRAWLER_NAMES: Array<[string, RegExp]> = [
   ["Googlebot", /\bGooglebot\b/i],
   ["GoogleOther", /\bGoogleOther\b/i],
-  ["Google-Extended", /\bGoogle-Extended\b/i],
   ["Google-InspectionTool", /\bGoogle-InspectionTool\b/i],
+  ["Google-GeminiNotebook", /\bGoogle-GeminiNotebook\b/i],
+  ["Google-Agent", /\bGoogle-Agent\b/i],
+  ["Google-CloudVertexBot", /\bGoogle-CloudVertexBot\b/i],
   ["Bingbot", /\bbingbot\b/i],
   ["BingPreview", /\bBingPreview\b/i],
   ["DuckDuckBot", /\bDuckDuckBot\b/i],
@@ -41,7 +43,6 @@ const CRAWLER_NAMES: Array<[string, RegExp]> = [
   ["Claude-User", /\bClaude-User\b/i],
   ["PerplexityBot", /\bPerplexityBot\b/i],
   ["Perplexity-User", /\bPerplexity-User\b/i],
-  ["Applebot-Extended", /\bApplebot-Extended\b/i],
   ["Applebot", /\bApplebot\b/i],
   ["Amazonbot", /\bAmazonbot\b/i],
   ["CCBot", /\bCCBot\b/i],
@@ -68,6 +69,12 @@ function crawlerName(userAgent: string): string {
 function crawlerCategory(name: string): string {
   if (name === "Google-InspectionTool") return "Search Console inspection";
 
+  if (["Google-GeminiNotebook", "Google-Agent", "ChatGPT-User", "Claude-User", "Perplexity-User"].includes(name)) {
+    return "AI user-triggered fetch";
+  }
+
+  if (name === "Google-CloudVertexBot") return "Google Cloud agent setup";
+
   if (["Googlebot", "Bingbot", "DuckDuckBot", "Baiduspider", "YandexBot", "Applebot"].includes(name)) {
     return "Search indexing";
   }
@@ -75,18 +82,15 @@ function crawlerCategory(name: string): string {
   if (
     [
       "OAI-SearchBot",
-      "ChatGPT-User",
       "Claude-SearchBot",
-      "Claude-User",
       "PerplexityBot",
-      "Perplexity-User",
     ].includes(name)
   ) {
     return "AI search / live fetch";
   }
 
   if (
-    ["GPTBot", "Google-Extended", "ClaudeBot", "Applebot-Extended", "CCBot", "Bytespider", "cohere-ai"].includes(
+    ["GPTBot", "ClaudeBot", "CCBot", "Bytespider", "cohere-ai"].includes(
       name,
     )
   ) {
@@ -164,7 +168,7 @@ export const config = {
           type: "header",
           key: "user-agent",
           value:
-            ".*(Googlebot|GoogleOther|Google-Extended|Google-InspectionTool|bingbot|BingPreview|DuckDuckBot|Baiduspider|YandexBot|GPTBot|OAI-SearchBot|ChatGPT-User|ClaudeBot|Claude-SearchBot|Claude-User|PerplexityBot|Perplexity-User|Applebot|Amazonbot|CCBot|Bytespider|cohere-ai|meta-externalagent|meta-externalfetcher).*",
+            ".*(Googlebot|GoogleOther|Google-InspectionTool|Google-GeminiNotebook|Google-Agent|Google-CloudVertexBot|bingbot|BingPreview|DuckDuckBot|Baiduspider|YandexBot|GPTBot|OAI-SearchBot|ChatGPT-User|ClaudeBot|Claude-SearchBot|Claude-User|PerplexityBot|Perplexity-User|Applebot|Amazonbot|CCBot|Bytespider|cohere-ai|meta-externalagent|meta-externalfetcher).*",
         },
       ],
     },
