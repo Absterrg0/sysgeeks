@@ -312,6 +312,9 @@ export default function SystemDesignInterviewPage() {
             <Link href="/system-design-interview/worksheet" className="font-medium text-accent hover:underline">
               Download the free printable practice sheet
             </Link>
+            <Link href="/system-design-interview/scorecard" className="font-medium text-accent hover:underline">
+              Use the printable system design interview scorecard
+            </Link>
           </div>
         </div>
       </Section>
