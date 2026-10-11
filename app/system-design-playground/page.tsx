@@ -6,9 +6,9 @@ import { PLAYGROUNDS } from "@/lib/content/playground";
 import { breadcrumbs, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 
 const PATH = "/system-design-playground";
-const TITLE = "Interactive System Design Interview Practice";
+const TITLE = "Free System Design Interview Simulator";
 const DESCRIPTION =
-  `Explore ${Object.keys(PLAYGROUNDS).length} free system design simulations. Change components, increase traffic, test failures, and compare architectures. No signup.`;
+  `Try ${Object.keys(PLAYGROUNDS).length} free system design interview simulations in your browser. Change components, raise traffic, test failures, and see where requests back up. No signup.`;
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
@@ -27,10 +27,10 @@ export default function SystemDesignPlaygroundPage() {
             "@graph": [
               breadcrumbs([
                 { name: "System design interview questions", path: "/investigations" },
-                { name: "Interactive system design interview practice", path: PATH },
+                { name: "Free system design interview simulator", path: PATH },
               ]),
               itemList(
-                "Interactive system design interview practice",
+                "Free system design interview simulator",
                 playgrounds.map(({ investigation }) => ({
                   name: investigation.searchTitle,
                   path: `/investigations/${investigation.id}/playground`,
@@ -42,7 +42,7 @@ export default function SystemDesignPlaygroundPage() {
       />
 
       <PageHeader
-        title="Interactive system design interview practice"
+        title="Free system design interview simulator"
         meta={`${playgrounds.length} simulations · Free · No account needed`}
         actions={
           <Link href="/investigations" className="btn btn-secondary">
@@ -50,9 +50,10 @@ export default function SystemDesignPlaygroundPage() {
           </Link>
         }
       >
-        Practise architecture decisions with browser-based simulations. Change components or capacity, test failures,
-        and see which requests fail, where work backs up, and what it takes to keep up. These exercises build reasoning
-        between full interview rounds; they do not simulate a live interviewer.
+        Practise architecture decisions with browser-based system design simulations. Change components or capacity,
+        test failures, and see which requests fail, where work backs up, and what it takes to keep up. Each exercise
+        models architecture behavior under an explicit interview workload. Use the results to compare bottlenecks;
+        production sizing requires measured workloads and system-specific engineering.
       </PageHeader>
 
       <Section
@@ -97,7 +98,7 @@ export default function SystemDesignPlaygroundPage() {
         </ol>
       </Section>
 
-      <Section id="how-the-simulations-work" title="How the simulations work">
+      <Section id="how-the-simulations-work" title="How the system design simulator works">
         <div className="prose max-w-[72ch]">
           <p>
             Each playground starts with a reference architecture and an explicit workload. Select a component to change
