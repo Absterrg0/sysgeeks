@@ -9,7 +9,7 @@ import { SystemMap } from "@/components/system-map";
 import { DashList, PageHeader } from "@/components/page-header";
 import { getCompany, getConcept, getInvestigation, listInvestigations, writeupsForInvestigation } from "@/lib/content";
 import { DESIGN_ROUND_MINUTES } from "@/lib/domain/design-round";
-import { breadcrumbs, clip, jsonLd, pageMetadata } from "@/lib/metadata";
+import { breadcrumbs, clip, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { PLAYGROUNDS } from "@/lib/content/playground";
 
@@ -23,11 +23,12 @@ export async function generateMetadata(props: PageProps<"/investigations/[invest
   const { investigationId } = await props.params;
   const inv = getInvestigation(investigationId);
   if (!inv) return {};
+  const systemName =
+    inv.id === "shard-live-database"
+      ? "Live Database Sharding"
+      : systemNameForTitle(inv.searchTitle).replace(/ System$/, "");
   return pageMetadata({
-    title:
-      inv.id === "url-shortener"
-        ? "URL Shortener System Design Interview Practice"
-        : `${inv.searchTitle}: Interview Practice`,
+    title: `${systemName}: System Design Interview Practice`,
     description: clip(
       inv.id === "url-shortener"
         ? "Practice a Bitly-style URL shortener system design interview: estimate traffic, choose IDs, and test caching, click analytics, and urgent takedowns."
