@@ -12,6 +12,36 @@ import { md } from "./md";
 
 export const allCompanies: CompanyInput[] = [
   {
+    id: "google",
+    name: "Google",
+    topic: "Bigtable and Spanner",
+    summary:
+      "Two systems built for different guarantees: Bigtable scales structured storage across machines; Spanner adds globally distributed, externally consistent transactions.",
+    context: md`
+      Bigtable and Spanner are useful to study together because they solve different problems. Bigtable gives applications a sparse, distributed map whose rows are ordered by key; tablets split that key range across servers, and an immutable-file storage design makes writes and compaction explicit. It trades relational querying for control over data layout and scale.
+
+      Spanner keeps automatic sharding and synchronous replication, then adds a relational model and externally consistent transactions across regions. Its time API exposes clock uncertainty so the system can decide when a transaction's timestamp is safe. That guarantee has a cost: coordinating a write across replicas can add latency.
+
+      The published papers describe Google systems, not questions Google is known to ask in interviews. Use them to practise the underlying choices: data partitioning, replication, transaction guarantees, and the latency each guarantee costs.
+    `,
+    blogUrl: "https://research.google/pubs/",
+  },
+  {
+    id: "amazon",
+    name: "Amazon",
+    topic: "Dynamo's always-on key-value store",
+    summary:
+      "Dynamo keeps writes available during failures with consistent hashing, replicated data, quorum-style reads and writes, and application-assisted conflict resolution.",
+    context: md`
+      Dynamo was designed for services that had to keep accepting reads and writes even when parts of a large data centre were unreachable. It spreads keys across a ring of nodes, replicates each item, and lets each operation choose how many replicas must respond. During a failure, a replica outside the usual preference list can temporarily accept a write so availability does not depend on every normal replica being reachable.
+
+      That choice moves complexity to recovery. Concurrent writes can produce multiple versions, so applications help reconcile them; background anti-entropy repairs replicas that drifted apart. Dynamo is a good case study in making availability a requirement with explicit consistency costs, rather than claiming both without explaining the mechanism.
+
+      The paper describes Amazon's published storage design, not a claim that Dynamo itself appears in Amazon interviews. Practise the trade-offs with the linked exercises on replication, partitioning, and recovery.
+    `,
+    blogUrl: "https://www.amazon.science/publications/dynamo-amazons-highly-available-key-value-store",
+  },
+  {
     id: "dub",
     name: "Dub",
     topic: "Redirects at the edge",
@@ -180,6 +210,93 @@ export const allCompanies: CompanyInput[] = [
 ];
 
 export const allWriteups: WriteupInput[] = [
+  // Google
+  {
+    id: "google-bigtable",
+    companyId: "google",
+    title: "Bigtable: A Distributed Storage System for Structured Data",
+    url: "https://research.google/pubs/bigtable-a-distributed-storage-system-for-structured-data/",
+    authors: [
+      "Fay Chang",
+      "Jeffrey Dean",
+      "Sanjay Ghemawat",
+      "Wilson C. Hsieh",
+      "Deborah A. Wallach",
+      "Mike Burrows",
+      "Tushar Chandra",
+      "Andrew Fikes",
+      "Robert E. Gruber",
+    ],
+    published: "2006",
+    format: "paper",
+    note: "The original account of Bigtable's row-key data model, tablet partitioning, immutable storage files, and the trade-offs behind serving very large structured datasets.",
+    investigationIds: ["chat-message-store", "distributed-cache"],
+    conceptIds: ["partitioning", "lsm-trees", "replication"],
+  },
+  {
+    id: "google-spanner",
+    companyId: "google",
+    title: "Spanner: Google's Globally-Distributed Database",
+    url: "https://research.google/pubs/spanner-googles-globally-distributed-database-2/",
+    authors: [
+      "James C. Corbett",
+      "Jeffrey Dean",
+      "Michael Epstein",
+      "Andrew Fikes",
+      "Christopher Frost",
+      "J. J. Furman",
+      "Sanjay Ghemawat",
+      "Andrey Gubarev",
+      "Christopher Heiser",
+      "Peter Hochschild",
+      "Wilson C. Hsieh",
+      "Sebastian Kanthak",
+      "Eugene Kogan",
+      "Hongyi Li",
+      "Alexander Lloyd",
+      "Sergey Melnik",
+      "David Mwaura",
+      "David Nagle",
+      "Sean Quinlan",
+      "Rajesh Rao",
+      "Lindsay Rolig",
+      "Dale Woodford",
+      "Yasushi Saito",
+      "Christopher Taylor",
+      "Michal Szymaniak",
+      "Ruth Wang",
+    ],
+    published: "2012",
+    format: "paper",
+    note: "The OSDI paper explains Spanner's automatic sharding, synchronous replication, external consistency, and the time API that makes globally ordered transactions possible.",
+    investigationIds: ["shard-live-database"],
+    conceptIds: ["partitioning", "replication", "transactions"],
+  },
+
+  // Amazon
+  {
+    id: "amazon-dynamo",
+    companyId: "amazon",
+    title: "Dynamo: Amazon's Highly Available Key-value Store",
+    url: "https://www.amazon.science/publications/dynamo-amazons-highly-available-key-value-store",
+    authors: [
+      "Giuseppe DeCandia",
+      "Deniz Hastorun",
+      "Madan Jampani",
+      "Gunavardhan Kakulapati",
+      "Avinash Lakshman",
+      "Alex Pilchin",
+      "Swaminathan Sivasubramanian",
+      "Peter Vosshall",
+      "Werner Vogels",
+    ],
+    published: "2007",
+    format: "paper",
+    note: "The original SOSP paper connects consistent hashing, replication, tunable read/write quorums, hinted handoff, anti-entropy, and application-assisted conflict resolution into one availability design.",
+    investigationIds: ["distributed-cache", "shard-live-database"],
+    conceptIds: ["consistent-hashing", "replication", "conflict-resolution"],
+  },
+
   // Dub
   {
     id: "dub-link-middleware",

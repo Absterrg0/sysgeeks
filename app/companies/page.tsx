@@ -4,12 +4,12 @@ import { PageHeader } from "@/components/page-header";
 import { SystemThumb } from "@/components/system-thumb";
 import { visibleAfter } from "@/lib/domain/visibility";
 import { getInvestigation, listCompanies, writeupsByCompany } from "@/lib/content";
-import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
+import { faqPage, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = pageMetadata({
-  title: "How Real Companies Do System Design",
+  title: "System Design Interview Practice from Real Company Systems",
   description:
-    "How Stripe, Discord, Figma, Uber, Slack and others solved real system design problems, in their engineers' own words, with a system to practise each on.",
+    "Study published engineering designs from Google, Amazon, Meta, Stripe, Discord and more. Read the original sources, then practise the trade-offs in free interactive system design exercises.",
   path: "/companies",
 });
 
@@ -29,17 +29,47 @@ export default function CompaniesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: jsonLd(
-            itemList(
-              "How real companies do system design",
-              companies.map(({ company }) => ({ name: `${company.name}: ${company.topic}`, path: `/companies/${company.id}` })),
-            ),
+            {
+              "@graph": [
+                itemList(
+                  "System design practice based on real company engineering",
+                  companies.map(({ company }) => ({ name: `${company.name}: ${company.topic}`, path: `/companies/${company.id}` })),
+                ),
+                faqPage([
+                  {
+                    question: "Are these actual system design interview questions from these companies?",
+                    answer:
+                      "No. These are practice case studies based on engineering work the companies have published. They do not claim that a company asks these exact systems in interviews.",
+                  },
+                ]),
+              ],
+            },
           ),
         }}
       />
-      <PageHeader title="How real companies do system design">
-        One idea per company, from what their engineers published about it. Each page explains the idea, links to the
-        original writing, and has an investigation to practise it.
+      <PageHeader title="System design interview practice from real company systems">
+        Study how engineers at Google, Amazon, Meta, Stripe, Discord, and other teams describe systems they built. Each
+        case study links to its primary source and a free interactive exercise where you practise the same design
+        trade-offs.
       </PageHeader>
+      <section aria-labelledby="practice-method" className="mt-6 max-w-[72ch]">
+        <h2 id="practice-method" className="font-display text-[1.25rem] leading-tight">
+          How to use these case studies for interview practice
+        </h2>
+        <ol className="mt-3 grid gap-3 sm:grid-cols-3">
+          {[
+            ["Read the source", "Start with the engineers' paper, post, talk, or code—not a secondhand summary."],
+            ["Name the trade-off", "Write down the constraint, the mechanism chosen, and the cost that choice accepts."],
+            ["Practise the reasoning", "Work through a related system design exercise before reading its reference answer."],
+          ].map(([title, text], index) => (
+            <li key={title} className="sheet px-4 py-3">
+              <p className="kicker">Step {index + 1}</p>
+              <h3 className="mt-1 text-[0.9375rem] font-medium">{title}</h3>
+              <p className="mt-1 text-[0.8125rem] leading-relaxed text-ink-2">{text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
       <section aria-label="All companies" className="mt-6 pb-10">
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {companies.map(({ company, practise }) => (
@@ -73,6 +103,16 @@ export default function CompaniesPage() {
             </li>
           ))}
         </ul>
+      </section>
+      <section aria-labelledby="question-claims" className="max-w-[72ch] border-t border-rule py-6">
+        <h2 id="question-claims" className="font-display text-[1.125rem] leading-tight">
+          Are these actual interview questions from these companies?
+        </h2>
+        <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
+          No. These are practice case studies based on engineering work the companies have published. They do not claim
+          that a company asks these exact systems in interviews. The exercises help you practise transferable design
+          decisions against real constraints.
+        </p>
       </section>
     </div>
   );

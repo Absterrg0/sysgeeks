@@ -7,7 +7,7 @@ import { Prose } from "@/components/prose";
 import { ShareButton } from "@/components/share";
 import { SourceList } from "@/components/writeup";
 import { getCompany, getInvestigation, listCompanies, writeupsByCompany } from "@/lib/content";
-import { breadcrumbs, clip, jsonLd, pageMetadata } from "@/lib/metadata";
+import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -21,8 +21,8 @@ export async function generateMetadata(props: PageProps<"/companies/[companyId]"
   const company = getCompany(companyId);
   if (!company) return {};
   return pageMetadata({
-    title: `${company.name} System Design: ${company.topic}`,
-    description: clip(`${company.summary} What ${company.name}'s engineers published, and a system to practise it on.`),
+    title: `${company.name} System Design Interview Practice`,
+    description: `${company.name}: ${company.topic}. Read the original engineering sources, then practise the design trade-offs in a free interactive exercise.`,
     path: `/companies/${company.id}`,
   });
 }
@@ -72,6 +72,13 @@ export default async function CompanyPage(props: PageProps<"/companies/[companyI
                   })),
                 },
               },
+              faqPage([
+                {
+                  question: `Are these actual ${company.name} system design interview questions?`,
+                  answer:
+                    "No. This case study is based on published engineering work and does not claim that the company asks this exact system in interviews. The linked exercise is for practising transferable design trade-offs.",
+                },
+              ]),
             ],
           }),
         }}
@@ -112,6 +119,14 @@ export default async function CompanyPage(props: PageProps<"/companies/[companyI
 
       <Section id="read" title="Read the originals" description="Written by the engineers who built it.">
         <SourceList writeups={writeups} />
+      </Section>
+
+      <Section id="interview-practice" title={`Is this an actual ${company.name} interview question?`}>
+        <p className="max-w-[66ch] text-[0.9375rem] leading-relaxed text-ink-2">
+          No. This case study explains published engineering work; it does not claim that {company.name} asks this exact
+          system in interviews. Use the source and linked exercise to practise the design decisions, constraints, and
+          failure cases that transfer to unfamiliar interview prompts.
+        </p>
       </Section>
 
       {investigations.length > 0 && (

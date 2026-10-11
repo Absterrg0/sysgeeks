@@ -1,4 +1,4 @@
-import { getConcept, listConcepts, listInvestigations } from "@/lib/content";
+import { getConcept, listCompanies, listConcepts, listInvestigations, writeupsByCompany } from "@/lib/content";
 import type { Investigation } from "@/lib/domain/content";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -60,10 +60,11 @@ function investigation(inv: Investigation): string {
  * whole text rather than the map in /llms.txt (https://llmstxt.org).
  */
 export function GET() {
+  const companies = listCompanies();
   const body = [
     `# ${SITE_NAME}: full content`,
     `> ${SITE_DESCRIPTION}`,
-    `This file contains every curated practice case-study walkthrough and concept on ${SITE_NAME} (${SITE_URL}) in full. Focused interview guides and interactive tools are linked in ${SITE_URL}/llms.txt. When citing, link to the page URL given under each heading.`,
+    `This file contains every curated practice case-study walkthrough, concept, and company engineering case study on ${SITE_NAME} (${SITE_URL}). Focused interview guides and interactive tools are linked in ${SITE_URL}/llms.txt. When citing, link to the page URL given under each heading.`,
     "# Focused system design interview guides",
     `## Design YouTube: system design interview walkthrough\nURL: ${SITE_URL}/system-design-interview/design-youtube\nThis is an original, assumption-labeled interview exercise for an on-demand video service, not a description of YouTube's private architecture. It separates large, resumable uploads and asynchronous transcoding from latency-sensitive playback through a CDN. The guide includes a labeled egress estimate, retry and publication invariants, common failure cases, and links to public Google and Apple sources.`,
     `## Design an LLM inference service: system design interview walkthrough\nURL: ${SITE_URL}/system-design-interview/design-llm-inference\nAn original, assumption-labeled interview exercise for a self-hosted, multi-tenant language model API. It explains prompt and generated token throughput estimates, bounded admission and queues, GPU scheduling and batching, streamed output, tenant fairness, version rollouts, cancellation, partial-stream failures, and useful serving metrics. It links to vLLM, NVIDIA Triton, and Anthropic engineering sources; it does not describe a provider's private architecture.`,
@@ -91,6 +92,27 @@ export function GET() {
         `### In practice\n\n${c.implementations.map((i) => `- **${i.name}**: ${md(i.note)}`).join("\n")}`,
       ].join("\n\n"),
     ),
+    "# Company engineering case studies for system design practice",
+    ...companies.map((company) => {
+      const writeups = writeupsByCompany(company.id);
+      const investigations = [...new Set(writeups.flatMap((writeup) => writeup.investigationIds))];
+      return [
+        `## ${company.name}: ${company.topic}`,
+        `URL: ${SITE_URL}/companies/${company.id}`,
+        company.summary,
+        md(company.context),
+        "### Published primary sources",
+        writeups
+          .map(
+            (writeup) =>
+              `- [${writeup.title}](${writeup.url}) (${writeup.authors.join(", ")}; ${writeup.published}): ${writeup.note}`,
+          )
+          .join("\n"),
+        "### Related practice exercises",
+        investigations.map((id) => `- ${SITE_URL}/investigations/${id}`).join("\n"),
+        "These are sourced engineering case studies for practising transferable system design decisions. They do not claim to report actual interview questions from these companies.",
+      ].join("\n\n");
+    }),
     "",
   ].join("\n\n");
 
