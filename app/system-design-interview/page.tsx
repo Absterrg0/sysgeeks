@@ -228,7 +228,20 @@ export default function SystemDesignInterviewPage() {
           }),
         }}
       />
-      <PageHeader title="How to prepare for a system design interview" meta={`Updated ${formatDate(MODIFIED)}`}>
+      <PageHeader
+        title="How to prepare for a system design interview"
+        meta={`Updated ${formatDate(MODIFIED)}`}
+        actions={
+          <>
+            <Link href="/review#session" className="btn btn-accent">
+              Try a 45-minute mock
+            </Link>
+            <Link href="/investigations" className="btn btn-secondary">
+              Browse practice questions
+            </Link>
+          </>
+        }
+      >
         {LEAD}
       </PageHeader>
 
