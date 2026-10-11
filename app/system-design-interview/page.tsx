@@ -201,6 +201,11 @@ const FAQ = [
       "Practise scoping the problem before choosing components, defending a design against a plausible alternative, and tracing how it behaves during failure or migration. Use examples from your work to explain a decision you owned, but leave out confidential details and do not assume the interview prompt has the same scale as your production system.",
   },
   {
+    question: "What makes a system design interview senior-level?",
+    answer:
+      "A senior-level answer explains how the design can be introduced, operated, and changed safely under the prompt's constraints. Cover migration steps, verification, rollback, and the signals that show the change worked. Staff-level prompts may also test how teams adopt the design and share ownership, depending on the role.",
+  },
+  {
     question: "What is the difference between high-level and low-level design?",
     answer:
       "High-level design (HLD) is about services, data stores and how requests and data flow between them. Low-level design (LLD) is about the inside of one component: its classes, interfaces and data schema. Most system design interviews are high-level, with a deep dive into one component.",
@@ -419,8 +424,8 @@ export default function SystemDesignInterviewPage() {
               State the constraint that drives each decision, then compare it with one workable alternative.
             </li>
             <li>
-              Follow the design through a failure or a change. Explain retries, recovery, migration, verification, and
-              rollback where they matter.
+              Explain how the system changes safely. Include migration, verification, rollback, and the signals that
+              tell the team when to continue or stop.
             </li>
             <li>
               Use a work example to explain a decision you owned. Keep private company details out, and be clear about
@@ -428,14 +433,20 @@ export default function SystemDesignInterviewPage() {
             </li>
           </ul>
           <p>
-            Practise with advanced prompts that require this kind of reasoning:
+            A live database migration makes these decisions concrete. Before sharding, choose a key that keeps related
+            reads together and keep the current database authoritative. Capture writes before backfill, prevent an old
+            copied row from overwriting a newer write, then compare the two stores while users still read from the
+            original. Define what counts as a safe cutover and how to return to the old path if the checks fail.
           </p>
+          <p>
+            A strong answer covers the transition and its safety conditions alongside the target architecture. The{" "}
+            <Link href="/investigations/shard-live-database" className="text-accent hover:underline">
+              live database sharding exercise
+            </Link>{" "}
+            walks through the write log, version checks, backfill, dark reads, verification, and cutover.
+          </p>
+          <p>Use advanced prompts to practise the same reasoning:</p>
           <ul className="flex flex-wrap gap-x-5 gap-y-2 font-medium">
-            <li>
-              <Link href="/investigations/shard-live-database" className="text-accent hover:underline">
-                Shard a live database without downtime
-              </Link>
-            </li>
             <li>
               <Link href="/investigations/chat-message-store" className="text-accent hover:underline">
                 Store trillions of chat messages
