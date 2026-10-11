@@ -7,7 +7,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 const PATH = "/system-design-mock-interview";
 const TITLE = "Free Solo System Design Mock Interview Practice";
 const DESCRIPTION =
-  "Practice system design alone with timed 30, 45, or 60-minute mocks, follow-up prompts, and a self-review scorecard. Free, no partner needed.";
+  "Free system design mock interview practice: timed 30, 45 or 60-minute sessions, follow-up questions, and a self-review scorecard.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
@@ -38,6 +38,11 @@ const FAQ = [
       "Score a timed round 0–2 on trace, explain, defend, change, break, and implement. Use the lowest dimension to choose your next drill. This practice aid is not an employer rubric or a hiring prediction.",
   },
   {
+    question: "What follow-up questions should I practise in a system design interview?",
+    answer:
+      "Practise changes that pressure-test the design: tenfold traffic growth, a retry after an uncertain timeout, a worker crash, a hot partition, stale cache data, and a zero-downtime migration. Explain the key assumption, failure mode, trade-off, and signal you would monitor. These are transferable practice prompts, not employer-reported questions.",
+  },
+  {
     question: `Is the ${SITE_NAME} mock interview free?`,
     answer: `Yes. You can start a timed mock interview without an account. The session runs in your browser.`,
   },
@@ -52,13 +57,43 @@ const SCORECARD = [
   ["Implement", "Can you connect a guarantee to the API, data model, or code that enforces it?"],
 ] as const;
 
-const SELF_INTERVIEW_PROMPTS = [
-  ["After you set requirements", "Which requirement would change your design if it doubled? What can you leave out?"],
-  ["After you estimate scale", "Which estimate changes an architecture choice? What becomes the bottleneck if that number is wrong?"],
-  ["After you choose a component", "What does this choice make easier? What new cost or failure mode does it add?"],
-  ["After you trace a request", "What happens if it runs twice, arrives late, or succeeds while the response times out?"],
-  ["After you handle a failure", "What durable state tells recovery what completed? Which signal would alert an operator?"],
-  ["Before you finish", "What does the design guarantee, what does it leave uncertain, and where does it stop working?"],
+const FOLLOW_UP_PROMPTS = [
+  [
+    "What changes if traffic grows tenfold?",
+    "Re-estimate peak reads and writes, find the first saturated component, and explain which scaling change addresses that limit. Avoid adding capacity everywhere by default.",
+    "/capacity-estimator",
+    "Try the capacity estimator",
+  ],
+  [
+    "What if a payment succeeds but the response times out?",
+    "Treat the outcome as unknown until durable state or reconciliation resolves it. Explain how an idempotency key makes a retry safe and what the customer sees meanwhile.",
+    "/investigations/payment-workflow",
+    "Practise the payment workflow",
+  ],
+  [
+    "What if a worker dies halfway through a job?",
+    "Identify what progress was persisted, how another worker takes ownership, and how retries avoid repeating completed side effects.",
+    "/investigations/video-processing-pipeline",
+    "Practise the video processing pipeline",
+  ],
+  [
+    "What if one partition receives most of the traffic?",
+    "Name the key or tenant creating the hotspot, then compare partitioning, replication, caching, or request coalescing. State which consistency or write cost each option adds.",
+    "/investigations/chat-message-store",
+    "Practise the chat message store",
+  ],
+  [
+    "How stale can a cached value be?",
+    "Set the freshness requirement first. Then explain invalidation, refresh, and what the caller should do when the cache or source is unavailable.",
+    "/concepts/caching",
+    "Review caching trade-offs",
+  ],
+  [
+    "How would you change the data model without downtime?",
+    "Describe a staged migration: keep old and new readers compatible, backfill safely, verify parity, switch traffic gradually, and define a rollback point.",
+    "/investigations/shard-live-database",
+    "Practise a live database migration",
+  ],
 ] as const;
 
 export default function SystemDesignMockInterviewPage() {
@@ -179,24 +214,27 @@ export default function SystemDesignMockInterviewPage() {
         </div>
       </Section>
 
-      <Section id="solo-prompts" title="How to practise a system design interview alone">
+      <Section id="solo-prompts" title="System design interview follow-up questions to practise">
         <p className="max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
-          Use the 45-minute structure in the <Link href="/system-design-interview#plan" className="link">system design interview guide</Link>.
-          After each major choice, ask yourself a follow-up before you move on. That forces you to test the reason for
-          the choice, not just name a familiar tool.
+          Use these as practice prompts, not as claims about questions asked by a particular employer. In a solo round,
+          pause after each major design choice and answer the follow-up before moving on. The 45-minute plan in the{" "}
+          <Link href="/system-design-interview#plan" className="link">system design interview guide</Link> gives you a place for that deeper reasoning.
         </p>
         <ol className="mt-5 max-w-[72ch] divide-y divide-rule border-y border-rule">
-          {SELF_INTERVIEW_PROMPTS.map(([moment, prompt]) => (
-            <li key={moment} className="py-3.5">
-              <h3 className="text-[0.9375rem] font-medium">{moment}</h3>
-              <p className="mt-1 text-[0.9375rem] leading-relaxed text-ink-2">{prompt}</p>
+          {FOLLOW_UP_PROMPTS.map(([question, answer, href, linkText]) => (
+            <li key={question} className="py-3.5">
+              <h3 className="text-[0.9375rem] font-medium">{question}</h3>
+              <p className="mt-1 text-[0.9375rem] leading-relaxed text-ink-2">{answer}</p>
+              <Link href={href} className="mt-2 inline-flex text-[0.8125rem] font-medium text-accent hover:underline">
+                {linkText} →
+              </Link>
             </li>
           ))}
         </ol>
         <p className="mt-4 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
-          For example, if a payment provider accepts a charge but the response times out, decide what the buyer sees,
-          whether a retry is safe, and which stored state resolves the unknown outcome. Then compare your answer with
-          the <Link href="/investigations/payment-workflow" className="link">worked payment system design</Link>.
+          Practise one prompt aloud, write down the assumption that drives your answer, and identify what evidence
+          would tell you the design is working. Then compare your reasoning with the linked exercise and its worked
+          walkthrough.
         </p>
         <p className="mt-3 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
           A solo round cannot give you the pushback of a live interviewer. It can still help you practise clear
