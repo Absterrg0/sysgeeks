@@ -71,6 +71,9 @@ export function GET() {
     "## Design a RAG system: system design interview walkthrough\nURL: " +
       SITE_URL +
       "/system-design-interview/design-rag-system\nAn original, assumption-labeled interview exercise for question answering over private, changing documents. It covers versioned ingestion, idempotent indexing, permission-scoped retrieval, lexical and semantic search, reranking, source citations, deletion, freshness, retrieval and answer evaluation, and failure handling. Primary sources include Cohere's RAG and evaluation documentation and OpenAI's vector-store API reference.",
+    "## Design an AI agent: system design interview walkthrough\nURL: " +
+      SITE_URL +
+      "/system-design-interview/design-ai-agent\nAn original practice prompt for a customer-support agent that can look up orders and issue refunds. It explains bounded orchestration, scoped tools, durable run and action state, idempotent external writes, uncertain outcomes, prompt injection boundaries, evaluation, and when a fixed workflow is simpler than an agent. Primary sources include OpenAI's agent guide, Anthropic's Building Effective Agents, and OWASP's excessive-agency guidance. It does not claim to describe an employer's interview loop or private architecture.",
     "# System design interview questions, answered",
     ...listInvestigations().map(investigation),
     "# System design concepts",

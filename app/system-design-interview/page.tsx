@@ -292,6 +292,11 @@ export default function SystemDesignInterviewPage() {
             RAG system design interview walkthrough
           </Link>
           , which covers document freshness, permission-scoped retrieval, citations, and evaluation.
+          For an agent that can take actions, work through the{" "}
+          <Link href="/system-design-interview/design-ai-agent" className="link">
+            AI agent system design interview walkthrough
+          </Link>
+          , which focuses on scoped tools, idempotent actions, prompt injection, and uncertain outcomes.
         </p>
       </Section>
 

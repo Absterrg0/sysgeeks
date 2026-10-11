@@ -36,6 +36,9 @@ export function GET() {
     "",
     "- [Design a RAG system](" + SITE_URL + "/system-design-interview/design-rag-system): An original interview walkthrough for private-document ingestion, permission-scoped retrieval, citations, freshness, evaluation, and failure handling.",
     "",
+    "- [Design an AI agent](" +
+      SITE_URL +
+      "/system-design-interview/design-ai-agent): An original interview walkthrough for scoped tools, safe refunds, idempotent actions, prompt injection, durable runs, and evaluation.",
     "## System design interview questions",
     "",
     ...investigations.map((inv) => line(inv.searchTitle, `/investigations/${inv.id}`, inv.premise)),

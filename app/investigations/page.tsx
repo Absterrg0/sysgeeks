@@ -191,6 +191,16 @@ export default function InvestigationsPage() {
               Design private-document ingestion and retrieval with access controls, citations, freshness, and evaluation.
             </p>
           </li>
+          <li className="py-4">
+            <h3 className="text-[0.9375rem] font-medium">
+              <Link href="/system-design-interview/design-ai-agent" className="transition-colors hover:text-accent">
+                Design an AI agent
+              </Link>
+            </h3>
+            <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+              Work through scoped tools, safe external actions, idempotency, prompt injection, and evaluation.
+            </p>
+          </li>
         </ul>
       </section>
     </div>
