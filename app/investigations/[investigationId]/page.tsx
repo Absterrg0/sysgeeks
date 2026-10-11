@@ -23,9 +23,14 @@ export async function generateMetadata(props: PageProps<"/investigations/[invest
   const inv = getInvestigation(investigationId);
   if (!inv) return {};
   return pageMetadata({
-    title: `${inv.searchTitle}: Interview Practice`,
+    title:
+      inv.id === "url-shortener"
+        ? "URL Shortener System Design Interview Practice"
+        : `${inv.searchTitle}: Interview Practice`,
     description: clip(
-      `Free interactive system design practice: ${inv.searchTitle}. Make design choices, test failure cases, and read the worked answer.`,
+      inv.id === "url-shortener"
+        ? "Practice a Bitly-style URL shortener system design interview: estimate traffic, choose IDs, and test caching, click analytics, and urgent takedowns."
+        : `Free interactive system design practice: ${inv.searchTitle}. Make design choices, test failure cases, and read the worked answer.`,
     ),
     path: `/investigations/${inv.id}`,
   });
