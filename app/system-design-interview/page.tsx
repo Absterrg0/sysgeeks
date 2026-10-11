@@ -314,6 +314,9 @@ export default function SystemDesignInterviewPage() {
             <Link href="/system-design-mock-interview" className="font-medium text-accent hover:underline">
               How the mock interview works
             </Link>
+            <Link href="/system-design-interview/ai-system-design" className="font-medium text-accent hover:underline">
+              Practise AI system design interview questions
+            </Link>
             <Link href="/system-design-interview/worksheet" className="font-medium text-accent hover:underline">
               Download the free system design interview cheat sheet
             </Link>

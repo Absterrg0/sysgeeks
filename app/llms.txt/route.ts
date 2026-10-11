@@ -27,6 +27,7 @@ export function GET() {
     "## Start here",
     "",
     `- [How to prepare for a system design interview](${SITE_URL}/system-design-interview): What the interview tests, how to spend the 45 minutes, common mistakes, and which systems to practise.`,
+    `- [AI system design interview practice](${SITE_URL}/system-design-interview/ai-system-design): A guide to LLM inference, RAG over private documents, and tool-using agents, with shared workload, quality, permission, and failure considerations.`,
     `- [System design interview cheat sheet (printable worksheet)](${SITE_URL}/system-design-interview/worksheet): A free two-page PDF with a 45-minute plan, sizing formulas, five questions, and a readiness checklist. Download: ${SITE_URL}/downloads/system-design-interview-practice-sheet.pdf`,
     `- [System design interview questions and answers PDF](${SITE_URL}/investigations): A free guide with 14 original question prompts, concise answer outlines, and links to complete worked walkthroughs. Download: ${SITE_URL}/downloads/system-design-interview-questions-and-answers.pdf`,
     `- [System design interview scorecard](${SITE_URL}/system-design-interview/scorecard): A free printable self-review rubric. Score six observable skills from 0 to 2, record evidence from a mock, and choose one focused drill. Download: ${SITE_URL}/downloads/system-design-interview-scorecard.pdf`,
