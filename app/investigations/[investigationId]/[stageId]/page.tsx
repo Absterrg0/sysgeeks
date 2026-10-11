@@ -53,6 +53,7 @@ export default async function StagePage(props: PageProps<"/investigations/[inves
   if (!found) notFound();
   const { investigation, stage, index } = found;
   const ref: ExerciseRef = { kind: "stage", investigationId: investigation.id, stageId: stage.id };
+  const systemName = systemNameForTitle(investigation.searchTitle);
 
   const previous = investigation.stages[index - 1];
   const next = investigation.stages[index + 1];
@@ -156,7 +157,9 @@ export default async function StagePage(props: PageProps<"/investigations/[inves
         <p className="kicker">
           Stage {index + 1} of {investigation.stages.length} · {PHASE_LABELS[stage.phase]}
         </p>
-        <h1 className="mt-3 font-display text-h1 text-balance">{stage.title}</h1>
+        <h1 className="mt-3 font-display text-h1 text-balance">
+          {systemName}: {stage.title}
+        </h1>
       </header>
 
       <section aria-label="The situation" className="section space-y-6">
