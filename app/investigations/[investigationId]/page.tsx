@@ -31,13 +31,17 @@ export async function generateMetadata(props: PageProps<"/investigations/[invest
     title:
       inv.id === "news-feed"
         ? "Twitter System Design Interview: Home Timeline"
-        : `${systemName}: System Design Interview`,
+        : inv.id === "file-storage-sync"
+          ? "Dropbox System Design Interview: File Sync Practice"
+          : `${systemName}: System Design Interview`,
     description: clip(
       inv.id === "url-shortener"
         ? "Practice a Bitly-style URL shortener system design interview: estimate traffic, choose IDs, and test caching, click analytics, and urgent takedowns."
         : inv.id === "news-feed"
           ? "Practice a Twitter/X system design interview: choose timeline fan-out, handle celebrity accounts, and reason through freshness, deletes, and failures."
-        : `Free interactive system design practice: ${inv.searchTitle}. Make design choices, test failure cases, and read the worked answer.`,
+          : inv.id === "file-storage-sync"
+            ? "Free Dropbox system design interview practice: design resumable uploads, offline sync, conflict handling, and safe cleanup, then read a sourced walkthrough."
+            : `Free interactive system design practice: ${inv.searchTitle}. Make design choices, test failure cases, and read the worked answer.`,
     ),
     path: `/investigations/${inv.id}`,
   });
