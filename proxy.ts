@@ -58,8 +58,19 @@ function isAuthPath(pathname: string): boolean {
   return AUTH_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 }
 
-function isPublicContentPath(pathname: string): boolean {
-  return pathname === "/" || PUBLIC_CONTENT_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+function isCrawlerRelevantPath(pathname: string): boolean {
+  return (
+    pathname === "/" ||
+    ["/robots.txt", "/sitemap.xml", "/llms.txt", "/llms-full.txt"].includes(pathname) ||
+    PUBLIC_CONTENT_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))
+  );
+}
+
+function crawlerResourceType(pathname: string): string {
+  if (pathname === "/robots.txt") return "robots";
+  if (pathname === "/sitemap.xml") return "sitemap";
+  if (pathname === "/llms.txt" || pathname === "/llms-full.txt") return "llms_txt";
+  return "html_page";
 }
 
 function crawlerName(userAgent: string): string {
@@ -108,7 +119,7 @@ function captureCrawlerRequest(request: NextRequest, event: NextFetchEvent) {
   if (
     !POSTHOG_KEY ||
     hostname !== CANONICAL_HOST ||
-    !isPublicContentPath(pathname) ||
+    !isCrawlerRelevantPath(pathname) ||
     !CRAWLER_USER_AGENT.test(userAgent) ||
     !["GET", "HEAD"].includes(request.method) ||
     request.headers.has("rsc")
@@ -129,6 +140,7 @@ function captureCrawlerRequest(request: NextRequest, event: NextFetchEvent) {
       $raw_user_agent: userAgent,
       crawler_name: name,
       crawler_category: crawlerCategory(name),
+      crawler_resource_type: crawlerResourceType(pathname),
       method: request.method,
     },
   };
@@ -162,7 +174,7 @@ export const config = {
     "/sign-in/:path*",
     "/sign-up/:path*",
     {
-      source: "/((?!api(?:/|$)|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)",
+      source: "/((?!api(?:/|$)|_next/static|_next/image|favicon.ico).*)",
       has: [
         {
           type: "header",
