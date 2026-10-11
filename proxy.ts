@@ -65,9 +65,39 @@ function crawlerName(userAgent: string): string {
   return CRAWLER_NAMES.find(([, pattern]) => pattern.test(userAgent))?.[0] ?? "Unknown";
 }
 
+function crawlerCategory(name: string): string {
+  if (["Googlebot", "Bingbot", "DuckDuckBot", "Baiduspider", "YandexBot", "Applebot"].includes(name)) {
+    return "Search indexing";
+  }
+
+  if (
+    [
+      "OAI-SearchBot",
+      "ChatGPT-User",
+      "Claude-SearchBot",
+      "Claude-User",
+      "PerplexityBot",
+      "Perplexity-User",
+    ].includes(name)
+  ) {
+    return "AI search / live fetch";
+  }
+
+  if (
+    ["GPTBot", "Google-Extended", "ClaudeBot", "Applebot-Extended", "CCBot", "Bytespider", "cohere-ai"].includes(
+      name,
+    )
+  ) {
+    return "AI training / model access";
+  }
+
+  return "Other / preview";
+}
+
 function captureCrawlerRequest(request: NextRequest, event: NextFetchEvent) {
   const userAgent = request.headers.get("user-agent")?.slice(0, 512) ?? "";
   const { hostname, pathname, protocol } = request.nextUrl;
+  const name = crawlerName(userAgent);
 
   if (
     !POSTHOG_KEY ||
@@ -91,7 +121,8 @@ function captureCrawlerRequest(request: NextRequest, event: NextFetchEvent) {
       $host: hostname,
       $pathname: pathname,
       $raw_user_agent: userAgent,
-      crawler_name: crawlerName(userAgent),
+      crawler_name: name,
+      crawler_category: crawlerCategory(name),
       method: request.method,
     },
   };
