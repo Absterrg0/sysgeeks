@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ShareButton } from "@/components/share";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { DashList, PageHeader, Section } from "@/components/page-header";
 import { getConcept, listInvestigations } from "@/lib/content";
@@ -244,6 +245,11 @@ export default function SystemDesignInterviewPage() {
             <Link href="/investigations" className="btn btn-secondary">
               Browse practice questions
             </Link>
+            <ShareButton
+              url={`${SITE_URL}${PATH}`}
+              title="How to prepare for a system design interview"
+              text="A practical 45-minute system design interview plan, a one-week practice schedule, and free solo exercises."
+            />
           </>
         }
       >

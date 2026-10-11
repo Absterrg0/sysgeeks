@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ShareButton } from "@/components/share";
 import { breadcrumbs, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -75,9 +76,16 @@ export default function SystemDesignWorksheetPage() {
             formulas, five questions and an answer checklist. No signup is needed.
           </p>
         </div>
-        <a className="btn btn-accent" href={PDF_PATH} download>
-          Download the PDF
-        </a>
+        <div className="flex flex-wrap items-center gap-2">
+          <a className="btn btn-accent" href={PDF_PATH} download>
+            Download the PDF
+          </a>
+          <ShareButton
+            url={`${SITE_URL}${PATH}`}
+            title={TITLE}
+            text="A free printable system design interview cheat sheet with a 45-minute plan, sizing formulas, and practice questions."
+          />
+        </div>
       </header>
 
       <section aria-labelledby="plan" className="section">

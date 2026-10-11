@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ShareButton } from "@/components/share";
 import { PageHeader, Section } from "@/components/page-header";
 import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
@@ -133,6 +134,11 @@ export default function SystemDesignMockInterviewPage() {
         <Link href="/investigations" className="btn btn-secondary btn-lg">
           Browse practice systems
         </Link>
+        <ShareButton
+          url={`${SITE_URL}${PATH}`}
+          title={TITLE}
+          text="A free, self-guided system design mock interview with timed rounds and a practical scorecard."
+        />
       </div>
 
       <Section id="format" title="How the mock interview works">
