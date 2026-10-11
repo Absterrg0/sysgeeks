@@ -573,7 +573,7 @@ export const jobQueue = {
     },
     {
       id: "delivery",
-      title: "What 'at least once' commits you to",
+      title: "At-least-once delivery: what it commits you to",
       phase: "break",
       dimensions: ["explain", "break"],
       conceptIds: ["delivery-guarantees", "idempotency", "retries-and-backoff"],

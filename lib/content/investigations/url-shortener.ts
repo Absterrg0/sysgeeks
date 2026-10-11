@@ -1023,7 +1023,7 @@ export const urlShortener = {
     },
     {
       id: "replica-lag-404",
-      title: "New links show as \"not found\" in a new region",
+      title: "New links return 404 in another region",
       phase: "change",
       dimensions: ["change", "break"],
       conceptIds: ["replication", "caching"],

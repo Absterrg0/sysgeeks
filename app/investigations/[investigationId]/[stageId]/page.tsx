@@ -35,7 +35,7 @@ export async function generateMetadata(
   const fullTitle = `${investigation.searchTitle}: ${stage.title}`;
   const systemName = systemNameForTitle(investigation.searchTitle);
   const suffix = ` | ${systemName}`;
-  const title = fullTitle.length <= 70 ? fullTitle : `${clip(stage.title, 70 - suffix.length)}${suffix}`;
+  const title = fullTitle.length <= 55 ? fullTitle : `${clip(stage.title, 55 - suffix.length)}${suffix}`;
   return pageMetadata({
     title,
     description: clip(

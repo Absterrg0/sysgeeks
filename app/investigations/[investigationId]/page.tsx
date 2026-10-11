@@ -28,7 +28,7 @@ export async function generateMetadata(props: PageProps<"/investigations/[invest
       ? "Live Database Sharding"
       : systemNameForTitle(inv.searchTitle).replace(/ System$/, "");
   return pageMetadata({
-    title: `${systemName}: System Design Interview Practice`,
+    title: `${systemName}: System Design Interview`,
     description: clip(
       inv.id === "url-shortener"
         ? "Practice a Bitly-style URL shortener system design interview: estimate traffic, choose IDs, and test caching, click analytics, and urgent takedowns."

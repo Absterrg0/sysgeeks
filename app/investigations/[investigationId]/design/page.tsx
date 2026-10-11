@@ -24,8 +24,12 @@ export async function generateMetadata(
   const inv = getInvestigation(investigationId);
   if (!inv) return {};
   const fullTitle = `${inv.searchTitle}: Practice Round from a Blank Page`;
+  const systemName =
+    inv.id === "shard-live-database"
+      ? "Database Sharding"
+      : systemNameForTitle(inv.searchTitle).replace(/ System$/, "");
   return pageMetadata({
-    title: fullTitle.length <= 70 ? fullTitle : `${systemNameForTitle(inv.searchTitle)}: Blank-Page System Design Practice`,
+    title: fullTitle.length <= 55 ? fullTitle : `Blank-Page System Design: ${systemName}`,
     description: clip(
       `A ${DESIGN_ROUND_MINUTES}-minute system design round: ${inv.premise} Write requirements, estimates, the design, deep dives and failure handling yourself, then compare with a reference design.`,
     ),

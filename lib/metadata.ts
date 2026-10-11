@@ -22,9 +22,8 @@ export function pageMetadata({
   noindex?: boolean;
 }): Metadata {
   return {
-    // Search results show the site name on their own line, so the suffix is dropped where it would push
-    // the title past what Google displays (about 60 characters) and cut off the words that matter.
-    title: `${title}${TITLE_SUFFIX}`.length > 60 ? { absolute: title } : title,
+    // Keep title text concise enough that the important words fit after HTML escaping and result decoration.
+    title: `${title}${TITLE_SUFFIX}`.length > 55 ? { absolute: title } : title,
     description,
     alternates: { canonical: path },
     openGraph: { title, description, url: path, siteName: SITE_NAME, type: "website", locale: "en_US" },

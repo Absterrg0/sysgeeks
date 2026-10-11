@@ -12,8 +12,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
         "/investigations/ride-dispatch/review",
         "/investigations/ride-dispatch/design",
         ...rideDispatch.stages.map((stage) => `/investigations/ride-dispatch/${stage.id}`),
-      ]
+    ]
     : [];
+  const updatedInvestigationTitles = listInvestigations().flatMap((investigation) => {
+    const { id, searchTitle } = investigation;
+    const paths = [`/investigations/${id}`];
+    for (const stage of investigation.stages) {
+      if (`${searchTitle}: ${stage.title}`.length > 55) paths.push(`/investigations/${id}/${stage.id}`);
+    }
+    if (`${searchTitle}: Practice Round from a Blank Page`.length > 55) {
+      paths.push(`/investigations/${id}/design`);
+    }
+    const howTo = `How to ${searchTitle[0]?.toLowerCase()}${searchTitle.slice(1)}`;
+    if (`${howTo}: Step-by-Step System Design`.length > 55) paths.push(`/investigations/${id}/review`);
+    if (PLAYGROUNDS[id]) paths.push(`/investigations/${id}/playground`);
+    return paths.map((path) => [path, "2026-10-11"] as const);
+  });
   // Only include dates for pages with a known material edit. Avoid refreshing every
   // URL on each deploy, which would make the sitemap's update hints unreliable.
   const lastModified: Record<string, string> = {
@@ -21,10 +35,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/system-design-interview": "2026-10-11",
     "/investigations": "2026-10-11",
     "/capacity-estimator": "2026-10-11",
+    "/concepts/server-push": "2026-10-11",
+    "/system-design-interview/design-llm-inference": "2026-10-11",
     "/companies/google": "2026-10-11",
     "/companies/amazon": "2026-10-11",
     "/companies/uber": "2026-10-11",
     ...Object.fromEntries(rideDispatchPaths.map((path) => [path, "2026-10-11"])),
+    ...Object.fromEntries(updatedInvestigationTitles),
   };
   const paths = [
     "/",

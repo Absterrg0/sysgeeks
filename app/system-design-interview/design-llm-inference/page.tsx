@@ -5,7 +5,7 @@ import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-interview/design-llm-inference";
-const TITLE = "Design an LLM Inference Service: System Design Interview Walkthrough";
+const TITLE = "LLM Inference System Design: Interview Walkthrough";
 const DESCRIPTION =
   "A practical LLM system design interview answer: token-aware capacity estimates, GPU admission control, continuous batching, streaming, tenant fairness, and failure handling.";
 

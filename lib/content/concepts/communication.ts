@@ -557,7 +557,7 @@ export const communicationConcepts: ConceptInput[] = [
   },
   {
     id: "server-push",
-    title: "Server push: polling, long polling, SSE, WebSockets",
+    title: "Server push: Polling, SSE, WebSockets",
     domain: "communication",
     summary:
       "The ways a server can tell a client that something changed, and how update rate, latency needs and who-knows-what decide between them.",

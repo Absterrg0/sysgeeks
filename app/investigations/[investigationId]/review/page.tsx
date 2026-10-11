@@ -34,8 +34,12 @@ export async function generateMetadata(
   const inv = getInvestigation(investigationId);
   if (!inv) return {};
   const fullTitle = `${howTo(inv.searchTitle)}: Step-by-Step System Design`;
+  const systemName =
+    inv.id === "shard-live-database"
+      ? "Database Sharding"
+      : systemNameForTitle(inv.searchTitle).replace(/ System$/, "");
   return pageMetadata({
-    title: fullTitle.length <= 70 ? fullTitle : `${systemNameForTitle(inv.searchTitle)}: Step-by-Step System Design`,
+    title: fullTitle.length <= 55 ? fullTitle : `System Design Walkthrough: ${systemName}`,
     description: clip(
       `${howTo(inv.searchTitle)}, step by step: ${inv.system.components.map((c) => c.label).join(", ")}. ${inv.premise}`,
     ),

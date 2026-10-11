@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Playground } from "@/components/playground/playground";
 import { getCompany, getInvestigation, listConcepts, listInvestigations, listWriteups } from "@/lib/content";
 import { PLAYGROUNDS } from "@/lib/content/playground";
-import { breadcrumbs, clip, jsonLd, pageMetadata } from "@/lib/metadata";
+import { breadcrumbs, clip, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 
 export function generateStaticParams() {
   return listInvestigations()
@@ -19,8 +19,12 @@ export async function generateMetadata(
   const { investigationId } = await props.params;
   const inv = getInvestigation(investigationId);
   if (!inv) return {};
+  const systemName =
+    inv.id === "shard-live-database"
+      ? "Database Sharding"
+      : systemNameForTitle(inv.searchTitle).replace(/ System$/, "");
   return pageMetadata({
-    title: `${inv.searchTitle}: Architecture Playground`,
+    title: `System Design Playground: ${systemName}`,
     description: clip(
       `Change the architecture of ${inv.title.toLowerCase()}: add caches, queues, load balancers and replicas, turn up the traffic and kill parts, and see what each change buys and costs.`,
     ),
