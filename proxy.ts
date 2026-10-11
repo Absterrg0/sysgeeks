@@ -23,6 +23,33 @@ const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posth
 const CANONICAL_HOST = "www.sysgeeks.com";
 const CRAWLER_USER_AGENT =
   /(?:Googlebot|GoogleOther|Google-Extended|Google-InspectionTool|bingbot|BingPreview|DuckDuckBot|Baiduspider|YandexBot|GPTBot|OAI-SearchBot|ChatGPT-User|ClaudeBot|Claude-SearchBot|Claude-User|PerplexityBot|Perplexity-User|Applebot(?:-Extended)?|Amazonbot|CCBot|Bytespider|cohere-ai|meta-external(?:agent|fetcher))/i;
+const CRAWLER_NAMES: Array<[string, RegExp]> = [
+  ["Googlebot", /\bGooglebot\b/i],
+  ["GoogleOther", /\bGoogleOther\b/i],
+  ["Google-Extended", /\bGoogle-Extended\b/i],
+  ["Google-InspectionTool", /\bGoogle-InspectionTool\b/i],
+  ["Bingbot", /\bbingbot\b/i],
+  ["BingPreview", /\bBingPreview\b/i],
+  ["DuckDuckBot", /\bDuckDuckBot\b/i],
+  ["Baiduspider", /\bBaiduspider\b/i],
+  ["YandexBot", /\bYandexBot\b/i],
+  ["GPTBot", /\bGPTBot\b/i],
+  ["OAI-SearchBot", /\bOAI-SearchBot\b/i],
+  ["ChatGPT-User", /\bChatGPT-User\b/i],
+  ["ClaudeBot", /\bClaudeBot\b/i],
+  ["Claude-SearchBot", /\bClaude-SearchBot\b/i],
+  ["Claude-User", /\bClaude-User\b/i],
+  ["PerplexityBot", /\bPerplexityBot\b/i],
+  ["Perplexity-User", /\bPerplexity-User\b/i],
+  ["Applebot-Extended", /\bApplebot-Extended\b/i],
+  ["Applebot", /\bApplebot\b/i],
+  ["Amazonbot", /\bAmazonbot\b/i],
+  ["CCBot", /\bCCBot\b/i],
+  ["Bytespider", /\bBytespider\b/i],
+  ["cohere-ai", /\bcohere-ai\b/i],
+  ["Meta external agent", /\bmeta-externalagent\b/i],
+  ["Meta external fetcher", /\bmeta-externalfetcher\b/i],
+];
 
 const clerkProxy = features().auth ? clerkMiddleware() : undefined;
 
@@ -32,6 +59,10 @@ function isAuthPath(pathname: string): boolean {
 
 function isPublicContentPath(pathname: string): boolean {
   return pathname === "/" || PUBLIC_CONTENT_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+}
+
+function crawlerName(userAgent: string): string {
+  return CRAWLER_NAMES.find(([, pattern]) => pattern.test(userAgent))?.[0] ?? "Unknown";
 }
 
 function captureCrawlerRequest(request: NextRequest, event: NextFetchEvent) {
@@ -60,6 +91,7 @@ function captureCrawlerRequest(request: NextRequest, event: NextFetchEvent) {
       $host: hostname,
       $pathname: pathname,
       $raw_user_agent: userAgent,
+      crawler_name: crawlerName(userAgent),
       method: request.method,
     },
   };
