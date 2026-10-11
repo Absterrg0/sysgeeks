@@ -5,9 +5,9 @@ import { breadcrumbs, faqPage, itemList, jsonLd, pageMetadata } from "@/lib/meta
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-interview/ai-system-design";
-const TITLE = "AI System Design Interview Practice";
+const TITLE = "AI System Design Interview Questions & Practice";
 const DESCRIPTION =
-  "Practise AI system design interviews with free walkthroughs for LLM inference, RAG over private documents, and tool-using agents. No signup.";
+  "Practice AI system design interview questions with free walkthroughs for LLM inference, private-document RAG, and AI agents. No signup.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
@@ -15,24 +15,38 @@ const CASES = [
   {
     title: "Design an LLM inference service",
     href: "/system-design-interview/design-llm-inference",
+    prompt:
+      "Design a model-serving API for a chat product. Prompt and response lengths vary, users expect streaming, and GPU capacity is limited.",
     focus: "Estimate prompt and generated-token throughput, schedule GPU work, stream within a latency target, and handle overload or worker failure.",
     hardPart: "Throughput and latency",
+    followUp: "A traffic burst triples average prompt length while a GPU worker fails. What do you queue, reject, or retry, and what does the caller see?",
   },
   {
     title: "Design a RAG system for private documents",
     href: "/system-design-interview/design-rag-system",
+    prompt:
+      "Design an assistant that answers employee questions from company documents. Access depends on each employee's permissions, and the source documents keep changing.",
     focus: "Separate ingestion from query serving, keep retrieval inside the caller's permissions, publish fresh versions safely, and return evidence-backed answers.",
     hardPart: "Retrieval, permissions, and freshness",
+    followUp: "A document changes while an answer is being generated, or a user's access is revoked. How do you prevent stale or unauthorized content from reaching the model?",
   },
   {
     title: "Design a customer-support AI agent",
     href: "/system-design-interview/design-ai-agent",
+    prompt:
+      "Design a support agent that can update subscriptions and issue refunds. It must keep users in control and recover safely when a tool call times out.",
     focus: "Bound tool access, persist runs and actions, make external effects safe to retry, and decide what to do when the model or a tool fails.",
     hardPart: "Authority and side effects",
+    followUp: "A refund succeeds at the payment provider, but the response times out. How does a retry avoid a second refund, and how can support staff audit the outcome?",
   },
 ] as const;
 
 const FAQ = [
+  {
+    question: "What AI system design interview questions should I practise?",
+    answer:
+      "Practise designing an LLM inference service, a retrieval-augmented assistant over private documents, and an AI agent that can take customer-support actions. For each, clarify the quality and latency targets, estimate the workload, enforce permissions, and reason through a failure. These are original practice prompts, not claims about any employer's interview loop.",
+  },
   {
     question: "What is different about an AI system design interview?",
     answer:
@@ -85,7 +99,7 @@ export default function AiSystemDesignPage() {
         permissions, and model-driven side effects change what a strong design must guarantee.
       </PageHeader>
 
-      <Section id="choose" title="Choose a system to design">
+      <Section id="choose" title="AI system design interview questions to practise">
         <ol className="max-w-[72ch] divide-y divide-rule border-y border-rule">
           {CASES.map((item, index) => (
             <li key={item.href} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3 py-5">
@@ -96,8 +110,19 @@ export default function AiSystemDesignPage() {
                     {item.title}
                   </Link>
                 </h2>
-                <p className="mt-1 text-[0.9375rem] leading-relaxed text-ink-2">{item.focus}</p>
-                <p className="mt-2 text-[0.8125rem] text-ink-3">Main design pressure: {item.hardPart}.</p>
+                <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
+                  <strong className="font-medium text-ink">Prompt:</strong> {item.prompt}
+                </p>
+                <p className="mt-2 text-[0.875rem] leading-relaxed text-ink-2">
+                  <strong className="font-medium text-ink">Work through:</strong> {item.focus} The central design
+                  pressure is {item.hardPart.toLowerCase()}.
+                </p>
+                <p className="mt-2 text-[0.875rem] leading-relaxed text-ink-3">
+                  <strong className="font-medium text-ink-2">Follow-up:</strong> {item.followUp}
+                </p>
+                <Link href={item.href} className="mt-3 inline-flex text-[0.875rem] font-medium text-accent hover:underline">
+                  Try the full design exercise →
+                </Link>
               </div>
             </li>
           ))}
