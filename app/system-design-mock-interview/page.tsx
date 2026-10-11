@@ -7,7 +7,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 const PATH = "/system-design-mock-interview";
 const TITLE = "Free Solo System Design Mock Interview Practice";
 const DESCRIPTION =
-  "Practice system design interviews alone for free. Choose 30, 45, or 60 minutes, answer first, then review the references. No partner needed.";
+  "Practice system design interviews alone for free. Choose 30, 45, or 60 minutes, answer first, then review references with a practical self-scorecard.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
@@ -28,10 +28,24 @@ const FAQ = [
       "No. You answer the questions first. References, feedback, and self-assessment appear in the debrief after you finish, so you can try to reason through each prompt on your own.",
   },
   {
+    question: "How can I assess my system design interview practice?",
+    answer:
+      "Score a timed round 0–2 on trace, explain, defend, change, break, and implement. Use the lowest dimension to choose your next drill. This practice aid is not an employer rubric or a hiring prediction.",
+  },
+  {
     question: `Is the ${SITE_NAME} mock interview free?`,
     answer: `Yes. You can start a timed mock interview without an account. The session runs in your browser.`,
   },
 ];
+
+const SCORECARD = [
+  ["Trace", "Can you follow a request or event through the components and state changes?"],
+  ["Explain", "Can you explain how a mechanism works, beyond naming a tool?"],
+  ["Defend", "Can you compare an alternative and name the cost of your choice?"],
+  ["Change", "Can you adapt the design when traffic or a requirement shifts?"],
+  ["Break", "Can you predict a concrete failure and explain recovery?"],
+  ["Implement", "Can you connect a guarantee to the API, data model, or code that enforces it?"],
+] as const;
 
 export default function SystemDesignMockInterviewPage() {
   return (
@@ -107,6 +121,44 @@ export default function SystemDesignMockInterviewPage() {
           This is a self-guided practice tool, not a live interviewer or voice simulation. If you want to study a system
           first, work through an <Link href="/investigations" className="link">interactive system design question</Link> and its written walkthrough, then return for a timed round.
         </p>
+      </Section>
+
+      <Section id="scorecard" title="A practical system design interview self-scorecard">
+        <div className="max-w-[72ch] space-y-4 text-[0.9375rem] leading-relaxed text-ink-2">
+          <p>
+            After a mock, score each dimension from 0 to 2. Give yourself 0 if you skipped it, 1 if you did it with
+            gaps, and 2 if your reasoning was clear and tied to the stated constraints.
+          </p>
+          <p>
+            These six dimensions come from SysGeeks practice exercises. Use them to choose what to practise next; they
+            are not an employer rubric.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="data-table min-w-[36rem]">
+              <caption className="sr-only">Six dimensions for reviewing a system design interview practice round</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Dimension</th>
+                  <th scope="col">Evidence to look for in your answer</th>
+                </tr>
+              </thead>
+              <tbody>
+                {SCORECARD.map(([dimension, evidence]) => (
+                  <tr key={dimension}>
+                    <th scope="row">{dimension}</th>
+                    <td>{evidence}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Do not read the total as a hiring prediction. Pick the lowest dimension, do one focused exercise, then try
+            the same prompt again. The{" "}
+            <Link href="/review#dimension" className="link">skill drills</Link> sort practice by dimension, and the{" "}
+            <Link href="/review#session" className="link">timed mock interview</Link> gives you another round to review.
+          </p>
+        </div>
       </Section>
 
       <Section id="prep" title="Prepare for a system design interview">
