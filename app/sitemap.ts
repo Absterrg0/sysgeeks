@@ -33,6 +33,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified: Record<string, string> = {
     "/": "2026-10-11",
     "/system-design-interview": "2026-10-11",
+    "/system-design-interview/worksheet": "2026-10-11",
     "/investigations": "2026-10-11",
     "/system-design-mock-interview": "2026-10-11",
     "/system-design-playground": "2026-10-11",

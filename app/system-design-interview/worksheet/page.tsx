@@ -5,9 +5,9 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-interview/worksheet";
 const PDF_PATH = "/downloads/system-design-interview-practice-sheet.pdf";
-const TITLE = "System Design Interview PDF Worksheet";
+const TITLE = "System Design Interview Cheat Sheet PDF";
 const DESCRIPTION =
-  "Download a free printable system design interview worksheet with a 45-minute plan, sizing formulas, five practice questions and an answer checklist.";
+  "Free printable system design interview cheat sheet PDF: a 45-minute plan, quick sizing formulas, five practice prompts and a final-answer checklist.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
@@ -38,7 +38,7 @@ export default function SystemDesignWorksheetPage() {
             "@graph": [
               breadcrumbs([
                 { name: "System design interview guide", path: "/system-design-interview" },
-                { name: "Printable practice sheet", path: PATH },
+                { name: "Printable cheat sheet", path: PATH },
               ]),
               {
                 "@type": "WebPage",
@@ -47,7 +47,7 @@ export default function SystemDesignWorksheetPage() {
                 url: `${SITE_URL}${PATH}`,
                 mainEntity: {
                   "@type": "DigitalDocument",
-                  name: "Printable system design interview practice sheet",
+                  name: "Printable system design interview cheat sheet (two-page worksheet)",
                   encodingFormat: "application/pdf",
                   contentUrl: `${SITE_URL}${PDF_PATH}`,
                   inLanguage: "en",
@@ -68,11 +68,11 @@ export default function SystemDesignWorksheetPage() {
             <span className="mx-1.5 text-rule-strong">/</span>Printable worksheet
           </p>
           <h1 className="font-display text-[1.75rem] leading-[1.15] tracking-[-0.02em] text-balance sm:text-[2rem]">
-            System design interview practice sheet
+            System design interview cheat sheet
           </h1>
           <p className="mt-2.5 max-w-[66ch] text-[0.9375rem] leading-relaxed text-ink-2">
-            A free, two-page PDF for a 45-minute practice round. It gives you a time plan, quick sizing formulas,
-            five questions and a checklist. No signup is needed.
+            A free, two-page printable worksheet for a 45-minute practice round. It gives you a time plan, quick sizing
+            formulas, five questions and an answer checklist. No signup is needed.
           </p>
         </div>
         <a className="btn btn-accent" href={PDF_PATH} download>

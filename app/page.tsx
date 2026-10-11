@@ -171,7 +171,7 @@ export default function Home() {
                 How to prepare for a system design interview →
               </Link>
               <Link href="/system-design-interview/worksheet" className="transition-colors hover:text-accent">
-                Free system design interview worksheet →
+                Free system design interview cheat sheet PDF →
               </Link>
               <Link href="/system-design-interview/scorecard" className="transition-colors hover:text-accent">
                 Printable system design interview scorecard →

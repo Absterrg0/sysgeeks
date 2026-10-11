@@ -315,7 +315,7 @@ export default function SystemDesignInterviewPage() {
               How the mock interview works
             </Link>
             <Link href="/system-design-interview/worksheet" className="font-medium text-accent hover:underline">
-              Download the free printable practice sheet
+              Download the free system design interview cheat sheet
             </Link>
             <Link href="/system-design-interview/scorecard" className="font-medium text-accent hover:underline">
               Use the printable system design interview scorecard
