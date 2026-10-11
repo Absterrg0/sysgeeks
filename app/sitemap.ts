@@ -83,7 +83,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...listExampleProjects().map((e) => `/projects/examples/${e.id}`),
   ];
   return paths.map((path) => ({
-    url: `${SITE_URL}${path}`,
+    url: path === "/" ? SITE_URL : `${SITE_URL}${path}`,
     ...(lastModified[path] ? { lastModified: lastModified[path] } : {}),
   }));
 }
