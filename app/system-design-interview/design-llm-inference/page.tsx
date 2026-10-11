@@ -78,6 +78,9 @@ export default function DesignLlmInferencePage() {
       </PageHeader>
 
       <div className="mt-6 flex flex-wrap gap-2">
+        <Link href="/system-design-interview/llm-inference-capacity" className="btn btn-accent">
+          Estimate LLM inference capacity
+        </Link>
         <Link href="/projects/examples/ml-inference-api" className="btn btn-accent">
           Explore the model inference API example
         </Link>

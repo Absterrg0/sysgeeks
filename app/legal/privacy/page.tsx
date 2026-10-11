@@ -73,7 +73,9 @@ export default function PrivacyPage() {
               interaction metrics, along with page URL and route, network speed, browser, device, operating system and
               country. Both tools exclude sign-in and sign-up pages, account pages, saved reports, interview sessions
               and private project URLs. If configured, PostHog records public-page views and the explicit events
-              share, answer_submitted, design_round_saved, mock_interview_started and mock_interview_completed. These
+              share, answer_submitted, design_round_saved, mock_interview_started, mock_interview_completed and
+              llm_capacity_estimator_used. The calculator event records only that the tool was used; it does not include
+              values entered. These
               events include only the event name and limited context such as the public route, exercise, interview
               length, focus and question count; answer text and private project content are not sent. PostHog uses
               session storage for an anonymous identifier that lasts for the browser tab session. Autocapture and

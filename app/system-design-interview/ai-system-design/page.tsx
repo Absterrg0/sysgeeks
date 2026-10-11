@@ -188,6 +188,9 @@ export default function AiSystemDesignPage() {
           </li>
         </ol>
         <div className="mt-5 flex flex-wrap gap-3">
+          <Link href="/system-design-interview/llm-inference-capacity" className="btn btn-secondary">
+            Estimate LLM inference memory and token load
+          </Link>
           <Link href="/system-design-mock-interview" className="btn btn-accent">
             Practise a timed system design mock
           </Link>

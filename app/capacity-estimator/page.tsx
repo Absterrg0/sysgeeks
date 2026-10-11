@@ -72,6 +72,13 @@ export default function CapacityEstimatorPage() {
         <p className="mt-4 max-w-[72ch] text-[0.8125rem] leading-relaxed text-ink-3">
           These are workload estimates, not server or database sizing recommendations. The cache working set is the assumed share of logical retained data that stays hot; real capacity depends on access patterns, freshness targets, measured per-instance throughput, redundancy, and operational headroom. Read the <Link href="/concepts/caching" className="link">cache design guide</Link> for invalidation and failure tradeoffs.
         </p>
+        <p className="mt-3 max-w-[72ch] text-[0.875rem] leading-relaxed text-ink-2">
+          Estimating a language-model serving pool? Use the{" "}
+          <Link href="/system-design-interview/llm-inference-capacity" className="link">
+            LLM inference capacity calculator
+          </Link>{" "}
+          to estimate weight memory, KV cache, active sequences, and token workload.
+        </p>
       </Section>
 
       <Section id="formulas" title="How the estimate is calculated">
