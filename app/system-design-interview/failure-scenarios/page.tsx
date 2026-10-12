@@ -7,7 +7,7 @@ import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-interview/failure-scenarios";
-const TITLE = "System Design Interview Follow-Up Questions: 12 Scenarios";
+const TITLE = "System Design Interview Failure Scenarios: 12 Follow-Ups";
 const DESCRIPTION =
   "Practise 12 system design interview follow-up questions about failures, overload, and recovery, with worked answers, a five-step method, and free interactive drills.";
 
@@ -183,7 +183,7 @@ export default function FailureScenariosPage() {
         }}
       />
 
-      <PageHeader title={`${SCENARIOS.length} system design interview follow-up questions with answers`}>
+      <PageHeader title={`${SCENARIOS.length} system design interview failure scenarios with answers`}>
         Interview follow-ups test whether your design still meets its promises after traffic changes or a component,
         request, or dependency behaves unexpectedly. Practise the reasoning in order: name the impact, protect the
         invariant, contain the failure, recover safely, and say what the recovery costs. These are original practice
