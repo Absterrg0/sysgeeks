@@ -8,7 +8,8 @@ export type PracticeEntrySource =
   | "home_hero"
   | "question_catalog"
   | "interview_guide_mistake_drill"
-  | "interview_guide_question_list";
+  | "interview_guide_question_list"
+  | "failure_scenarios_guide";
 
 export function PracticeEntryLink({
   href,

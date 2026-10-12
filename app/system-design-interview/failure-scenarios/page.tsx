@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ContentUsefulness } from "@/components/content-usefulness";
 import { PageHeader, Section } from "@/components/page-header";
+import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 
@@ -248,9 +249,14 @@ export default function FailureScenariosPage() {
           <p>
             A strong answer also asks whether the provider guarantees idempotency and for how long. If its key expires
             before a delayed retry, the design needs a status lookup or a human reconciliation path.{" "}
-            <Link href="/investigations/payment-workflow/diagnose-the-double-charge" className="link">
+            <PracticeEntryLink
+              href="/investigations/payment-workflow/diagnose-the-double-charge"
+              investigationId="payment-workflow"
+              source="failure_scenarios_guide"
+              className="link"
+            >
               Practise the full payment failure
-            </Link>
+            </PracticeEntryLink>
             .
           </p>
         </div>
@@ -258,23 +264,39 @@ export default function FailureScenariosPage() {
 
       <Section id="drills" title={`${SCENARIOS.length} system design interview follow-up questions to practise`}>
         <ol className="max-w-[72ch] divide-y divide-rule border-y border-rule">
-          {SCENARIOS.map((scenario) => (
-            <li key={scenario.title} className="py-5">
-              <h3 className="text-[1rem] font-medium">{scenario.title}</h3>
-              <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
-                <strong className="font-medium text-ink">Failure: </strong>
-                {scenario.failure}
-              </p>
-              <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
-                <strong className="font-medium text-ink">Reason through it: </strong>
-                {scenario.answer}
-              </p>
-              <p className="mt-2 text-[0.8125rem] leading-relaxed text-ink-3">Listen for: {scenario.cue}</p>
-              <Link href={scenario.href} className="mt-2 inline-block text-[0.8125rem] font-medium text-accent hover:underline">
-                {scenario.link} →
-              </Link>
-            </li>
-          ))}
+          {SCENARIOS.map((scenario) => {
+            const investigationId = scenario.href.match(/^\/investigations\/([^/]+)/)?.[1];
+            const className = "mt-2 inline-block text-[0.8125rem] font-medium text-accent hover:underline";
+
+            return (
+              <li key={scenario.title} className="py-5">
+                <h3 className="text-[1rem] font-medium">{scenario.title}</h3>
+                <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
+                  <strong className="font-medium text-ink">Failure: </strong>
+                  {scenario.failure}
+                </p>
+                <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
+                  <strong className="font-medium text-ink">Reason through it: </strong>
+                  {scenario.answer}
+                </p>
+                <p className="mt-2 text-[0.8125rem] leading-relaxed text-ink-3">Listen for: {scenario.cue}</p>
+                {investigationId ? (
+                  <PracticeEntryLink
+                    href={scenario.href}
+                    investigationId={investigationId}
+                    source="failure_scenarios_guide"
+                    className={className}
+                  >
+                    {scenario.link} →
+                  </PracticeEntryLink>
+                ) : (
+                  <Link href={scenario.href} className={className}>
+                    {scenario.link} →
+                  </Link>
+                )}
+              </li>
+            );
+          })}
         </ol>
       </Section>
 
