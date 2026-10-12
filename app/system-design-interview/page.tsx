@@ -16,7 +16,7 @@ const PUBLISHED = "2026-10-06";
 const MODIFIED = "2026-10-12";
 
 export const metadata: Metadata = pageMetadata({
-  title: "How to Prepare for a System Design Interview",
+  title: "How to Prepare for a System Design Interview in 1 Week",
   description:
     "A 45-minute interview plan, focused drills for common system design mistakes, and a one-week practice schedule. Free exercises, no signup.",
   path: PATH,
@@ -279,7 +279,7 @@ export default function SystemDesignInterviewPage() {
         }}
       />
       <PageHeader
-        title="How to prepare for a system design interview"
+        title="How to prepare for a system design interview in one week"
         meta={`Updated ${formatDate(MODIFIED)}`}
         actions={
           <>
@@ -291,7 +291,7 @@ export default function SystemDesignInterviewPage() {
             </Link>
             <ShareButton
               url={`${SITE_URL}${PATH}`}
-              title="How to prepare for a system design interview"
+              title="How to prepare for a system design interview in one week"
               text="A practical 45-minute system design interview plan, a one-week practice schedule, and free solo exercises."
             />
           </>
