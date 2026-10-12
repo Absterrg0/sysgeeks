@@ -55,7 +55,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/concepts/asynchronous-processing": "2026-10-12",
     "/concepts/replication": "2026-10-12",
     "/concepts/concurrency-control": "2026-10-12",
-    "/system-design-mock-interview": "2026-10-11",
+    "/system-design-mock-interview": "2026-10-12",
     "/system-design-playground": "2026-10-11",
     "/downloads/system-design-interview-questions-and-answers.pdf": "2026-10-12",
     "/capacity-estimator": "2026-10-11",

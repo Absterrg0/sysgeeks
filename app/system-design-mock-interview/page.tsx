@@ -9,12 +9,11 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-mock-interview";
 const TITLE = "Free System Design Mock Interview Practice";
-const SEARCH_TITLE = "How to Practice System Design Interviews Alone";
 const DESCRIPTION =
-  "Practice system design interviews alone with a free 30-, 45-, or 60-minute timed mock, follow-up prompts, a six-skill scorecard, and a post-round debrief.";
+  "Run a free system design mock interview alone. Choose 30, 45, or 60 minutes, answer follow-up prompts, score six interview skills, and review your debrief. No account needed.";
 const PRACTICE_COUNT = listInvestigations().length;
 
-export const metadata: Metadata = pageMetadata({ title: SEARCH_TITLE, description: DESCRIPTION, path: PATH });
+export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
 const FAQ = [
   {
