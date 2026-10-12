@@ -5,6 +5,9 @@ const LEGACY_HOSTS = ["sysgeeks.vercel.app", "interviewgeek.vercel.app"];
 const nextConfig: NextConfig = {
   devIndicators: false,
   poweredByHeader: false,
+  experimental: {
+    inlineCss: true,
+  },
   async redirects() {
     return [
       // The Vercel hosts serve the same pages as the domain; send them, and their ranking, to the domain.
