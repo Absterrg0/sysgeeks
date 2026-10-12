@@ -34,19 +34,38 @@ export function shouldTrack(url: string): boolean {
 function getPostHog(): Promise<PostHog> | undefined {
   if (!POSTHOG_KEY) return undefined;
 
-  posthogPromise ??= import("posthog-js").then(({ default: posthog }) => {
-    posthog.init(POSTHOG_KEY, {
-      api_host: POSTHOG_HOST,
-      defaults: "2026-05-30",
-      autocapture: false,
-      rageclick: false,
-      capture_pageview: false,
-      capture_pageleave: false,
-      disable_session_recording: true,
-      persistence: "sessionStorage",
-      person_profiles: "identified_only",
-    });
-    return posthog;
+  posthogPromise ??= new Promise((resolve, reject) => {
+    const load = () => {
+      void import("posthog-js")
+        .then(({ default: posthog }) => {
+          posthog.init(POSTHOG_KEY, {
+            api_host: POSTHOG_HOST,
+            defaults: "2026-05-30",
+            autocapture: false,
+            rageclick: false,
+            capture_pageview: false,
+            capture_pageleave: false,
+            disable_session_recording: true,
+            disable_surveys: true,
+            persistence: "sessionStorage",
+            person_profiles: "identified_only",
+          });
+          resolve(posthog);
+        })
+        .catch(reject);
+    };
+
+    const requestIdleCallback = (
+      window as unknown as {
+        requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      }
+    ).requestIdleCallback;
+
+    if (requestIdleCallback) {
+      requestIdleCallback.call(window, load, { timeout: 2_000 });
+    } else {
+      window.setTimeout(load, 1_000);
+    }
   });
 
   return posthogPromise;
