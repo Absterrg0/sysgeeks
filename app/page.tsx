@@ -132,7 +132,7 @@ export default function Home() {
       />
       <section aria-labelledby="hero" className="relative isolate pt-10 sm:pt-14">
         <div className="light-cool" aria-hidden="true" />
-        <div className="rise grid gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1fr)_27rem] lg:items-end">
+        <div className="grid gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1fr)_27rem] lg:items-end">
           <div>
             {scene && (
               <p className="kicker flex items-center gap-2.5">
