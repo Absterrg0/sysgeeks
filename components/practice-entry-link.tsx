@@ -6,6 +6,7 @@ import { track } from "@/lib/analytics";
 
 export type PracticeEntrySource =
   | "home_hero"
+  | "mock_interview_landing_hero"
   | "question_catalog"
   | "interview_guide_mistake_drill"
   | "interview_guide_question_list"
@@ -20,7 +21,7 @@ export function PracticeEntryLink({
   className,
 }: {
   href: string;
-  investigationId: string;
+  investigationId?: string;
   source: PracticeEntrySource;
   children: ReactNode;
   className: string;
@@ -29,7 +30,12 @@ export function PracticeEntryLink({
     <Link
       href={href}
       className={className}
-      onClick={() => track("practice_entry_clicked", { investigation: investigationId, source })}
+      onClick={() =>
+        track("practice_entry_clicked", {
+          ...(investigationId ? { investigation: investigationId } : {}),
+          source,
+        })
+      }
     >
       {children}
     </Link>

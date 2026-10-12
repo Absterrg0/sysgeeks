@@ -77,7 +77,8 @@ export default function PrivacyPage() {
               answer_submitted,
               design_round_saved, mock_interview_started, mock_interview_completed, llm_capacity_estimator_used and
               content_feedback.
-              The practice_entry_clicked event records which public exercise link was selected and its source label.
+              The practice_entry_clicked event records the public practice entry point and its source label; exercise
+              links also include the selected exercise ID.
               The walkthrough_opened event records the public walkthrough slug and whether its title or exercise link
               was selected.
               The practice_started event records the exercise, whether someone started or continued it, and the

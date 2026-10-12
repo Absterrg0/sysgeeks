@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContentUsefulness } from "@/components/content-usefulness";
+import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { ShareButton } from "@/components/share";
 import { PageHeader, Section } from "@/components/page-header";
 import { listInvestigations } from "@/lib/content";
@@ -131,9 +132,13 @@ export default function SystemDesignMockInterviewPage() {
       </PageHeader>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        <Link href="/review#session" className="btn btn-accent btn-lg">
+        <PracticeEntryLink
+          href="/review#session"
+          source="mock_interview_landing_hero"
+          className="btn btn-accent btn-lg"
+        >
           Choose a mock interview length
-        </Link>
+        </PracticeEntryLink>
         <Link href="/investigations" className="btn btn-secondary btn-lg">
           Browse practice systems
         </Link>
