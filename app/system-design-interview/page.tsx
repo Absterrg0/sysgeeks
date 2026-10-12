@@ -335,11 +335,11 @@ export default function SystemDesignInterviewPage() {
           ))}
         </ol>
         <p className="mt-6 max-w-[66ch] text-[0.9375rem] leading-relaxed text-ink-2">
-          Want more practice with retries, worker crashes, database failover, or stale data? Use the{" "}
+          Want more practice with retries, worker crashes, queue backlogs, cache failures, or split-brain writes? Use the{" "}
           <Link href="/system-design-interview/failure-scenarios" className="link">
-            system design interview failure scenarios guide
+            system design interview follow-up questions and failure scenarios
           </Link>{" "}
-          for a five-step answer method and seven focused drills.
+          for a five-step answer method and 12 worked drills.
         </p>
       </Section>
 
@@ -416,7 +416,7 @@ export default function SystemDesignInterviewPage() {
         <div className="max-w-[66ch] space-y-4 text-[0.9375rem] leading-relaxed text-ink-2">
           <p>
             At mid and senior levels, naming familiar services is not enough. Show how a requirement leads to a design
-            choice, what that choice costs, and what evidence would make you change it. Start from the prompt's scale
+            choice, what that choice costs, and what evidence would make you change it. Start from the prompt&apos;s scale
             instead of copying a production architecture from memory.
           </p>
           <ul className="list-disc space-y-2 pl-5">

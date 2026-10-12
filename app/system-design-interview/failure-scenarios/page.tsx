@@ -6,9 +6,9 @@ import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-interview/failure-scenarios";
-const TITLE = "System Design Interview Failure Scenarios with Answers";
+const TITLE = "System Design Interview Follow-Up Questions: 12 Scenarios";
 const DESCRIPTION =
-  "Practise seven system design interview failure scenarios with worked answers, a five-step method, and free interactive drills.";
+  "Practise 12 system design interview follow-up questions about failures, overload, and recovery, with worked answers, a five-step method, and free interactive drills.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
@@ -21,7 +21,12 @@ const FAQ = [
   {
     question: "What failure scenarios should I practise for system design interviews?",
     answer:
-      "Practise uncertain payment timeouts, duplicate queue delivery, workers stopping mid-job, database failover, stale caches, hot partitions, and data migrations. They test different guarantees: idempotency, durable progress, availability, freshness, load distribution, and safe cutover.",
+      "Practise uncertain payment timeouts, duplicate queue delivery, workers stopping mid-job, database failover, stale caches, hot partitions, growing backlogs, cache stampedes, slow dependencies, out-of-order events, split-brain writes, and data migrations. They test guarantees around idempotency, durable progress, availability, freshness, load distribution, ordering, and safe recovery.",
+  },
+  {
+    question: "What follow-up questions come after the first system design diagram?",
+    answer:
+      "Expect the interviewer to change a constraint or introduce a failure: traffic grows tenfold, a hot key overloads one partition, a dependency slows down, a queue falls behind, a cache entry expires under heavy load, or a region becomes unreachable. Explain what the user sees, which guarantee must hold, how you detect and recover, and what trade-off the change introduces.",
   },
   {
     question: "Should I retry whenever a system design request fails?",
@@ -99,6 +104,51 @@ const SCENARIOS = [
     href: "/investigations/shard-live-database",
     link: "Practise a safe live data migration",
   },
+  {
+    title: "A queue backlog keeps growing",
+    failure: "Producers add work faster than consumers can finish it, so requests become stale even while every worker appears busy.",
+    answer:
+      "Compare arrival and completion rates, then track the age of the oldest item as well as queue depth. Find whether work is slow, stuck, or unevenly distributed. Add consumers only if the downstream system has capacity; otherwise rate-limit producers, shed optional work, or make the workload cheaper. Define how the backlog drains and route poison messages aside so one item cannot block progress.",
+    cue: "Queue depth shows volume; oldest-message age shows how long users have been waiting.",
+    href: "/concepts/backpressure",
+    link: "Review backpressure and overload control",
+  },
+  {
+    title: "A popular cache entry expires and overloads the database",
+    failure: "Many concurrent requests miss the same expired key and all try to rebuild it from the source at once.",
+    answer:
+      "Treat the cache miss as a burst, not as one isolated request. Coalesce concurrent fills so one request fetches the value, stagger expirations with jitter, and consider refreshing a hot value before it expires. If stale data can be served briefly, say how long and for which data; protect the origin with bounded concurrency or load shedding either way.",
+    cue: "More database capacity does not prevent duplicate work for the same key.",
+    href: "/investigations/distributed-cache",
+    link: "Practise distributed cache failure modes",
+  },
+  {
+    title: "A slow dependency exhausts the service's connection pool",
+    failure: "Requests hold connections while waiting on a dependency, leaving healthy requests unable to reach the database or finish their work.",
+    answer:
+      "Bound each wait with a deadline and keep a slow dependency from consuming every worker or connection. Limit concurrent calls, reject or shed low-priority work when saturated, and use a circuit breaker only with a clear recovery policy. Check pool wait time, request latency, and saturation together; retries need backoff and a total deadline so they do not add more load to the slow service.",
+    cue: "A timeout at one layer is not enough if callers immediately retry and occupy the pool again.",
+    href: "/concepts/backpressure",
+    link: "Review backpressure and overload control",
+  },
+  {
+    title: "Events for one user arrive out of order",
+    failure: "A delayed older update can overwrite a newer state, even when each event is processed successfully.",
+    answer:
+      "First decide whether order is required globally or only for one entity. If it is per user or account, partition work by that key and attach a sequence or version so consumers can reject stale updates or wait for a gap to be repaired. Preserve parallelism across unrelated entities, and make replay and duplicate delivery safe.",
+    cue: "Ordering one entity's events does not require serializing the entire system.",
+    href: "/investigations/chat-message-store",
+    link: "Practise message ordering and delivery guarantees",
+  },
+  {
+    title: "A network partition leaves two regions accepting writes",
+    failure: "Both sides may believe they are the active owner, creating conflicting updates or stale writers after failover.",
+    answer:
+      "State which operations may remain available during the partition and what consistency users require. A failover needs an authority rule—such as a quorum or lease—and a way to fence off the old owner before the new one writes. If the system allows writes in both regions, describe conflict resolution and which data can be lost or require reconciliation. Verify that promotion and recovery cannot let an old leader publish late writes.",
+    cue: "Routing traffic to a new region does not, by itself, stop the old region from writing.",
+    href: "/concepts/leases-and-fencing",
+    link: "Review leases and fencing tokens",
+  },
 ] as const;
 
 export default function FailureScenariosPage() {
@@ -132,11 +182,11 @@ export default function FailureScenariosPage() {
         }}
       />
 
-      <PageHeader title="7 system design interview failure scenarios with answers">
-        Failure questions test whether your design still meets its promises after a component, request, or dependency
-        behaves unexpectedly. Practise the reasoning in order: name the impact, protect the invariant, contain the
-        failure, recover safely, and say what the recovery costs. These are original practice scenarios, not claims
-        about questions asked by a particular employer.
+      <PageHeader title={`${SCENARIOS.length} system design interview follow-up questions with answers`}>
+        Interview follow-ups test whether your design still meets its promises after traffic changes or a component,
+        request, or dependency behaves unexpectedly. Practise the reasoning in order: name the impact, protect the
+        invariant, contain the failure, recover safely, and say what the recovery costs. These are original practice
+        scenarios, not claims about questions asked by a particular employer.
       </PageHeader>
       <p className="mt-2 max-w-[72ch] text-[0.8125rem] leading-relaxed text-ink-3">
         This guide was drafted with AI assistance and has not yet been independently reviewed by a human.{" "}
@@ -206,7 +256,7 @@ export default function FailureScenariosPage() {
         </div>
       </Section>
 
-      <Section id="drills" title="Seven system design failure scenarios to practise">
+      <Section id="drills" title={`${SCENARIOS.length} system design interview follow-up questions to practise`}>
         <ol className="max-w-[72ch] divide-y divide-rule border-y border-rule">
           {SCENARIOS.map((scenario) => (
             <li key={scenario.title} className="py-5">
@@ -293,6 +343,30 @@ export default function FailureScenariosPage() {
               PostgreSQL: High availability and replication
             </a>
             <span className="text-ink-3"> — The data-loss and latency tradeoffs between asynchronous and synchronous replication.</span>
+          </li>
+          <li className="py-3">
+            <a className="link" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Best_Practice_Recommended_Alarms_AWS_Services.html">
+              Amazon CloudWatch: Recommended SQS alarms
+            </a>
+            <span className="text-ink-3"> — Use the age of the oldest message with queue depth to spot work that is falling behind.</span>
+          </li>
+          <li className="py-3">
+            <a className="link" href="https://redis.io/blog/how-to-tame-the-thundering-herd-problem/">
+              Redis: How to tame the thundering herd problem
+            </a>
+            <span className="text-ink-3"> — Cache stampedes, request coalescing, expiry jitter, and overload controls.</span>
+          </li>
+          <li className="py-3">
+            <a className="link" href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/data-modeling-blocks.html">
+              Amazon DynamoDB: Write sharding
+            </a>
+            <span className="text-ink-3"> — How a hot partition can throttle a workload and when spreading a hot key helps.</span>
+          </li>
+          <li className="py-3">
+            <a className="link" href="https://kafka.apache.org/40/documentation/#intro_guarantees">
+              Apache Kafka: Ordering and delivery guarantees
+            </a>
+            <span className="text-ink-3"> — Ordering within a topic partition and the role of consumer state.</span>
           </li>
         </ul>
       </Section>

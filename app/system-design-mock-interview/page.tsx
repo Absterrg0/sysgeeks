@@ -236,7 +236,7 @@ export default function SystemDesignMockInterviewPage() {
         <p className="mt-3 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
           For worked answers to common failure follow-ups, read the{" "}
           <Link href="/system-design-interview/failure-scenarios" className="link">
-            system design interview failure scenarios guide
+            system design interview follow-up questions and failure scenarios guide
           </Link>
           .
         </p>
