@@ -8,10 +8,48 @@ const CANONICAL_HOST = "www.sysgeeks.com";
 const INTERNAL_UTM_VALUES = new Set(["codex", "posthog-setup"]);
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
+const POSTHOG_QUEUE_KEY = "sysgeeks-posthog-pending-events";
+const MAX_QUEUED_EVENTS = 50;
 
 type EventProperties = Record<string, string | number | boolean | null>;
+type QueuedEvent = { event: string; properties?: EventProperties };
 
 let posthogPromise: Promise<PostHog> | undefined;
+
+function queuePostHogEvent(event: string, properties?: EventProperties): boolean {
+  try {
+    const stored = window.sessionStorage.getItem(POSTHOG_QUEUE_KEY);
+    const queue: QueuedEvent[] = stored ? JSON.parse(stored) : [];
+    queue.push({ event, properties });
+    window.sessionStorage.setItem(POSTHOG_QUEUE_KEY, JSON.stringify(queue.slice(-MAX_QUEUED_EVENTS)));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function flushQueuedPostHogEvents(posthog: PostHog) {
+  let queue: unknown;
+  try {
+    queue = JSON.parse(window.sessionStorage.getItem(POSTHOG_QUEUE_KEY) ?? "[]");
+    window.sessionStorage.removeItem(POSTHOG_QUEUE_KEY);
+  } catch {
+    return;
+  }
+
+  if (!Array.isArray(queue)) return;
+  for (const item of queue) {
+    if (
+      item &&
+      typeof item === "object" &&
+      "event" in item &&
+      typeof item.event === "string" &&
+      (!item.properties || typeof item.properties === "object")
+    ) {
+      posthog.capture(item.event, item.properties as EventProperties | undefined);
+    }
+  }
+}
 
 export function shouldTrack(url: string): boolean {
   try {
@@ -50,6 +88,7 @@ function getPostHog(): Promise<PostHog> | undefined {
             persistence: "sessionStorage",
             person_profiles: "identified_only",
           });
+          flushQueuedPostHogEvents(posthog);
           resolve(posthog);
         })
         .catch(reject);
@@ -72,10 +111,18 @@ function getPostHog(): Promise<PostHog> | undefined {
 }
 
 function sendToPostHog(event: string, properties?: EventProperties) {
+  if (!POSTHOG_KEY) return;
+
+  const queued = queuePostHogEvent(event, properties);
   const client = getPostHog();
   if (!client) return;
 
-  void client.then((posthog) => posthog.capture(event, properties));
+  if (!queued) {
+    void client.then((posthog) => posthog.capture(event, properties));
+    return;
+  }
+
+  void client.then((posthog) => flushQueuedPostHogEvents(posthog));
 }
 
 export function track(event: string, properties?: EventProperties) {
