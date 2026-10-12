@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { TrackedWalkthroughLink } from "@/components/tracked-walkthrough-link";
 import { PageHeader, Section } from "@/components/page-header";
 import { breadcrumbs, faqPage, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
@@ -106,9 +107,14 @@ export default function AiSystemDesignPage() {
               <span className="pt-0.5 font-heading text-[1.125rem] text-ink-3 tabular-nums">{index + 1}</span>
               <div>
                 <h2 className="text-[1rem] font-medium">
-                  <Link href={item.href} className="hover:text-accent hover:underline">
+                  <TrackedWalkthroughLink
+                    href={item.href}
+                    slug={item.href.split("/").at(-1) ?? "unknown"}
+                    placement="title"
+                    className="hover:text-accent hover:underline"
+                  >
                     {item.title}
-                  </Link>
+                  </TrackedWalkthroughLink>
                 </h2>
                 <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
                   <strong className="font-medium text-ink">Prompt:</strong> {item.prompt}
@@ -120,9 +126,14 @@ export default function AiSystemDesignPage() {
                 <p className="mt-2 text-[0.875rem] leading-relaxed text-ink-3">
                   <strong className="font-medium text-ink-2">Follow-up:</strong> {item.followUp}
                 </p>
-                <Link href={item.href} className="mt-3 inline-flex text-[0.875rem] font-medium text-accent hover:underline">
+                <TrackedWalkthroughLink
+                  href={item.href}
+                  slug={item.href.split("/").at(-1) ?? "unknown"}
+                  placement="exercise_link"
+                  className="mt-3 inline-flex text-[0.875rem] font-medium text-accent hover:underline"
+                >
                   Try the full design exercise →
-                </Link>
+                </TrackedWalkthroughLink>
               </div>
             </li>
           ))}

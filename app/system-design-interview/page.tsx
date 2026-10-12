@@ -588,9 +588,14 @@ export default function SystemDesignInterviewPage() {
         </p>
         <div className="mt-6 flex flex-wrap gap-2">
           {investigations[0] && (
-            <Link href={`/investigations/${investigations[0].id}`} className="btn btn-primary">
+            <PracticeEntryLink
+              href={`/investigations/${investigations[0].id}`}
+              investigationId={investigations[0].id}
+              source="interview_guide_final_cta"
+              className="btn btn-primary"
+            >
               Start with {investigations[0].searchTitle.toLowerCase()}
-            </Link>
+            </PracticeEntryLink>
           )}
           <Link href="/review#session" className="btn btn-secondary">
             Take a mock interview

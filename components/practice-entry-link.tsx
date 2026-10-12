@@ -9,7 +9,8 @@ export type PracticeEntrySource =
   | "question_catalog"
   | "interview_guide_mistake_drill"
   | "interview_guide_question_list"
-  | "failure_scenarios_guide";
+  | "failure_scenarios_guide"
+  | "interview_guide_final_cta";
 
 export function PracticeEntryLink({
   href,
