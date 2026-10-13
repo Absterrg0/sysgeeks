@@ -20,12 +20,19 @@ const PUBLIC_EXCEPTIONS = ["/projects/examples"];
  */
 const AI_CRAWLERS = [
   "OAI-SearchBot",
-  "ChatGPT-User",
   "Claude-SearchBot",
-  "Claude-User",
   "PerplexityBot",
-  "Perplexity-User",
   "Applebot",
+  "Amzn-SearchBot",
+];
+
+// These agents fetch pages only when an individual user asks an assistant to visit a URL.
+// Keep them separate from automatic search indexing and training crawlers.
+const USER_REQUESTED_FETCHERS = [
+  "ChatGPT-User",
+  "Claude-User",
+  "Perplexity-User",
+  "Amzn-User",
 ];
 
 // These tokens control model-training or corpus access rather than web search. Keep live search
@@ -37,6 +44,7 @@ const TRAINING_AND_CORPUS_CRAWLERS = [
   "Applebot-Extended",
   "CCBot",
   "Meta-ExternalAgent",
+  "Amazonbot",
 ];
 
 export default function robots(): MetadataRoute.Robots {
@@ -44,6 +52,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       { userAgent: "*", allow: ["/", ...PUBLIC_EXCEPTIONS], disallow: PRIVATE },
       { userAgent: AI_CRAWLERS, allow: ["/", ...PUBLIC_EXCEPTIONS], disallow: PRIVATE },
+      { userAgent: USER_REQUESTED_FETCHERS, disallow: "/" },
       { userAgent: TRAINING_AND_CORPUS_CRAWLERS, disallow: "/" },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
