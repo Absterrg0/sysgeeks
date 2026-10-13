@@ -97,6 +97,7 @@ export default function Home() {
     return [{ company, writeup, system }];
   });
   const first = investigations[0];
+  const firstStage = first?.stages[0];
   const scene = heroScene();
   const stage = scene?.investigation.stages[scene.index];
   const visible = scene ? visibleAfter(scene.investigation, scene.index) : null;
@@ -153,14 +154,14 @@ export default function Home() {
               with the full written walkthrough. Free, no account needed.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-2.5">
-              {first && (
+              {first && firstStage && (
                 <PracticeEntryLink
-                  href={`/investigations/${first.id}`}
+                  href={`/investigations/${first.id}/${firstStage.id}`}
                   investigationId={first.id}
                   source="home_hero"
                   className="btn btn-accent btn-lg"
                 >
-                  {first.id === "url-shortener" ? "Practice a URL shortener interview" : "Start the first system"}
+                  {first.id === "url-shortener" ? "Try a URL shortener exercise" : "Try a system design exercise"}
                 </PracticeEntryLink>
               )}
               <PracticeEntryLink
@@ -189,18 +190,6 @@ export default function Home() {
               </PracticeEntryLink>
               <Link href="/system-design-interview" className="transition-colors hover:text-accent">
                 How to prepare for a system design interview →
-              </Link>
-              <Link href="/system-design-interview/ai-system-design" className="transition-colors hover:text-accent">
-                AI system design interview practice →
-              </Link>
-              <Link href="/system-design-interview/worksheet" className="transition-colors hover:text-accent">
-                Free system design interview cheat sheet PDF →
-              </Link>
-              <Link href="/investigations" className="transition-colors hover:text-accent">
-                System design interview questions and answers →
-              </Link>
-              <Link href="/system-design-interview/scorecard" className="transition-colors hover:text-accent">
-                Printable system design interview scorecard →
               </Link>
             </div>
           </div>
