@@ -11,7 +11,7 @@ import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
 import { breadcrumbs, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
-const TITLE = `${SYSTEM_DESIGN_ANSWERS.length} Free System Design Interview Questions & Answers`;
+const TITLE = `${SYSTEM_DESIGN_ANSWERS.length} Free Interactive System Design Interview Questions & Answers`;
 const DESCRIPTION =
   `Practice ${SYSTEM_DESIGN_ANSWERS.length} system design interview questions as interactive exercises: make a design choice, test a failure, then compare with a worked answer. Free PDF; no signup.`;
 const PDF_PATH = "/downloads/system-design-interview-questions-and-answers.pdf";
@@ -69,7 +69,7 @@ export default function InvestigationsPage() {
         }}
       />
       <PageHeader
-        title={`${questionCount} free system design interview questions and answers`}
+        title={`${questionCount} interactive system design interview questions, with worked answers`}
         actions={
           <>
             {PRACTICE_PATH[0] && (
