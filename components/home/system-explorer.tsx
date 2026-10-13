@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { SystemMap } from "@/components/system-map";
+import { track } from "@/lib/analytics";
 import type { ArchitectureFlow, PlacedComponent } from "@/lib/domain/content";
 
 export type ExplorerSystem = {
@@ -35,6 +37,7 @@ export function SystemExplorer({ systems }: { systems: ExplorerSystem[] }) {
             <li key={s.id} className="border-b border-rule-soft">
               <Link
                 href={`/investigations/${s.id}`}
+                onClick={() => track("practice_entry_clicked", { investigation: s.id, source: "home_explorer_system" })}
                 onMouseEnter={() => setActiveId(s.id)}
                 onFocus={() => setActiveId(s.id)}
                 aria-describedby={on ? "explorer-premise" : undefined}
@@ -85,13 +88,23 @@ export function SystemExplorer({ systems }: { systems: ExplorerSystem[] }) {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Link href={`/investigations/${active.id}/${active.firstStageId}`} className="btn btn-accent btn-sm">
+              <PracticeEntryLink
+                href={`/investigations/${active.id}/${active.firstStageId}`}
+                investigationId={active.id}
+                source="home_explorer_learn"
+                className="btn btn-accent btn-sm"
+              >
                 Learn it
-              </Link>
+              </PracticeEntryLink>
               {active.hasPlayground && (
-                <Link href={`/investigations/${active.id}/playground`} className="btn btn-secondary btn-sm">
+                <PracticeEntryLink
+                  href={`/investigations/${active.id}/playground`}
+                  investigationId={active.id}
+                  source="home_explorer_playground"
+                  className="btn btn-secondary btn-sm"
+                >
                   Play with it
-                </Link>
+                </PracticeEntryLink>
               )}
             </div>
           </div>

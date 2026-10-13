@@ -139,9 +139,13 @@ export default function SystemDesignMockInterviewPage() {
         >
           Choose a mock interview length
         </PracticeEntryLink>
-        <Link href="/investigations" className="btn btn-secondary btn-lg">
+        <PracticeEntryLink
+          href="/investigations"
+          source="mock_interview_landing_browse_systems"
+          className="btn btn-secondary btn-lg"
+        >
           Browse practice systems
-        </Link>
+        </PracticeEntryLink>
         <ShareButton
           url={`${SITE_URL}${PATH}`}
           title={TITLE}
@@ -265,9 +269,13 @@ export default function SystemDesignMockInterviewPage() {
           reasoning and find one weak spot between peer mocks. SysGeeks practice sessions are free and do not need an
           account.
         </p>
-        <Link href="/review#session" className="mt-5 inline-flex btn btn-accent">
+        <PracticeEntryLink
+          href="/review#session"
+          source="mock_interview_landing_final_cta"
+          className="mt-5 inline-flex btn btn-accent"
+        >
           Start a timed system design mock
-        </Link>
+        </PracticeEntryLink>
       </Section>
 
       <Section id="faq" title="System design mock interview questions">

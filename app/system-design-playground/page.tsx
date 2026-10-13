@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, Section } from "@/components/page-header";
+import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { listInvestigations } from "@/lib/content";
 import { PLAYGROUNDS } from "@/lib/content/playground";
 import { breadcrumbs, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
@@ -46,9 +47,14 @@ export default function SystemDesignPlaygroundPage() {
         meta={`${playgrounds.length} simulations · Free · No account needed`}
         actions={
           <>
-            <Link href="/investigations/url-shortener/playground" className="btn btn-accent">
+            <PracticeEntryLink
+              href="/investigations/url-shortener/playground"
+              investigationId="url-shortener"
+              source="playground_landing_hero"
+              className="btn btn-accent"
+            >
               Try the URL shortener simulator
-            </Link>
+            </PracticeEntryLink>
             <Link href="/investigations" className="btn btn-secondary">
               Browse all system design questions
             </Link>
@@ -90,12 +96,22 @@ export default function SystemDesignPlaygroundPage() {
                   </p>
                 </div>
                 <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 pt-5 text-[0.8125rem] font-medium">
-                  <Link href={`/investigations/${investigation.id}/playground`} className="text-accent hover:underline">
+                  <PracticeEntryLink
+                    href={`/investigations/${investigation.id}/playground`}
+                    investigationId={investigation.id}
+                    source="playground_catalog"
+                    className="text-accent hover:underline"
+                  >
                     Open playground →
-                  </Link>
-                  <Link href={`/investigations/${investigation.id}`} className="text-ink-3 hover:text-ink">
+                  </PracticeEntryLink>
+                  <PracticeEntryLink
+                    href={`/investigations/${investigation.id}`}
+                    investigationId={investigation.id}
+                    source="playground_catalog_question"
+                    className="text-ink-3 hover:text-ink"
+                  >
                     Interview question
-                  </Link>
+                  </PracticeEntryLink>
                 </div>
               </article>
             </li>

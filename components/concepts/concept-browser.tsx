@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { ConceptStanding } from "@/components/concept-standing";
 import { AppHeader } from "@/components/page-header";
 import { STANDING_SIGNAL } from "@/components/ui";
+import { track } from "@/lib/analytics";
 import { byConcept, latestEvidence } from "@/lib/domain/understanding";
 import { useLearnerState } from "@/lib/store/learner-store";
 
@@ -90,7 +91,10 @@ export function ConceptBrowser({
 
   const pick = (e: MouseEvent, id: string) => {
     // Wide screens show the concept in the pane; a modified click still opens it.
-    if (e.metaKey || e.ctrlKey || e.shiftKey || !window.matchMedia("(min-width: 1024px)").matches) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || !window.matchMedia("(min-width: 1024px)").matches) {
+      track("practice_entry_clicked", { source: "concept_browser_list", concept: id });
+      return;
+    }
     e.preventDefault();
     setSelectedId(id);
   };
@@ -224,7 +228,11 @@ export function ConceptBrowser({
                 <ConceptStanding conceptId={selected.id} showEmpty />
               </dd>
             </dl>
-            <Link href={`/concepts/${selected.id}`} className="btn btn-accent mt-5 w-full">
+            <Link
+              href={`/concepts/${selected.id}`}
+              className="btn btn-accent mt-5 w-full"
+              onClick={() => track("practice_entry_clicked", { source: "concept_browser", concept: selected.id })}
+            >
               {selected.checks > 0 ? "Start the lesson" : "Read it"}
             </Link>
             {selected.systems.length > 0 && (

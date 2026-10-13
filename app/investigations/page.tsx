@@ -153,9 +153,13 @@ export default function InvestigationsPage() {
           >
             Download all {questionCount} questions and answers (PDF)
           </TrackedDownloadLink>
-          <Link href="/system-design-playground" className="btn btn-secondary">
+          <PracticeEntryLink
+            href="/system-design-playground"
+            source="question_catalog_playground"
+            className="btn btn-secondary"
+          >
             Try interactive system design interview practice
-          </Link>
+          </PracticeEntryLink>
           <span className="text-[0.8125rem] text-ink-3">Free, no signup. Includes links to full walkthroughs.</span>
         </div>
       </section>
