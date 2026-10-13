@@ -87,7 +87,7 @@ export function systemNameForTitle(searchTitle: string): string {
  * A schema.org FAQPage. Every question and answer must also be visible on the page;
  * answer engines quote these pairs, and Google ignores markup that the page does not show.
  */
-export function faqPage(items: { question: string; answer: string }[]): Record<string, unknown> {
+export function faqPage(items: readonly { question: string; answer: string }[]): Record<string, unknown> {
   return {
     "@type": "FAQPage",
     mainEntity: items.map((item) => ({

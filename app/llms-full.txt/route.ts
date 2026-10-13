@@ -1,5 +1,6 @@
 import { getConcept, listCompanies, listConcepts, listInvestigations, writeupsByCompany } from "@/lib/content";
 import { QUICK_DRILLS } from "@/lib/content/quick-drills";
+import { RAG_FAQ } from "@/lib/content/rag-faq";
 import type { Investigation } from "@/lib/domain/content";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
@@ -107,6 +108,8 @@ A free, in-browser interview estimator for model-weight memory, KV-cache memory,
     "## Design a RAG system: system design interview walkthrough\nURL: " +
       SITE_URL +
       "/system-design-interview/design-rag-system\nAn original, assumption-labeled interview exercise for question answering over private, changing documents. It covers versioned ingestion, idempotent indexing, permission-scoped retrieval, lexical and semantic search, reranking, source citations, deletion, freshness, retrieval and answer evaluation, and failure handling. It also includes four self-check follow-up drills on partial index publication, access revocation, stale deletion retries, and retrieval quality. Primary sources include Cohere's RAG and evaluation documentation and OpenAI's vector-store API reference.",
+    "### RAG questions and direct answers\n\n" +
+      RAG_FAQ.map(({ question, answer }) => `#### ${question}\n\n${answer}`).join("\n\n"),
     "## Design an AI agent: system design interview walkthrough\nURL: " +
       SITE_URL +
       "/system-design-interview/design-ai-agent\nAn original practice prompt for a customer-support agent that can look up orders and issue refunds. It explains bounded orchestration, scoped tools, durable run and action state, idempotent external writes, uncertain outcomes, prompt injection boundaries, evaluation, and when a fixed workflow is simpler than an agent. Primary sources include OpenAI's agent guide, Anthropic's Building Effective Agents, and OWASP's excessive-agency guidance. It does not claim to describe an employer's interview loop or private architecture.",
