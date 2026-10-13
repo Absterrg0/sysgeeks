@@ -73,8 +73,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/review",
     "/about",
     "/ai",
-    // Keep the sitemap focused on complete, standalone search pages. Individual
-    // practice stages and interactive modes remain linked and crawlable in the site.
+    // The exercise entry page and its complete walkthrough answer different search
+    // intents; both are canonical, standalone pages. Individual decision stages and
+    // tool-only modes remain linked and crawlable without being listed here.
+    ...investigations.map(({ id }) => `/investigations/${id}`),
     ...investigations.map((inv) => `/investigations/${inv.id}/review`),
     ...listConcepts().map((c) => `/concepts/${c.id}`),
     ...listCompanies().map((c) => `/companies/${c.id}`),
