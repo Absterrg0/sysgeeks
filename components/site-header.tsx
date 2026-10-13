@@ -1,15 +1,18 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { AccountMenu } from "@/components/account/account-menu";
-import { LiveCredits } from "@/components/account/live-credits";
-import { CreditsChip } from "@/components/billing-ui";
 import type { StageBarInvestigation } from "@/components/investigation/stage-bar";
-import { ProjectBar, SystemBar } from "@/components/investigation/system-bar";
 import { Brand, DesktopLinks, DesktopNav, MobileNav } from "@/components/site-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
+
+const AccountMenu = dynamic(() => import("@/components/account/account-menu").then((module) => module.AccountMenu));
+const LiveCredits = dynamic(() => import("@/components/account/live-credits").then((module) => module.LiveCredits));
+const CreditsChip = dynamic(() => import("@/components/billing-ui").then((module) => module.CreditsChip));
+const SystemBar = dynamic(() => import("@/components/investigation/system-bar").then((module) => module.SystemBar));
+const ProjectBar = dynamic(() => import("@/components/investigation/system-bar").then((module) => module.ProjectBar));
 
 export type HeaderCredits = { balance: number; allotment?: number; renewsAt?: Date | null };
 
@@ -62,7 +65,7 @@ export function SiteHeader({
           <div className="ml-auto flex items-center gap-1.5">
             <DesktopLinks />
             <ThemeToggle />
-            <AccountMenu auth={auth} credits={credits ? <CreditsChip {...credits} /> : <LiveCredits />} />
+            {auth && <AccountMenu auth={auth} credits={credits ? <CreditsChip {...credits} /> : <LiveCredits />} />}
             {!auth && (
               <Link
                 href="/investigations"
