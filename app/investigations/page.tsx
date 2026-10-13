@@ -11,9 +11,9 @@ import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
 import { breadcrumbs, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
-const TITLE = `System Design Interview Questions: ${SYSTEM_DESIGN_ANSWERS.length} Answers`;
+const TITLE = `${SYSTEM_DESIGN_ANSWERS.length} Free System Design Interview Questions & Answers`;
 const DESCRIPTION =
-  `Practice ${SYSTEM_DESIGN_ANSWERS.length} system design interview questions with concise answers, core concepts, design tradeoffs and worked walkthroughs. Download the free PDF. No signup.`;
+  `Practice ${SYSTEM_DESIGN_ANSWERS.length} system design interview questions as interactive exercises: make a design choice, test a failure, then compare with a worked answer. Free PDF; no signup.`;
 const PDF_PATH = "/downloads/system-design-interview-questions-and-answers.pdf";
 
 export const metadata: Metadata = pageMetadata({
@@ -69,13 +69,25 @@ export default function InvestigationsPage() {
         }}
       />
       <PageHeader
-        title={`${questionCount} system design interview questions and answers`}
+        title={`${questionCount} free system design interview questions and answers`}
         actions={
-          <ShareButton
-            url={`${SITE_URL}/investigations`}
-            title={`${questionCount} System Design Interview Questions · ${SITE_NAME}`}
-            text={`Explore ${questionCount} free system design interview questions with interactive exercises and worked answers.`}
-          />
+          <>
+            {PRACTICE_PATH[0] && (
+              <PracticeEntryLink
+                href={`/investigations/${PRACTICE_PATH[0].id}`}
+                investigationId={PRACTICE_PATH[0].id}
+                source="question_catalog"
+                className="btn btn-accent"
+              >
+                Start a practice question
+              </PracticeEntryLink>
+            )}
+            <ShareButton
+              url={`${SITE_URL}/investigations`}
+              title={`${questionCount} System Design Interview Questions · ${SITE_NAME}`}
+              text={`Explore ${questionCount} free system design interview questions with interactive exercises and worked answers.`}
+            />
+          </>
         }
       >
         Practice each question as a full interview exercise. Set requirements, estimate capacity, make the design
