@@ -27,6 +27,7 @@ export function GET() {
     "",
     "## Start here",
     "",
+    "- [Eight one-minute system design interview drills](" + SITE_URL + "/system-design-interview/drills): Choose an answer to a short failure or scaling prompt, reveal the reasoning and trade-off, then continue to a full interactive exercise. Original practice scenarios; free and no account needed.",
     `- [How to prepare for a system design interview](${SITE_URL}/system-design-interview): What the interview tests, a 45-minute plan, a one-week schedule, and focused drills for common mistakes in requirements, estimates, trade-offs, retries, failure recovery, and communication.`,
     `- [System design interview follow-up questions and failure scenarios](${SITE_URL}/system-design-interview/failure-scenarios): A five-step method, a worked uncertain-payment example, and 12 original drills for retries, worker failures, duplicate messages, queue backlogs, cache stampedes, dependency overload, event ordering, split-brain writes, failover, hot partitions, and live migrations.`,
     `- [AI system design interview practice](${SITE_URL}/system-design-interview/ai-system-design): A guide to LLM inference, RAG over private documents, and tool-using agents, with shared workload, quality, permission, and failure considerations.`,

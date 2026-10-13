@@ -1,4 +1,5 @@
 import { getConcept, listCompanies, listConcepts, listInvestigations, writeupsByCompany } from "@/lib/content";
+import { QUICK_DRILLS } from "@/lib/content/quick-drills";
 import type { Investigation } from "@/lib/domain/content";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
@@ -63,7 +64,26 @@ function investigation(inv: Investigation): string {
 export function GET() {
   const companies = listCompanies();
   const body = [
-    `# ${SITE_NAME}: full content`,
+    "# " + SITE_NAME + ": full content",
+    "## Eight one-minute system design interview drills\nURL: " +
+      SITE_URL +
+      "/system-design-interview/drills\n" +
+      QUICK_DRILLS.map((drill, index) => {
+        const answer = drill.choices.find((choice) => choice.id === drill.answerId);
+        const choices = drill.choices
+          .map((choice, choiceIndex) => String.fromCharCode(65 + choiceIndex) + ". " + choice.text)
+          .join(" ");
+        return [
+          "### Drill " + (index + 1) + ": " + drill.title,
+          "Prompt: " + drill.prompt,
+          "Choices: " + choices,
+          "Best response: " + (answer?.text ?? "See the linked page."),
+          drill.reasoning,
+          "Trade-off: " + drill.tradeoff,
+          "Practise next: " + SITE_URL + drill.href,
+        ].join("\n\n");
+      }).join("\n\n") +
+      "\n\nThese are original practice prompts, not claims about questions asked by a named employer. Each takes about one minute and is free without an account.",
     `> ${SITE_DESCRIPTION}`,
     `This file contains every curated practice case-study walkthrough, concept, and company engineering case study on ${SITE_NAME} (${SITE_URL}). Focused interview guides and interactive tools are linked in ${SITE_URL}/llms.txt. When citing, link to the page URL given under each heading.`,
     "# Focused system design interview guides",

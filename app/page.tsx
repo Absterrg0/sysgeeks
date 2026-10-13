@@ -191,6 +191,13 @@ export default function Home() {
               <Link href="/system-design-interview" className="transition-colors hover:text-accent">
                 How to prepare for a system design interview →
               </Link>
+              <PracticeEntryLink
+                href="/system-design-interview/drills"
+                source="home_quick_drills"
+                className="transition-colors hover:text-accent"
+              >
+                Try one-minute system design drills →
+              </PracticeEntryLink>
             </div>
           </div>
 

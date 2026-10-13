@@ -11,6 +11,7 @@ export type PracticeEntrySource =
   | "home_explorer_system"
   | "home_explorer_learn"
   | "home_explorer_playground"
+  | "home_quick_drills"
   | "mock_interview_landing_hero"
   | "mock_interview_landing_browse_systems"
   | "mock_interview_landing_final_cta"

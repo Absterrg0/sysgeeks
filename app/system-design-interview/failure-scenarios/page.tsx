@@ -197,6 +197,9 @@ export default function FailureScenariosPage() {
       </p>
 
       <div className="mt-6 flex flex-wrap gap-2">
+        <Link href="/system-design-interview/drills" className="btn btn-secondary">
+          Try eight one-minute failure drills
+        </Link>
         <Link href="/investigations" className="btn btn-accent">
           Choose an interactive practice question
         </Link>
