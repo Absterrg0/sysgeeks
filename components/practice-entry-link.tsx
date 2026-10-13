@@ -6,6 +6,8 @@ import { track } from "@/lib/analytics";
 
 export type PracticeEntrySource =
   | "home_hero"
+  | "home_playground_hero"
+  | "home_mock_interview_hero"
   | "mock_interview_landing_hero"
   | "question_catalog"
   | "interview_guide_mistake_drill"

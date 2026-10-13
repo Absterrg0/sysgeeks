@@ -163,9 +163,13 @@ export default function Home() {
                   {first.id === "url-shortener" ? "Practice a URL shortener interview" : "Start the first system"}
                 </PracticeEntryLink>
               )}
-              <Link href="/system-design-playground" className="btn btn-secondary btn-lg">
+              <PracticeEntryLink
+                href="/system-design-playground"
+                source="home_playground_hero"
+                className="btn btn-secondary btn-lg"
+              >
                 Try {Object.keys(PLAYGROUNDS).length} interactive simulations
-              </Link>
+              </PracticeEntryLink>
               <ShareButton
                 url={SITE_URL}
                 title={`${SITE_NAME} · System design interview practice`}
@@ -176,9 +180,13 @@ export default function Home() {
               <Link href="/investigations" className="transition-colors hover:text-accent">
                 Browse all {investigations.length} systems →
               </Link>
-              <Link href="/review#session" className="transition-colors hover:text-accent">
+              <PracticeEntryLink
+                href="/review#session"
+                source="home_mock_interview_hero"
+                className="transition-colors hover:text-accent"
+              >
                 Start a timed mock interview →
-              </Link>
+              </PracticeEntryLink>
               <Link href="/system-design-interview" className="transition-colors hover:text-accent">
                 How to prepare for a system design interview →
               </Link>
