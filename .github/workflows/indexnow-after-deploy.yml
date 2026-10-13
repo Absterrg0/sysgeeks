@@ -9,11 +9,16 @@ permissions:
   contents: read
 
 jobs:
-  submit-sitemap:
+  submit-changed-urls:
     if: github.event.client_payload.project.name == 'interviewgeek' && github.event.client_payload.environment == 'production'
     runs-on: ubuntu-latest
+    env:
+      DEPLOY_SHA: ${{ github.event.client_payload.deployment.meta.githubCommitSha || github.sha }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+          fetch-depth: 2
 
       - uses: actions/setup-node@v6
         with:
@@ -22,7 +27,7 @@ jobs:
       - name: Wait for the production sitemap to reach the edge
         run: sleep 15
 
-      - name: Submit the production sitemap to IndexNow
+      - name: Submit changed production URLs to IndexNow
         env:
           SITE_URL: https://www.sysgeeks.com
         run: node scripts/indexnow.mjs
