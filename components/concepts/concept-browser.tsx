@@ -98,9 +98,9 @@ export function ConceptBrowser({
   return (
     <>
       <AppHeader
-        title="Concepts"
+        title="System design concepts"
         count={concepts.length}
-        description="Short lessons on the mechanisms the systems are built on: the problem, how it works, how it fails."
+        description="Learn core system design concepts with short lessons, interactive checks, and examples of how each mechanism fails."
         actions={
           <label className="flex h-8 w-[17rem] max-w-full items-center gap-2 rounded-lg bg-[color-mix(in_srgb,var(--raised)_55%,var(--paper))] px-2.5 text-ink-3 shadow-[inset_0_0_0_1px_var(--rule-strong)] focus-within:shadow-[inset_0_0_0_1px_var(--focus)]">
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
