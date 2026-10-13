@@ -13,8 +13,7 @@ import { resolveExercise } from "@/lib/content/exercises";
 import { conceptsReferencing, getConcept, getInvestigation, listConcepts, stagesUsingConcept, writeupsForConcept } from "@/lib/content";
 import { DOMAIN_LABELS } from "@/lib/domain/content";
 import { conceptQuestions } from "@/lib/concept-questions";
-import { breadcrumbs, clip, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
-import { proseToPlainText } from "@/lib/prose";
+import { breadcrumbs, clip, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -133,19 +132,6 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
                 author: { "@id": `${SITE_URL}/#organization` },
                 mainEntity: { "@id": `${SITE_URL}/concepts/${concept.id}#term` },
               },
-              faqPage([
-                { question: questions.problem, answer: proseToPlainText(concept.problem) },
-                { question: questions.mechanism, answer: proseToPlainText(concept.mechanism) },
-                { question: questions.assumptions, answer: concept.assumptions.join(" ") },
-                {
-                  question: questions.failures,
-                  answer: concept.failureModes.map((f) => `${f.name}: ${f.description}`).join(" "),
-                },
-                {
-                  question: questions.alternatives,
-                  answer: concept.alternatives.map((a) => `${a.name}: ${a.when}`).join(" "),
-                },
-              ]),
             ],
           }),
         }}
