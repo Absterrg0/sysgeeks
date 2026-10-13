@@ -29,9 +29,9 @@ export async function generateMetadata(props: PageProps<"/concepts/[conceptId]">
   if (!c) return {};
   if (c.id === "rate-limiting") {
     return pageMetadata({
-      title: "How to Design a Rate Limiter in System Design",
+      title: "Rate Limiting Algorithms in System Design",
       description:
-        "Design a distributed API rate limiter with a shared token bucket, atomic counters, burst limits, 429 responses, and a plan for limiter-store failure.",
+        "Compare token bucket, leaky bucket, fixed and sliding windows, then see when to share limiter state across servers and how to handle store failure.",
       path: `/concepts/${c.id}`,
     });
   }

@@ -40,14 +40,18 @@ export async function generateMetadata(
       : systemNameForTitle(inv.searchTitle).replace(/ System$/, "");
   return pageMetadata({
     title:
-      inv.id === "url-shortener"
+      inv.id === "api-rate-limiter"
+        ? "API Rate Limiter System Design Walkthrough"
+        : inv.id === "url-shortener"
         ? "URL Shortener System Design: Full Walkthrough"
         : fullTitle.length <= 55
           ? fullTitle
           : `System Design Walkthrough: ${systemName}`,
     description: clip(
-      inv.answerSummary ??
-        `${howTo(inv.searchTitle)}, step by step: ${inv.system.components.map((c) => c.label).join(", ")}. ${inv.premise}`,
+      inv.id === "api-rate-limiter"
+        ? "Design a distributed API rate limiter: choose a token bucket, share atomic counters across servers, return 429 and Retry-After, and plan for Redis failure."
+        : inv.answerSummary ??
+            `${howTo(inv.searchTitle)}, step by step: ${inv.system.components.map((c) => c.label).join(", ")}. ${inv.premise}`,
     ),
     path: `/investigations/${inv.id}/review`,
   });
