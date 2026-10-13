@@ -82,6 +82,7 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
                 description: `Every stage of "${inv.title}", decided and explained: the question, the answer, the reasoning, the tradeoffs, and the finished architecture.`,
                 url: `${SITE_URL}/investigations/${inv.id}/review`,
                 learningResourceType: "Walkthrough",
+                author: { "@id": `${SITE_URL}/#organization` },
                 educationalLevel: inv.difficulty,
                 teaches: inv.competencies.map((c) => c.label),
                 isAccessibleForFree: true,
@@ -103,7 +104,7 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
         <PageHeader
           eyebrow="The finished design, decision by decision"
           title={howTo(inv.searchTitle)}
-          meta={inv.title}
+          meta={`By SysGeeks · ${inv.title}`}
         >
           Not the one correct diagram, but a design you can defend under these constraints: the finished architecture, then
           every stage&apos;s question with the reasoning that answers it, the tradeoffs it accepts, and where another

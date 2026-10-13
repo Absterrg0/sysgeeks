@@ -91,6 +91,7 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
               ]),
               {
                 "@type": "DefinedTerm",
+                "@id": `${SITE_URL}/concepts/${concept.id}#term`,
                 name: concept.title,
                 description: concept.summary,
                 url: `${SITE_URL}/concepts/${concept.id}`,
@@ -99,6 +100,14 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
                   name: `${SITE_NAME} system design concepts`,
                   url: `${SITE_URL}/concepts`,
                 },
+              },
+              {
+                "@type": "WebPage",
+                "@id": `${SITE_URL}/concepts/${concept.id}#webpage`,
+                url: `${SITE_URL}/concepts/${concept.id}`,
+                name: concept.title,
+                author: { "@id": `${SITE_URL}/#organization` },
+                mainEntity: { "@id": `${SITE_URL}/concepts/${concept.id}#term` },
               },
               faqPage([
                 { question: questions.problem, answer: proseToPlainText(concept.problem) },
@@ -119,6 +128,7 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
       />
       <PageHeader
         title={concept.title}
+        meta="By SysGeeks"
         eyebrow={
           <>
             <Link href="/concepts" className="hover:text-ink">

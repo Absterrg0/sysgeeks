@@ -85,6 +85,7 @@ export default async function InvestigationPage(props: PageProps<"/investigation
                 description: inv.premise,
                 url: `${SITE_URL}/investigations/${inv.id}`,
                 learningResourceType: "Interactive exercise",
+                author: { "@id": `${SITE_URL}/#organization` },
                 educationalLevel: inv.difficulty,
                 timeRequired: `PT${inv.estimatedMinutes}M`,
                 teaches: inv.competencies.map((c) => c.label),
@@ -104,6 +105,7 @@ export default async function InvestigationPage(props: PageProps<"/investigation
       />
       <PageHeader
         title={inv.searchTitle}
+        meta="By SysGeeks"
         eyebrow={
           <>
             <Link href="/investigations" className="hover:text-ink">

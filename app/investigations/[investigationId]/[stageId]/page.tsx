@@ -135,6 +135,7 @@ export default async function StagePage(props: PageProps<"/investigations/[inves
                 description: proseToPlainText(stage.interaction.prompt),
                 url: `${SITE_URL}/investigations/${investigation.id}/${stage.id}`,
                 learningResourceType: "Practice problem",
+                author: { "@id": `${SITE_URL}/#organization` },
                 educationalLevel: investigation.difficulty,
                 position: index + 1,
                 isPartOf: { "@id": `${SITE_URL}/investigations/${investigation.id}#resource` },
@@ -160,6 +161,7 @@ export default async function StagePage(props: PageProps<"/investigations/[inves
         <h1 className="mt-3 font-display text-h1 text-balance">
           {systemName}: {stage.title}
         </h1>
+        <p className="mt-2 text-[0.8125rem] text-ink-3">By SysGeeks</p>
       </header>
 
       <section aria-label="The situation" className="section space-y-6">
