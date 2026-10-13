@@ -214,6 +214,19 @@ export default function AiPage() {
         </div>
       </Section>
 
+      <Section id="editorial" title="AI in editorial content">
+        <div className="prose max-w-[66ch]">
+          <p>
+            Some educational guides use AI assistance during drafting. Each such guide says so and states whether a
+            person has independently reviewed it. For example, the{" "}
+            <Link href="/system-design-interview/failure-scenarios" className="link">
+              system design failure scenarios guide
+            </Link>{" "}
+            was drafted with AI assistance and has not yet had an independent human review.
+          </p>
+        </div>
+      </Section>
+
       <Section id="limits" title="Credits and limits">
         <div className="prose max-w-[66ch]">
           <ul>

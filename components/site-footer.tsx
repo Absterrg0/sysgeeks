@@ -28,8 +28,11 @@ export function SiteFooter() {
             System design practice that asks why, what breaks, and what changes at ten times the load.
           </p>
           <p className="mt-4 text-micro text-ink-3">
-            Lessons, investigations and keys are written and checked by people. Anything an AI wrote or assessed is
-            labelled as such.
+            Content is published under the SysGeeks name. Guides that use AI assistance say so and note whether a person
+            has independently reviewed them.{" "}
+            <Link href="/ai" className="link">
+              How we use AI
+            </Link>
           </p>
         </div>
         {column("Learn", LEARN)}
