@@ -8,7 +8,7 @@ import { SITE_URL } from "@/lib/site";
 const PATH = "/system-design-interview/design-rag-system";
 const TITLE = "RAG System Design Interview: Retrieval, LLMs & Failure Modes";
 const DESCRIPTION =
-  "Design a retrieval-augmented generation (RAG) system for private documents. Work through hybrid retrieval, LLM answer grounding, access controls, freshness, evaluation, and failure handling.";
+  "Design a RAG system for a system design interview: private documents, hybrid retrieval, grounded LLM answers, access control, freshness, and failure handling.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
