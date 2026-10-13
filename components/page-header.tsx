@@ -69,7 +69,12 @@ export function AppHeader({
         <div className="min-w-0">
           <h1 className="flex items-baseline gap-2.5 font-display text-[1.625rem] leading-tight tracking-[-0.02em] text-balance">
             {title}
-            {count !== undefined && <span className="font-mono text-[0.8125rem] tracking-normal text-ink-3">{count}</span>}
+          {count !== undefined && (
+            <span className="font-mono text-[0.8125rem] tracking-normal text-ink-3">
+              {" "}
+              {count}
+            </span>
+          )}
           </h1>
           {description && <p className="mt-1.5 max-w-[72ch] text-[0.875rem] leading-relaxed text-ink-2">{description}</p>}
         </div>
