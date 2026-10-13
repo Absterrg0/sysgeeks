@@ -10,7 +10,7 @@ import { ShareButton } from "@/components/share";
 import { SourceList } from "@/components/writeup";
 import { DashList, PageHeader, Section } from "@/components/page-header";
 import { resolveExercise } from "@/lib/content/exercises";
-import { conceptsReferencing, getConcept, listConcepts, stagesUsingConcept, writeupsForConcept } from "@/lib/content";
+import { conceptsReferencing, getConcept, getInvestigation, listConcepts, stagesUsingConcept, writeupsForConcept } from "@/lib/content";
 import { DOMAIN_LABELS } from "@/lib/domain/content";
 import { conceptQuestions } from "@/lib/concept-questions";
 import { breadcrumbs, clip, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
@@ -27,6 +27,14 @@ export async function generateMetadata(props: PageProps<"/concepts/[conceptId]">
   const { conceptId } = await props.params;
   const c = getConcept(conceptId);
   if (!c) return {};
+  if (c.id === "rate-limiting") {
+    return pageMetadata({
+      title: "How to Design a Rate Limiter in System Design",
+      description:
+        "Design a distributed API rate limiter with a shared token bucket, atomic counters, burst limits, 429 responses, and a plan for limiter-store failure.",
+      path: `/concepts/${c.id}`,
+    });
+  }
   return pageMetadata({ title: `${c.title} in System Design`, description: clip(c.summary), path: `/concepts/${c.id}` });
 }
 
@@ -48,6 +56,7 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
   const concept = getConcept(conceptId);
   if (!concept) notFound();
 
+  const rateLimiterExercise = concept.id === "rate-limiting" ? getInvestigation("api-rate-limiter") : undefined;
   const uses = stagesUsingConcept(concept.id);
   const sources = writeupsForConcept(concept.id);
   const related = [
@@ -166,6 +175,35 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
       >
         {concept.summary}
       </PageHeader>
+
+      {rateLimiterExercise && (
+        <section
+          aria-labelledby="distributed-rate-limiter-design"
+          className="mt-6 max-w-[72ch] rounded-xl border border-rule bg-[color-mix(in_srgb,var(--raised)_45%,var(--paper))] p-5 sm:p-6"
+        >
+          <h2 id="distributed-rate-limiter-design" className="font-display text-[1.25rem] leading-tight tracking-[-0.015em]">
+            How to design a rate limiter for a distributed API
+          </h2>
+          <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">
+            Use a token bucket per API key, with the customer&apos;s refill rate and burst capacity. Update it atomically in
+            shared state so requests reaching different API servers consume one allowance. When the bucket is empty, return
+            HTTP 429 with <code>Retry-After</code>. Set a short timeout for the limiter store and decide how to degrade if it
+            fails; a local approximate limit can preserve API availability while shared state recovers.
+          </p>
+          <p className="mt-3 text-[0.875rem] leading-relaxed text-ink-2">
+            That design assumes requests can be attributed to a key and that clients respect the retry response. Expensive
+            endpoints may also need cost-based limits, and a shared store adds latency and a failure mode to every request.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+            <Link href={`/investigations/${rateLimiterExercise.id}`} className="link text-[0.875rem]">
+              Try the API rate limiter interview exercise
+            </Link>
+            <Link href={`/investigations/${rateLimiterExercise.id}/review`} className="link text-[0.875rem]">
+              Read the full worked rate limiter design
+            </Link>
+          </div>
+        </section>
+      )}
 
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-x-12">
         <div className="min-w-0">
