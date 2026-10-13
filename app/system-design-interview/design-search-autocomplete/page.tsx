@@ -66,7 +66,7 @@ export default function DesignSearchAutocompletePage() {
         }}
       />
 
-      <PageHeader title="Search autocomplete system design interview: a worked guide" meta="Updated October 13, 2026">
+      <PageHeader title="Search autocomplete system design interview: a worked guide" meta="By SysGeeks · Updated October 13, 2026">
         Design typeahead suggestions for a search box. The central choices are what counts as a match, how to rank a
         small candidate set, how often to refresh it, and what query data is safe to retain. This is an interview
         proposal with illustrative assumptions, not a description of a search company&apos;s private architecture.

@@ -201,7 +201,7 @@ export default function DesignInstagramFeedPage() {
         }}
       />
 
-      <PageHeader title="Instagram feed system design interview: a worked guide">
+      <PageHeader title="Instagram feed system design interview: a worked guide" meta="By SysGeeks">
         Design a home feed for photo and video posts. The hard part is deciding which posts to consider, how to rank
         them within a latency budget, and how to keep a very large author from multiplying work without limit. This is
         an interview proposal based on public engineering sources, not a claim about Instagram&apos;s private

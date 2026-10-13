@@ -183,7 +183,7 @@ export default function FailureScenariosPage() {
         }}
       />
 
-      <PageHeader title={`${SCENARIOS.length} system design interview failure scenarios with answers`}>
+      <PageHeader title={`${SCENARIOS.length} system design interview failure scenarios with answers`} meta="By SysGeeks">
         Interview follow-ups test whether your design still meets its promises after traffic changes or a component,
         request, or dependency behaves unexpectedly. Practise the reasoning in order: name the impact, protect the
         invariant, contain the failure, recover safely, and say what the recovery costs. These are original practice

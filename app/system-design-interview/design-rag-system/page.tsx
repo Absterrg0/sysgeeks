@@ -70,7 +70,7 @@ export default function DesignRagSystemPage() {
         }}
       />
 
-      <PageHeader title="Design a RAG system with LLMs: a system design interview walkthrough">
+      <PageHeader title="Design a RAG system with LLMs: a system design interview walkthrough" meta="By SysGeeks">
         Design a retrieval-augmented generation (RAG) service that uses a large language model (LLM) to answer questions
         over private, changing documents. The hard parts are keeping retrieval
         inside the caller&apos;s permissions, publishing updates without mixed versions, and showing when the evidence

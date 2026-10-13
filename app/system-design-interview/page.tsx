@@ -280,7 +280,7 @@ export default function SystemDesignInterviewPage() {
       />
       <PageHeader
         title="How to prepare for a system design interview in one week"
-        meta={`Updated ${formatDate(MODIFIED)}`}
+        meta={`By SysGeeks · Updated ${formatDate(MODIFIED)}`}
         actions={
           <>
             <Link href="/review#session" className="btn btn-accent">

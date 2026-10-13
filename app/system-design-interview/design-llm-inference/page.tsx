@@ -70,7 +70,7 @@ export default function DesignLlmInferencePage() {
         }}
       />
 
-      <PageHeader title="Design an LLM inference service: a system design interview walkthrough">
+      <PageHeader title="Design an LLM inference service: a system design interview walkthrough" meta="By SysGeeks">
         Design an API that serves text from self-hosted language models to multiple customers. The key decisions are
         how to admit work before GPUs are saturated, how to trade batching against response latency, and what to do
         when a worker fails mid-stream. This is an interview design with explicit boundaries, not a claim about any

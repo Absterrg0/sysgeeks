@@ -78,6 +78,7 @@ export default function DesignAiAgentPage() {
                 educationalLevel: "Intermediate to advanced",
                 isAccessibleForFree: true,
                 inLanguage: "en",
+                author: { "@id": SITE_URL + "/#organization" },
                 provider: { "@id": SITE_URL + "/#organization" },
               },
               faqPage(FAQ),
@@ -86,7 +87,7 @@ export default function DesignAiAgentPage() {
         }}
       />
 
-      <PageHeader title="Design an AI agent: a system design interview walkthrough" eyebrow="AI systems · practice prompt">
+      <PageHeader title="Design an AI agent: a system design interview walkthrough" eyebrow="AI systems · practice prompt" meta="By SysGeeks">
         Design a customer-support agent that can answer questions, look up orders, and issue refunds. The hard parts
         are giving the model useful choices without giving it authority, surviving uncertain tool outcomes, and
         proving that the system works. This is an original practice design, not a claim about an employer&apos;s loop or

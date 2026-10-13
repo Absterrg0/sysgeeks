@@ -65,7 +65,7 @@ export default function DesignYouTubePage() {
         }}
       />
 
-      <PageHeader title="Design YouTube: a system design interview walkthrough">
+      <PageHeader title="Design YouTube: a system design interview walkthrough" meta="By SysGeeks">
         The strongest answer separates video upload and processing from playback. This walkthrough works through the
         requirements, a capacity estimate, the two request paths, and the failures that change the design. The numbers
         below are interview assumptions, not claims about YouTube&apos;s actual traffic.
