@@ -52,7 +52,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/companies/notion": "2026-10-14",
     "/companies/convex": "2026-10-14",
     "/companies/posthog": "2026-10-14",
-    "/companies/google": "2026-10-11",
+    "/companies/google": "2026-10-14",
     "/companies/amazon": "2026-10-11",
     "/companies/uber": "2026-10-11",
     ...Object.fromEntries(updatedInvestigationReviews),

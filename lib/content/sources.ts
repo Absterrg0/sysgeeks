@@ -27,15 +27,17 @@ export const allCompanies: CompanyInput[] = [
   {
     id: "google",
     name: "Google",
-    topic: "Bigtable and Spanner",
+    topic: "Chubby, Bigtable, and Spanner",
     summary:
-      "Two systems built for different guarantees: Bigtable scales structured storage across machines; Spanner adds globally distributed, externally consistent transactions.",
+      "Three systems built for different roles: Chubby provides reliable coordination, Bigtable scales structured storage across machines, and Spanner adds globally distributed, externally consistent transactions.",
     context: md`
-      Bigtable and Spanner are useful to study together because they solve different problems. Bigtable gives applications a sparse, distributed map whose rows are ordered by key; tablets split that key range across servers, and an immutable-file storage design makes writes and compaction explicit. It trades relational querying for control over data layout and scale.
+      Chubby, Bigtable, and Spanner solve different problems. Chubby is a coarse-grained lock service with reliable, low-volume file-like storage. Its design favors availability, reliability, and understandable semantics over high throughput. Google systems such as GFS and Bigtable used it for leader election and small pieces of shared metadata.
+
+      Bigtable gives applications a sparse, distributed map whose rows are ordered by key; tablets split that key range across servers, and an immutable-file storage design makes writes and compaction explicit. It trades relational querying for control over data layout and scale.
 
       Spanner keeps automatic sharding and synchronous replication, then adds a relational model and externally consistent transactions across regions. Its time API exposes clock uncertainty so the system can decide when a transaction's timestamp is safe. That guarantee has a cost: coordinating a write across replicas can add latency.
 
-      The published papers describe Google systems, not questions Google is known to ask in interviews. Use them to practise the underlying choices: data partitioning, replication, transaction guarantees, and the latency each guarantee costs.
+      The published papers describe Google systems, not questions Google is known to ask in interviews. Read them as separate case studies in coordination, data partitioning, replication, and transaction guarantees, then consider the latency and operational costs each design accepts.
     `,
     blogUrl: "https://research.google/pubs/",
   },
@@ -273,6 +275,18 @@ export const allWriteups: WriteupInput[] = [
     conceptIds: ["object-storage"],
   },
   // Google
+  {
+    id: "google-chubby",
+    companyId: "google",
+    title: "The Chubby lock service for loosely-coupled distributed systems",
+    url: "https://research.google/pubs/the-chubby-lock-service-for-loosely-coupled-distributed-systems/",
+    authors: ["Mike Burrows"],
+    published: "2006",
+    format: "paper",
+    note: "Explains why Google made coarse-grained locking and reliable, low-volume shared state a reusable service, prioritizing availability and understandable semantics over throughput.",
+    investigationIds: [],
+    conceptIds: ["leases-and-fencing"],
+  },
   {
     id: "google-bigtable",
     companyId: "google",

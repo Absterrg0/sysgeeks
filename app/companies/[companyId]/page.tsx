@@ -85,7 +85,7 @@ export default async function CompanyPage(props: PageProps<"/companies/[companyI
         }}
       />
       <PageHeader
-        title={`${company.name} system design: ${company.topic.toLowerCase()}`}
+        title={`${company.name} system design: ${company.topic}`}
         eyebrow={
           <Link href="/companies" className="hover:text-ink">
             Companies
