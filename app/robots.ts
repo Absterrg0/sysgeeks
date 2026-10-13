@@ -19,10 +19,8 @@ const PUBLIC_EXCEPTIONS = ["/projects/examples"];
  * some site operators block them by default and a few crawlers only read their own group.
  */
 const AI_CRAWLERS = [
-  "GPTBot",
   "OAI-SearchBot",
   "ChatGPT-User",
-  "ClaudeBot",
   "Claude-SearchBot",
   "Claude-User",
   "PerplexityBot",
@@ -32,11 +30,16 @@ const AI_CRAWLERS = [
   "CCBot",
 ];
 
+// Search and user-directed retrieval don't depend on these training crawlers. Keep the site's
+// content discoverable in live answer engines without opting into model training by default.
+const MODEL_TRAINING_CRAWLERS = ["GPTBot", "ClaudeBot"];
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       { userAgent: "*", allow: ["/", ...PUBLIC_EXCEPTIONS], disallow: PRIVATE },
       { userAgent: AI_CRAWLERS, allow: ["/", ...PUBLIC_EXCEPTIONS], disallow: PRIVATE },
+      { userAgent: MODEL_TRAINING_CRAWLERS, disallow: "/" },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
