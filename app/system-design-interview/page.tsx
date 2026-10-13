@@ -24,7 +24,7 @@ export const metadata: Metadata = pageMetadata({
 });
 
 const LEAD =
-  "A system design interview, often called high-level design (HLD), asks you to design a large system, such as a URL shortener or a news feed, out loud in about 45 minutes. It does not test whether you can draw the expected diagram. It tests whether you can turn vague requirements into numbers, choose between designs for a stated reason, and say what happens when parts of your design fail.";
+  "To prepare for a system design interview, practise complete designs out loud under a timer instead of memorising diagrams. In a high-level design (HLD) round, clarify requirements, estimate load, defend a design choice, and explain how the design fails. This guide gives you a 45-minute structure and a one-week practice plan using free interactive exercises: make each decision before seeing the worked reasoning, then test the design against a failure and a changed constraint.";
 
 const PLAN = [
   {
