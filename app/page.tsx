@@ -164,11 +164,11 @@ export default function Home() {
                 </PracticeEntryLink>
               )}
               <PracticeEntryLink
-                href="/system-design-playground"
-                source="home_playground_hero"
+                href="/review#session"
+                source="home_mock_interview_hero"
                 className="btn btn-secondary btn-lg"
               >
-                Try {Object.keys(PLAYGROUNDS).length} interactive simulations
+                Start a timed mock interview
               </PracticeEntryLink>
               <ShareButton
                 url={SITE_URL}
@@ -181,11 +181,11 @@ export default function Home() {
                 Browse all {investigations.length} systems →
               </Link>
               <PracticeEntryLink
-                href="/review#session"
-                source="home_mock_interview_hero"
+                href="/system-design-playground"
+                source="home_playground_hero"
                 className="transition-colors hover:text-accent"
               >
-                Start a timed mock interview →
+                Try {Object.keys(PLAYGROUNDS).length} interactive simulations →
               </PracticeEntryLink>
               <Link href="/system-design-interview" className="transition-colors hover:text-accent">
                 How to prepare for a system design interview →
