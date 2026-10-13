@@ -37,7 +37,7 @@ export default async function ExamplePage(props: PageProps<"/projects/examples/[
           __html: jsonLd({
             "@graph": [
               breadcrumbs([
-                { name: "Example architectures", path: "/projects/examples" },
+                { name: "System design examples", path: "/projects/examples" },
                 { name: plainName(example.name), path: `/projects/examples/${example.id}` },
               ]),
             ],

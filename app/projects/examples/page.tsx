@@ -7,7 +7,7 @@ import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = pageMetadata({
   title: "System Design Examples: Real Architectures",
   description:
-    "Real system designs, drawn as components, flows and invariants. Study one, then copy it and practise on your copy.",
+    "Explore system design examples through components, request flows, scale assumptions and invariants. Copy an architecture and practise changes on your version.",
   path: "/projects/examples",
 });
 
@@ -27,9 +27,9 @@ export default function ExamplesPage() {
         }}
       />
       <AppHeader
-        title="Example architectures"
+        title="System design examples"
         count={examples.length}
-        description="Whole systems: their parts, how they talk, and what must stay true. Study one, then copy it and practise on your version."
+        description={`Explore ${examples.length} system designs through their components, request flows, scale assumptions and invariants. Open one to inspect its architecture, then copy it and practise changes on your version.`}
       />
       <div className="mt-6">
         <ExampleGallery examples={examples} />
