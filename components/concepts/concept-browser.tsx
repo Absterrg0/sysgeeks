@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { ConceptStanding } from "@/components/concept-standing";
 import { AppHeader } from "@/components/page-header";
+import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { STANDING_SIGNAL } from "@/components/ui";
 import { track } from "@/lib/analytics";
 import { byConcept, latestEvidence } from "@/lib/domain/understanding";
@@ -162,6 +163,17 @@ export function ConceptBrowser({
           </div>
         </div>
       </AppHeader>
+
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <PracticeEntryLink
+          href="/review#session"
+          source="concept_browser_mock_interview"
+          className="btn btn-accent btn-sm"
+        >
+          Try a timed system design mock
+        </PracticeEntryLink>
+        <span className="text-[0.8125rem] text-ink-3">No account needed. Your progress stays in this browser.</span>
+      </div>
 
       <div className="mt-6 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="sheet py-1.5">

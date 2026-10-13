@@ -22,7 +22,8 @@ export type PracticeEntrySource =
   | "interview_guide_mistake_drill"
   | "interview_guide_question_list"
   | "failure_scenarios_guide"
-  | "interview_guide_final_cta";
+  | "interview_guide_final_cta"
+  | "concept_browser_mock_interview";
 
 export function PracticeEntryLink({
   href,
