@@ -5,9 +5,9 @@ import { CONCEPT_DOMAINS, DOMAIN_LABELS } from "@/lib/domain/content";
 import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = pageMetadata({
-  title: "System Design Concepts: How They Work and Fail",
+  title: "35 System Design Concepts with Examples",
   description:
-    "Learn caching, queues, replication, idempotency and more through concise explanations, quick interactive checks, and practical failure scenarios. Free, no signup.",
+    "Explore 35 system design concepts through concise lessons, interactive checks, and worked examples of caching, replication, queues, and failure handling.",
   path: "/concepts",
 });
 

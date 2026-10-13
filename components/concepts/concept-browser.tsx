@@ -103,9 +103,8 @@ export function ConceptBrowser({
   return (
     <>
       <AppHeader
-        title="System design concepts"
-        count={concepts.length}
-        description="Learn core system design concepts with short lessons, interactive checks, and examples of how each mechanism fails."
+        title={`${concepts.length} system design concepts with examples`}
+        description="Learn the mechanisms behind scalable systems through short lessons, interactive checks, and a worked URL-shortener design. See the trade-offs and failure modes."
         actions={
           <label className="flex h-8 w-[17rem] max-w-full items-center gap-2 rounded-lg bg-[color-mix(in_srgb,var(--raised)_55%,var(--paper))] px-2.5 text-ink-3 shadow-[inset_0_0_0_1px_var(--rule-strong)] focus-within:shadow-[inset_0_0_0_1px_var(--focus)]">
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
@@ -175,6 +174,31 @@ export function ConceptBrowser({
           may lag; <Link href="/concepts/message-queues" className="link">message queues</Link> absorb short bursts but build a
           backlog when work arrives faster than it can be processed. Open a concept below to examine its assumptions,
           trade-offs, and failure modes.
+        </p>
+      </section>
+
+      <section
+        aria-labelledby="concepts-example"
+        className="mt-4 rounded-xl border border-rule bg-[color-mix(in_srgb,var(--raised)_45%,var(--paper))] p-4 sm:p-5"
+      >
+        <h2 id="concepts-example" className="font-display text-[1.125rem] leading-tight tracking-[-0.015em]">
+          Worked example: designing a URL shortener
+        </h2>
+        <p className="mt-2 max-w-[78ch] text-[0.875rem] leading-relaxed text-ink-2">
+          At a modeled peak of 19,000 redirects per second, one Postgres primary can still be enough. A CDN caches
+          popular links near readers, click events are recorded asynchronously, and short cache lifetimes plus explicit
+          purges let the service disable a bad link. That one design uses durability, caching, asynchronous processing,
+          and invalidation; each solves a different constraint and adds its own failure case.
+        </p>
+        <p className="mt-2 max-w-[78ch] text-[0.875rem] leading-relaxed text-ink-2">
+          <Link href="/investigations/url-shortener" className="link">
+            Read the worked URL-shortener system design
+          </Link>
+          . Then examine <Link href="/concepts/caching" className="link">caching</Link>,{" "}
+          <Link href="/concepts/asynchronous-processing" className="link">
+            asynchronous processing
+          </Link>
+          , and <Link href="/concepts/idempotency" className="link">idempotency</Link> in detail.
         </p>
       </section>
 
