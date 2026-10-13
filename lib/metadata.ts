@@ -25,22 +25,23 @@ export function pageMetadata({
   noindex?: boolean;
 }): Metadata {
   const absoluteTitle = title.length > 68 ? clip(title, 68) : title;
+  const metaDescription = clip(description, 160);
   const imageUrl = `${SITE_URL}${imagePath}`;
   return {
     // Keep title text concise enough that the important words fit after HTML escaping and result decoration.
     title: `${title}${TITLE_SUFFIX}`.length > 55 ? { absolute: absoluteTitle } : title,
-    description,
+    description: metaDescription,
     alternates: { canonical: path },
     openGraph: {
       title,
-      description,
+      description: metaDescription,
       url: path,
       siteName: SITE_NAME,
       type: "website",
       locale: "en_US",
       images: [{ url: imageUrl, width: 1200, height: 630, alt: title }],
     },
-    twitter: { card: "summary_large_image", title, description, images: [{ url: imageUrl, alt: title }] },
+    twitter: { card: "summary_large_image", title, description: metaDescription, images: [{ url: imageUrl, alt: title }] },
     ...(noindex && { robots: { index: false, follow: true } }),
   };
 }
