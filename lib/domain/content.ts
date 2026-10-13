@@ -367,6 +367,8 @@ export const investigation = z.object({
   title: z.string().min(1),
   /** The phrase people search for, e.g. "Design a URL shortener". Used in page titles, not headings. */
   searchTitle: z.string().min(1).max(48),
+  /** A concise, authored answer for the search and walkthrough pages. */
+  answerSummary: z.string().min(1).max(400).optional(),
   premise: z.string().min(1),
   difficulty: z.enum(["foundational", "intermediate", "advanced"]),
   estimatedMinutes: z.number().int().positive(),

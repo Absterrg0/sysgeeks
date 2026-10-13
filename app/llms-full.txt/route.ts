@@ -38,6 +38,7 @@ function investigation(inv: Investigation): string {
   return [
     `## ${inv.searchTitle}: ${inv.title}`,
     `Interactive version: ${SITE_URL}/investigations/${inv.id}\nFull walkthrough: ${SITE_URL}/investigations/${inv.id}/review`,
+    inv.answerSummary ? `### Short answer\n\n${md(inv.answerSummary)}` : "",
     md(inv.premise),
     md(inv.scenario),
     `### Requirements\n\nFunctional:\n${list(inv.requirements.functional)}\n\nNon-functional:\n${list(inv.requirements.nonFunctional)}\n\nConstraints and assumptions:\n${list([...inv.constraints, ...inv.assumptions])}`,

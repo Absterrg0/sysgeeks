@@ -46,7 +46,8 @@ export async function generateMetadata(
           ? fullTitle
           : `System Design Walkthrough: ${systemName}`,
     description: clip(
-      `${howTo(inv.searchTitle)}, step by step: ${inv.system.components.map((c) => c.label).join(", ")}. ${inv.premise}`,
+      inv.answerSummary ??
+        `${howTo(inv.searchTitle)}, step by step: ${inv.system.components.map((c) => c.label).join(", ")}. ${inv.premise}`,
     ),
     path: `/investigations/${inv.id}/review`,
   });
@@ -60,9 +61,11 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
   const componentName = new Map(system.components.map((c) => [c.id, c.label]));
   const lastStage = inv.stages[inv.stages.length - 1];
   const firstStage = inv.stages[0];
-  const shortAnswer = `${howTo(inv.searchTitle)}: ${system.components
-    .map((c) => `${c.label} (${lowerFirst(c.responsibility).replace(/\.$/, "")})`)
-    .join("; ")}.`;
+  const shortAnswer =
+    inv.answerSummary ??
+    `${howTo(inv.searchTitle)}: ${system.components
+      .map((c) => `${c.label} (${lowerFirst(c.responsibility).replace(/\.$/, "")})`)
+      .join("; ")}.`;
 
   return (
     <div>
@@ -127,8 +130,8 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
             The short answer
           </h2>
           <p className="mt-3 max-w-[66ch] text-[1rem] leading-relaxed text-ink-2">
-            {system.components.length} parts, each with one job. The map below shows how requests and data move between
-            them; the stages after it explain why each part is there.
+            {inv.answerSummary ??
+              `${system.components.length} parts, each with one job. The map below shows how requests and data move between them; the stages after it explain why each part is there.`}
           </p>
           <dl className="mt-6 max-w-[66ch] divide-y divide-rule border-y border-rule">
             {system.components.map((c) => (

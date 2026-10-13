@@ -2,7 +2,7 @@
   {
     "id": "url-shortener",
     "title": "Design a URL Shortener",
-    "answer": "Generate a unique key, store its mapping to the long URL durably, and keep redirects fast with a cache for popular keys. Record click analytics asynchronously so tracking does not slow the redirect path.",
+    "answer": "At 10 billion redirects a month, plan for about 3,850 average and 19,000 peak redirects per second. Generate random short codes with a Postgres primary key and collision retries, serve redirects through a CDN/cache, and count clicks asynchronously. Short TTLs plus purges make takedowns fast.",
     "focus": "Estimate a read-heavy workload, then decide what to cache and how to count clicks without slowing redirects."
   },
   {

@@ -5,6 +5,8 @@ export const urlShortener = {
   id: "url-shortener",
   title: "A URL shortener like bit.ly",
   searchTitle: "Design a URL Shortener",
+  answerSummary:
+    "At 10 billion redirects a month, plan for about 3,850 average and 19,000 peak redirects per second. Generate random short codes with a Postgres primary key and collision retries, serve redirects through a CDN/cache, and count clicks asynchronously. Short TTLs plus purges make takedowns fast.",
   premise:
     "Short links that never collide, redirect quickly for users anywhere, count every click, and can be switched off in seconds. You will estimate the load first, then design each part from the numbers.",
   difficulty: "foundational",

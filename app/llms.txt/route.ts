@@ -64,7 +64,8 @@ export function GET() {
       line(
         `${inv.searchTitle}: full system design walkthrough`,
         `/investigations/${inv.id}/review`,
-        "Every stage's question and answer, the reasoning and tradeoffs behind each decision, the finished architecture, its invariants, and where it stops working.",
+        inv.answerSummary ??
+          "Every stage's question and answer, the reasoning and tradeoffs behind each decision, the finished architecture, its invariants, and where it stops working.",
       ),
     ),
     "",
