@@ -14,6 +14,11 @@ export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESC
 
 const FAQ = [
   {
+    question: "What is the difference between RAG and an LLM?",
+    answer:
+      "An LLM generates text. Retrieval-augmented generation (RAG) is a system pattern that retrieves relevant information from an external source and gives it to the LLM as context before it answers. RAG adds a retrieval and data pipeline around the model; it does not replace the model or guarantee that the answer is correct.",
+  },
+  {
     question: "How do you design a RAG system in a system design interview?",
     answer:
       "Start with the answer contract, corpus size, freshness target, latency, and access rules. Separate document ingestion from query serving. Version and chunk source documents, attach authorization metadata, retrieve candidates using lexical and semantic search, optionally rerank them, then generate only from authorized evidence with citations or abstention. Measure retrieval quality and grounded answer quality separately.",
@@ -87,6 +92,23 @@ export default function DesignRagSystemPage() {
           Design the LLM serving layer
         </Link>
       </div>
+
+      <Section id="what-is-rag" title="What is RAG, and how does it use an LLM?">
+        <p className="max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
+          <Link className="link" href="https://docs.cohere.com/docs/retrieval-augmented-generation-rag">
+            Retrieval-augmented generation (RAG)
+          </Link>{" "}
+          retrieves relevant information from an external source and supplies it as context to a large language model
+          (LLM) before the model answers. The LLM generates the response; a separate retrieval system finds the
+          supporting information. RAG is a system pattern built around a model, not a type of LLM, and retrieved
+          context does not guarantee a correct answer.
+        </p>
+        <p className="mt-3 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
+          In a system design interview, that means designing both the document-ingestion and query-serving paths, then
+          explaining how retrieval, permissions, freshness, citations, and failure handling fit together. The
+          walkthrough below works through those decisions.
+        </p>
+      </Section>
 
       <Section id="scope" title="Define what a useful answer must guarantee">
         <div className="max-w-[72ch] space-y-4 text-[0.9375rem] leading-relaxed text-ink-2">
