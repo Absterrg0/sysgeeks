@@ -50,7 +50,7 @@ export default function InvestigationsPage() {
                   description: DESCRIPTION,
                   url: `${SITE_URL}/investigations`,
                   mainEntity: itemList(
-                    "Interactive system design interview questions and worked answers",
+                    `${SYSTEM_DESIGN_ANSWERS.length} full system design interview problems and worked answers`,
                     PRACTICE_PATH.map(({ id, title }) => ({ name: title, path: `/investigations/${id}/review` })),
                   ),
                   hasPart: {
@@ -99,90 +99,99 @@ export default function InvestigationsPage() {
         </Link>
         .
       </PageHeader>
-      <section aria-labelledby="practice-path" className="mt-8 max-w-[72ch]">
-        <h2 id="practice-path" className="font-display text-[1.375rem] leading-tight tracking-[-0.015em]">
-          {PRACTICE_PATH.length} system design interview questions with short answers
+      <section aria-labelledby="question-bank" className="mt-8 max-w-[72ch]">
+        <h2 id="question-bank" className="font-display text-[1.375rem] leading-tight tracking-[-0.015em]">
+          {TOTAL_QUESTION_COUNT} system design interview questions with answers
         </h2>
         <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
-          These summaries show the key design choice and its cost; the full answer depends on the requirements and
-          scale you agree on in the interview. Use each one as a starting point, then work through the linked exercise
-          before reading its complete walkthrough.
+          Work through {SYSTEM_DESIGN_ANSWERS.length} interactive design problems with short answers and full worked
+          exercises, then review {SYSTEM_DESIGN_FUNDAMENTALS.length} core system design fundamentals with direct answers.
         </p>
-        <div className="mt-5 space-y-8">
-          {levels.map(({ level, items }) =>
-            items.length === 0 ? null : (
-              <section key={level} aria-labelledby={`questions-${level}`}>
-                <h3 id={`questions-${level}`} className="mb-2 flex items-baseline gap-2 text-[0.875rem] font-semibold">
-                  {DIFFICULTY[level]} questions
-                  <span className="font-mono text-[0.6875rem] font-normal text-ink-3">{items.length}</span>
-                </h3>
-                <ol className="divide-y divide-rule border-y border-rule">
-                  {items.map(({ investigation, title, focus, answer }) => (
-                    <li key={investigation.id} className="py-3.5">
-                      <h4 className="text-[0.9375rem] font-medium">
-                        <PracticeEntryLink
-                          href={`/investigations/${investigation.id}`}
-                          investigationId={investigation.id}
-                          source="question_catalog"
-                          className="transition-colors hover:text-accent"
-                        >
-                          {title}
-                        </PracticeEntryLink>
-                      </h4>
-                      <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
-                        <strong className="font-medium text-ink">Short answer: </strong>
-                        {answer}
-                      </p>
-                      <p className="mt-1 text-[0.8125rem] leading-relaxed text-ink-3">
-                        Practise: {focus}{" "}
-                        <Link href={`/investigations/${investigation.id}/review`} className="font-medium text-accent hover:underline">
-                          Read the full worked answer →
-                        </Link>
-                      </p>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-            ),
-          )}
-        </div>
-        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <TrackedDownloadLink
-            className="btn btn-secondary"
-            href={PDF_PATH}
-            resource="system_design_questions_answers"
-          >
-            Download all {TOTAL_QUESTION_COUNT} questions and answers (PDF)
-          </TrackedDownloadLink>
-          <PracticeEntryLink
-            href="/system-design-playground"
-            source="question_catalog_playground"
-            className="btn btn-secondary"
-          >
-            Try interactive system design interview practice
-          </PracticeEntryLink>
-          <span className="text-[0.8125rem] text-ink-3">Free, no signup. Includes links to full walkthroughs.</span>
-        </div>
-      </section>
-      <section aria-labelledby="fundamentals" className="max-w-[66ch] border-t border-rule py-8">
-        <h2 id="fundamentals" className="font-display text-[1.25rem] leading-tight">
-          {SYSTEM_DESIGN_FUNDAMENTALS.length} common system design interview fundamentals
-        </h2>
-        <dl className="mt-3 divide-y divide-rule border-y border-rule">
-          {SYSTEM_DESIGN_FUNDAMENTALS.map(({ question, answer, links }) => (
-            <div key={question} className="py-4">
-              <dt className="text-[0.9375rem] font-medium">{question}</dt>
-              <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
-                {answer} Read more: {links.map((link, index) => (
-                  <span key={link.href}>
-                    {index > 0 ? ", " : ""}
-                    <Link href={link.href} className="link">{link.label}</Link>
-                  </span>
-                ))}.
-              </dd>
-            </div>
-          ))}
-        </dl>
+        <section aria-labelledby="practice-path" className="mt-8">
+          <h3 id="practice-path" className="font-display text-[1.125rem] leading-tight tracking-[-0.015em]">
+            {PRACTICE_PATH.length} system design problems with short answers
+          </h3>
+          <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
+            These summaries show the key design choice and its cost; the full answer depends on the requirements and
+            scale you agree on in the interview. Use each one as a starting point, then work through the linked exercise
+            before reading its complete walkthrough.
+          </p>
+          <div className="mt-5 space-y-8">
+            {levels.map(({ level, items }) =>
+              items.length === 0 ? null : (
+                <section key={level} aria-labelledby={`questions-${level}`}>
+                  <h4 id={`questions-${level}`} className="mb-2 flex items-baseline gap-2 text-[0.875rem] font-semibold">
+                    {DIFFICULTY[level]} questions
+                    <span className="font-mono text-[0.6875rem] font-normal text-ink-3">{items.length}</span>
+                  </h4>
+                  <ol className="divide-y divide-rule border-y border-rule">
+                    {items.map(({ investigation, title, focus, answer }) => (
+                      <li key={investigation.id} className="py-3.5">
+                        <h5 className="text-[0.9375rem] font-medium">
+                          <PracticeEntryLink
+                            href={`/investigations/${investigation.id}`}
+                            investigationId={investigation.id}
+                            source="question_catalog"
+                            className="transition-colors hover:text-accent"
+                          >
+                            {title}
+                          </PracticeEntryLink>
+                        </h5>
+                        <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+                          <strong className="font-medium text-ink">Short answer: </strong>
+                          {answer}
+                        </p>
+                        <p className="mt-1 text-[0.8125rem] leading-relaxed text-ink-3">
+                          Practise: {focus}{" "}
+                          <Link href={`/investigations/${investigation.id}/review`} className="font-medium text-accent hover:underline">
+                            Read the full worked answer →
+                          </Link>
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              ),
+            )}
+          </div>
+          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <TrackedDownloadLink
+              className="btn btn-secondary"
+              href={PDF_PATH}
+              resource="system_design_questions_answers"
+            >
+              Download all {TOTAL_QUESTION_COUNT} questions and answers (PDF)
+            </TrackedDownloadLink>
+            <PracticeEntryLink
+              href="/system-design-playground"
+              source="question_catalog_playground"
+              className="btn btn-secondary"
+            >
+              Try interactive system design interview practice
+            </PracticeEntryLink>
+            <span className="text-[0.8125rem] text-ink-3">Free, no signup. Includes links to full walkthroughs.</span>
+          </div>
+        </section>
+        <section aria-labelledby="fundamentals" className="mt-8 max-w-[66ch] border-t border-rule py-8">
+          <h3 id="fundamentals" className="font-display text-[1.125rem] leading-tight">
+            {SYSTEM_DESIGN_FUNDAMENTALS.length} system design fundamentals with direct answers
+          </h3>
+          <dl className="mt-3 divide-y divide-rule border-y border-rule">
+            {SYSTEM_DESIGN_FUNDAMENTALS.map(({ question, answer, links }) => (
+              <div key={question} className="py-4">
+                <dt className="text-[0.9375rem] font-medium">{question}</dt>
+                <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+                  {answer} Read more: {links.map((link, index) => (
+                    <span key={link.href}>
+                      {index > 0 ? ", " : ""}
+                      <Link href={link.href} className="link">{link.label}</Link>
+                    </span>
+                  ))}.
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
       </section>
       <section aria-labelledby="focused-walkthroughs" className="max-w-[66ch] border-t border-rule py-8">
         <h2 id="focused-walkthroughs" className="font-display text-[1.25rem] leading-tight">
