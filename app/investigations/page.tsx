@@ -13,8 +13,8 @@ import { breadcrumbs, faqPage, itemList, jsonLd, pageMetadata } from "@/lib/meta
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const TOTAL_QUESTION_COUNT = SYSTEM_DESIGN_ANSWERS.length + SYSTEM_DESIGN_FUNDAMENTALS.length;
-const TITLE = `${TOTAL_QUESTION_COUNT} System Design Interview Questions & Answers`;
-const DESCRIPTION = `Practice ${SYSTEM_DESIGN_ANSWERS.length} system design prompts interactively, then review ${SYSTEM_DESIGN_FUNDAMENTALS.length} fundamentals with direct answers. Free, no signup; PDF included.`;
+const TITLE = `${TOTAL_QUESTION_COUNT} System Design Interview Questions and Answers (Free PDF)`;
+const DESCRIPTION = `Download a free PDF of all ${TOTAL_QUESTION_COUNT} system design interview questions and answers. Practice ${SYSTEM_DESIGN_ANSWERS.length} design prompts and review ${SYSTEM_DESIGN_FUNDAMENTALS.length} fundamentals with direct answers. No signup.`;
 const PDF_PATH = "/downloads/system-design-interview-questions-and-answers.pdf";
 
 export const metadata: Metadata = pageMetadata({
@@ -73,12 +73,19 @@ export default function InvestigationsPage() {
         title={`${TOTAL_QUESTION_COUNT} system design interview questions and answers`}
         actions={
           <>
+            <TrackedDownloadLink
+              className="btn btn-accent"
+              href={PDF_PATH}
+              resource="system_design_questions_answers"
+            >
+              Download all {TOTAL_QUESTION_COUNT} questions and answers (PDF)
+            </TrackedDownloadLink>
             {PRACTICE_PATH[0] && (
               <PracticeEntryLink
                 href={`/investigations/${PRACTICE_PATH[0].id}`}
                 investigationId={PRACTICE_PATH[0].id}
                 source="question_catalog"
-                className="btn btn-accent"
+                className="btn btn-secondary"
               >
                 Start a practice question
               </PracticeEntryLink>
