@@ -5,9 +5,9 @@ import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-interview/design-rag-system";
-const TITLE = "Design a RAG System: System Design Interview Walkthrough";
+const TITLE = "RAG System Design Interview: Retrieval, LLMs & Failure Modes";
 const DESCRIPTION =
-  "Design a RAG system for private documents. Practise ingestion, hybrid search, access controls, citations, freshness, and answer evaluation.";
+  "Design a retrieval-augmented generation (RAG) system for private documents. Work through hybrid retrieval, LLM answer grounding, access controls, freshness, evaluation, and failure handling.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
@@ -58,7 +58,7 @@ export default function DesignRagSystemPage() {
                 url: SITE_URL + PATH,
                 mainEntityOfPage: SITE_URL + PATH,
                 datePublished: "2026-10-11",
-                dateModified: "2026-10-11",
+                dateModified: "2026-10-13",
                 inLanguage: "en",
                 author: { "@id": SITE_URL + "/#organization" },
                 publisher: { "@id": SITE_URL + "/#organization" },
@@ -70,8 +70,9 @@ export default function DesignRagSystemPage() {
         }}
       />
 
-      <PageHeader title="Design a RAG system: a system design interview walkthrough">
-        Design a question-answering service over private, changing documents. The hard parts are keeping retrieval
+      <PageHeader title="Design a RAG system with LLMs: a system design interview walkthrough">
+        Design a retrieval-augmented generation (RAG) service that uses a large language model (LLM) to answer questions
+        over private, changing documents. The hard parts are keeping retrieval
         inside the caller&apos;s permissions, publishing updates without mixed versions, and showing when the evidence
         does not support an answer. This is an interview design with explicit assumptions, not a claim about any
         provider&apos;s private architecture.

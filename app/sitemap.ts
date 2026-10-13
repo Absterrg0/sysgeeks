@@ -62,6 +62,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/capacity-estimator": "2026-10-11",
     "/concepts/server-push": "2026-10-11",
     "/system-design-interview/design-llm-inference": "2026-10-11",
+    "/system-design-interview/design-rag-system": "2026-10-13",
     "/system-design-interview/llm-inference-capacity": "2026-10-11",
     "/system-design-interview/design-instagram-feed": "2026-10-12",
     "/system-design-interview/design-search-autocomplete": "2026-10-13",
