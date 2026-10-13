@@ -21,6 +21,7 @@ export const metadata: Metadata = pageMetadata({
   description:
     "A 45-minute interview plan, focused drills for common system design mistakes, and a one-week practice schedule. Free exercises, no signup.",
   path: PATH,
+  imagePath: `${PATH}/opengraph-image`,
 });
 
 const LEAD =
@@ -269,6 +270,7 @@ export default function SystemDesignInterviewPage() {
                 mainEntityOfPage: `${SITE_URL}${PATH}`,
                 datePublished: PUBLISHED,
                 dateModified: MODIFIED,
+                image: `${SITE_URL}${PATH}/opengraph-image`,
                 inLanguage: "en",
                 author: { "@id": `${SITE_URL}/#organization` },
                 publisher: { "@id": `${SITE_URL}/#organization` },
