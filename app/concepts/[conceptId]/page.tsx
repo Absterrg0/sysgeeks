@@ -29,9 +29,9 @@ export async function generateMetadata(props: PageProps<"/concepts/[conceptId]">
   if (!c) return {};
   if (c.id === "rate-limiting") {
     return pageMetadata({
-      title: "Rate Limiting Algorithms in System Design",
+      title: "How to Design a Rate Limiter in System Design",
       description:
-        "Compare token bucket, leaky bucket, fixed and sliding windows, then see when to share limiter state across servers and how to handle store failure.",
+        "Design a rate limiter for a distributed API: choose token bucket vs windows, share per-key state across servers, and handle Redis failure and HTTP 429 retries.",
       path: `/concepts/${c.id}`,
       imagePath: `/concepts/${c.id}/opengraph-image`,
     });
@@ -142,7 +142,7 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
         }}
       />
       <PageHeader
-        title={concept.title}
+        title={concept.id === "rate-limiting" ? "How to design a rate limiter" : concept.title}
         meta="By SysGeeks"
         eyebrow={
           <>
