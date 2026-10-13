@@ -14,7 +14,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const TOTAL_QUESTION_COUNT = SYSTEM_DESIGN_ANSWERS.length + SYSTEM_DESIGN_FUNDAMENTALS.length;
 const TITLE = `${TOTAL_QUESTION_COUNT} System Design Interview Questions and Answers (Free PDF)`;
-const DESCRIPTION = `Download a free PDF of all ${TOTAL_QUESTION_COUNT} system design interview questions and answers. Practice ${SYSTEM_DESIGN_ANSWERS.length} design prompts and review ${SYSTEM_DESIGN_FUNDAMENTALS.length} fundamentals with direct answers. No signup.`;
+const DESCRIPTION = `Download a free PDF with ${TOTAL_QUESTION_COUNT} system design interview questions and answers: ${SYSTEM_DESIGN_ANSWERS.length} design exercises and ${SYSTEM_DESIGN_FUNDAMENTALS.length} fundamentals. No signup.`;
 const PDF_PATH = "/downloads/system-design-interview-questions-and-answers.pdf";
 
 export const metadata: Metadata = pageMetadata({
