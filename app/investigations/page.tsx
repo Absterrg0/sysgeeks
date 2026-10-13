@@ -8,12 +8,13 @@ import { ShareButton } from "@/components/share";
 import { TrackedDownloadLink } from "@/components/tracked-download-link";
 import { getInvestigation } from "@/lib/content";
 import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
-import { breadcrumbs, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
+import { SYSTEM_DESIGN_FUNDAMENTALS } from "@/lib/content/system-design-fundamentals";
+import { breadcrumbs, faqPage, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
-const TITLE = `${SYSTEM_DESIGN_ANSWERS.length} Free Interactive System Design Interview Questions & Answers`;
-const DESCRIPTION =
-  `Practice ${SYSTEM_DESIGN_ANSWERS.length} system design interview questions as interactive exercises: make a design choice, test a failure, then compare with a worked answer. Free PDF; no signup.`;
+const TOTAL_QUESTION_COUNT = SYSTEM_DESIGN_ANSWERS.length + SYSTEM_DESIGN_FUNDAMENTALS.length;
+const TITLE = `${TOTAL_QUESTION_COUNT} System Design Interview Questions & Answers`;
+const DESCRIPTION = `Practice ${SYSTEM_DESIGN_ANSWERS.length} system design prompts interactively, then review ${SYSTEM_DESIGN_FUNDAMENTALS.length} fundamentals with direct answers. Free, no signup; PDF included.`;
 const PDF_PATH = "/downloads/system-design-interview-questions-and-answers.pdf";
 
 export const metadata: Metadata = pageMetadata({
@@ -49,12 +50,12 @@ export default function InvestigationsPage() {
                   description: DESCRIPTION,
                   url: `${SITE_URL}/investigations`,
                   mainEntity: itemList(
-                    "System design interview questions and worked answers",
+                    "Interactive system design interview questions and worked answers",
                     PRACTICE_PATH.map(({ id, title }) => ({ name: title, path: `/investigations/${id}/review` })),
                   ),
                   hasPart: {
                     "@type": "DigitalDocument",
-                    name: `${SYSTEM_DESIGN_ANSWERS.length} system design interview questions and answers (PDF)`,
+                    name: `${SYSTEM_DESIGN_ANSWERS.length} interactive system design interview questions and answers (PDF)`,
                     encodingFormat: "application/pdf",
                     contentUrl: `${SITE_URL}${PDF_PATH}`,
                     inLanguage: "en",
@@ -62,13 +63,14 @@ export default function InvestigationsPage() {
                     publisher: { "@id": `${SITE_URL}/#organization` },
                   },
                 },
+                faqPage(SYSTEM_DESIGN_FUNDAMENTALS.map(({ question, answer }) => ({ question, answer }))),
               ],
             },
           ),
         }}
       />
       <PageHeader
-        title={`${questionCount} interactive system design interview questions, with worked answers`}
+        title={`${TOTAL_QUESTION_COUNT} system design interview questions and answers`}
         actions={
           <>
             {PRACTICE_PATH[0] && (
@@ -83,15 +85,15 @@ export default function InvestigationsPage() {
             )}
             <ShareButton
               url={`${SITE_URL}/investigations`}
-              title={`${questionCount} System Design Interview Questions · ${SITE_NAME}`}
-              text={`Explore ${questionCount} free system design interview questions with interactive exercises and worked answers.`}
+              title={`${TOTAL_QUESTION_COUNT} System Design Interview Questions · ${SITE_NAME}`}
+              text={`Explore ${TOTAL_QUESTION_COUNT} free system design interview questions and answers: ${questionCount} interactive designs plus ${SYSTEM_DESIGN_FUNDAMENTALS.length} fundamentals.`}
             />
           </>
         }
       >
-        Practice each question as a full interview exercise. Set requirements, estimate capacity, make the design
-        decisions, then test failures and changed constraints before comparing your reasoning with the worked answer.
-        New to the format? Start with{" "}
+        Practise {questionCount} questions as full interview exercises. Set requirements, estimate capacity, make the
+        design decisions, then test failures and changed constraints before comparing your reasoning with the worked
+        answer. Review {SYSTEM_DESIGN_FUNDAMENTALS.length} common fundamentals with direct answers below. New to the format? Start with{" "}
         <Link href="/system-design-interview" className="link">
           how the interview works
         </Link>
@@ -150,7 +152,7 @@ export default function InvestigationsPage() {
             href={PDF_PATH}
             resource="system_design_questions_answers"
           >
-            Download all {questionCount} questions and answers (PDF)
+            Download the {questionCount} interactive questions and answers (PDF)
           </TrackedDownloadLink>
           <PracticeEntryLink
             href="/system-design-playground"
@@ -164,50 +166,22 @@ export default function InvestigationsPage() {
       </section>
       <section aria-labelledby="fundamentals" className="max-w-[66ch] border-t border-rule py-8">
         <h2 id="fundamentals" className="font-display text-[1.25rem] leading-tight">
-          Common system design interview fundamentals
+          {SYSTEM_DESIGN_FUNDAMENTALS.length} common system design interview fundamentals
         </h2>
         <dl className="mt-3 divide-y divide-rule border-y border-rule">
-          <div className="py-4">
-            <dt className="text-[0.9375rem] font-medium">What should you clarify first in a system design interview?</dt>
-            <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
-              Identify the users and their core actions, then agree on scale, latency, availability, consistency and
-              durability needs. Prioritize the requirements that change the architecture before drawing components.
-              See the <Link href="/system-design-interview" className="link">interview approach</Link>.
-            </dd>
-          </div>
-          <div className="py-4">
-            <dt className="text-[0.9375rem] font-medium">How do you estimate capacity for a system design?</dt>
-            <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
-              Estimate peak requests per second, data written per day, retention and concurrent work from the
-              requirements. Use order-of-magnitude numbers to find likely bottlenecks, then size the parts that need
-              different scaling strategies. Learn about <Link href="/concepts/backpressure" className="link">capacity and backpressure</Link>.
-            </dd>
-          </div>
-          <div className="py-4">
-            <dt className="text-[0.9375rem] font-medium">What is the difference between replication and sharding?</dt>
-            <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
-              Replication keeps copies of the same data on multiple machines, which can improve read capacity and
-              resilience. Sharding splits data across machines to spread storage and write load, but makes
-              cross-shard operations harder. Read about <Link href="/concepts/replication" className="link">replication</Link> and{" "}
-              <Link href="/concepts/partitioning" className="link">partitioning</Link>.
-            </dd>
-          </div>
-          <div className="py-4">
-            <dt className="text-[0.9375rem] font-medium">When should you add a cache?</dt>
-            <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
-              Cache data when repeated reads are costly and the hit rate makes the cache faster than recomputing or
-              querying the source. Decide how stale a value may be and how writes invalidate it; caching adds
-              consistency and failure cases. See the <Link href="/concepts/caching" className="link">caching guide</Link>.
-            </dd>
-          </div>
-          <div className="py-4">
-            <dt className="text-[0.9375rem] font-medium">When does a message queue help?</dt>
-            <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
-              A queue decouples a producer from slower consumers and can absorb short bursts, giving workers time to
-              process jobs asynchronously. It does not fix sustained overload: bound the queue, define retry and
-              rejection behavior, and make handlers safe to retry. See <Link href="/concepts/message-queues" className="link">message queues</Link>.
-            </dd>
-          </div>
+          {SYSTEM_DESIGN_FUNDAMENTALS.map(({ question, answer, links }) => (
+            <div key={question} className="py-4">
+              <dt className="text-[0.9375rem] font-medium">{question}</dt>
+              <dd className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+                {answer} Read more: {links.map((link, index) => (
+                  <span key={link.href}>
+                    {index > 0 ? ", " : ""}
+                    <Link href={link.href} className="link">{link.label}</Link>
+                  </span>
+                ))}.
+              </dd>
+            </div>
+          ))}
         </dl>
       </section>
       <section aria-labelledby="focused-walkthroughs" className="max-w-[66ch] border-t border-rule py-8">

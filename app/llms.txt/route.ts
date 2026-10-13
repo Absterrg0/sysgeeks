@@ -3,6 +3,7 @@ import { proseToPlainText } from "@/lib/prose";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import { PLAYGROUNDS } from "@/lib/content/playground";
 import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
+import { SYSTEM_DESIGN_FUNDAMENTALS } from "@/lib/content/system-design-fundamentals";
 
 export const dynamic = "force-static";
 
@@ -32,7 +33,7 @@ export function GET() {
     `- [System design interview follow-up questions and failure scenarios](${SITE_URL}/system-design-interview/failure-scenarios): A five-step method, a worked uncertain-payment example, and 12 original drills for retries, worker failures, duplicate messages, queue backlogs, cache stampedes, dependency overload, event ordering, split-brain writes, failover, hot partitions, and live migrations.`,
     `- [AI system design interview practice](${SITE_URL}/system-design-interview/ai-system-design): A guide to LLM inference, RAG over private documents, and tool-using agents, with shared workload, quality, permission, and failure considerations.`,
     `- [System design interview cheat sheet (printable worksheet)](${SITE_URL}/system-design-interview/worksheet): A free two-page PDF with a 45-minute plan, sizing formulas, five questions, and a readiness checklist. Download: ${SITE_URL}/downloads/system-design-interview-practice-sheet.pdf`,
-    `- [${SYSTEM_DESIGN_ANSWERS.length} system design interview questions and answers](${SITE_URL}/investigations): A free HTML guide with concise answer outlines, focused practice prompts, and links to interactive exercises and full walkthroughs. Download the printable PDF: ${SITE_URL}/downloads/system-design-interview-questions-and-answers.pdf`,
+    `- [${SYSTEM_DESIGN_ANSWERS.length + SYSTEM_DESIGN_FUNDAMENTALS.length} system design interview questions and answers](${SITE_URL}/investigations): ${SYSTEM_DESIGN_ANSWERS.length} interactive design prompts with worked answers, plus ${SYSTEM_DESIGN_FUNDAMENTALS.length} answer-first fundamentals with links to deeper concept guides. Download the ${SYSTEM_DESIGN_ANSWERS.length} interactive prompts as a PDF: ${SITE_URL}/downloads/system-design-interview-questions-and-answers.pdf`,
     `- [System design interview scorecard](${SITE_URL}/system-design-interview/scorecard): A free printable self-review rubric. Score six observable skills from 0 to 2, record evidence from a mock, and choose one focused drill. Download: ${SITE_URL}/downloads/system-design-interview-scorecard.pdf`,
     `- [Free system design mock interview practice](${SITE_URL}/system-design-mock-interview): Practise alone with timed 30, 45, or 60-minute sessions, six original follow-up prompts about scale, retries, worker failure, hot partitions, cache freshness and migration, a six-dimension scorecard, and a debrief after you answer. These are practice prompts, not claims about questions asked by a particular employer.`,
     `- [Interactive system design interview practice](${SITE_URL}/system-design-playground): Explore ${Object.keys(PLAYGROUNDS).length} browser-based simulations. Change components, raise traffic, and compare failures, backlog, and capacity with a reference design.`,
