@@ -67,6 +67,7 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
+  robots: { googleBot: { "max-image-preview": "large" } },
   // Search Console and Bing Webmaster Tools can verify by meta tag, as an alternative to a DNS record.
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
