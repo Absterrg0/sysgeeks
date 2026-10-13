@@ -7,7 +7,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const investigations = listInvestigations();
   const updatedInvestigationReviews = investigations
     .filter((investigation) => investigation.answerSummary)
-    .map(({ id }) => [`/investigations/${id}/review`, "2026-10-13"] as const);
+    .map(({ id }) => [
+      `/investigations/${id}/review`,
+      id === "shard-live-database" ? "2026-10-14" : "2026-10-13",
+    ] as const);
   // Only include dates for pages with a known material edit. Avoid refreshing every
   // URL on each deploy, which would make the sitemap's update hints unreliable.
   const lastModified: Record<string, string> = {
@@ -30,7 +33,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/concepts/replication": "2026-10-12",
     "/concepts/concurrency-control": "2026-10-12",
     "/system-design-mock-interview": "2026-10-12",
-    "/system-design-playground": "2026-10-13",
+    "/system-design-playground": "2026-10-14",
+    "/investigations/shard-live-database": "2026-10-14",
     "/downloads/system-design-interview-questions-and-answers.pdf": "2026-10-13",
     "/capacity-estimator": "2026-10-11",
     "/concepts/server-push": "2026-10-11",

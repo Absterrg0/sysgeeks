@@ -68,7 +68,7 @@ export default function SystemDesignPlaygroundPage() {
         production sizing requires measured workloads and system-specific engineering.
       </PageHeader>
 
-      <Section id="postgres-sharding" title="How do you shard Postgres without downtime?">
+      <Section id="postgres-sharding" title="How do you shard a live Postgres database?">
         <div className="max-w-[72ch] space-y-3 text-[0.9375rem] leading-relaxed text-ink-2">
           <p>
             Pick a shard key that keeps common reads and joins together. Notion chose workspace ID and mapped 480
@@ -82,6 +82,12 @@ export default function SystemDesignPlaygroundPage() {
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-[0.8125rem] font-medium">
             <Link href="/investigations/shard-live-database/playground" className="text-accent hover:underline">
               Try the Postgres sharding simulator →
+            </Link>
+            <Link href="/investigations/shard-live-database" className="text-accent hover:underline">
+              Work through the Postgres sharding interview exercise →
+            </Link>
+            <Link href="/investigations/shard-live-database/review" className="text-accent hover:underline">
+              Read the full Postgres sharding walkthrough →
             </Link>
             <Link href="/companies/notion" className="text-accent hover:underline">
               Read the sourced Notion case study →

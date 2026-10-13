@@ -4,9 +4,9 @@ import { md } from "../md";
 export const shardLiveDatabase = {
   id: "shard-live-database",
   title: "Sharding Postgres while it is running",
-  searchTitle: "Shard a Live Database Without Downtime",
+  searchTitle: "Shard a Live Postgres Database",
   answerSummary:
-    "Shard by workspace because common reads and joins stay within one workspace, and map 480 logical Postgres shards to hosts. Log writes, backfill versioned rows, verify with comparisons and dark reads, then cut over in a short maintenance window. Replicas and table partitioning address other limits, but neither divides one host's write load.",
+    "Postgres sharding splits data across independent hosts, so writes and table growth no longer land on one primary. Here, shard by workspace so common reads and joins stay together, then map 480 logical shards to hosts. Log writes, backfill versioned rows, compare the copies, and cut over after verification. Replicas and table partitioning solve different limits.",
   premise:
     "Built from how Notion sharded Postgres while millions of people were using it: choose a shard key, choose a shard count you can live with for years, move every row while writes continue, prove the copy is right, and grow again later without starting over.",
   difficulty: "advanced",

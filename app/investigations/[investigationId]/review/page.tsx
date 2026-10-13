@@ -44,12 +44,16 @@ export async function generateMetadata(
         ? "API Rate Limiter System Design Walkthrough"
         : inv.id === "url-shortener"
         ? "URL Shortener System Design: Full Walkthrough"
+        : inv.id === "shard-live-database"
+          ? "Postgres Sharding: Migration Walkthrough"
         : fullTitle.length <= 55
           ? fullTitle
           : `System Design Walkthrough: ${systemName}`,
     description: clip(
       inv.id === "api-rate-limiter"
         ? "Design a distributed API rate limiter: choose a token bucket, share atomic counters across servers, return 429 and Retry-After, and plan for Redis failure."
+        : inv.id === "shard-live-database"
+          ? "A worked Postgres sharding example based on Notion: choose a workspace key, map logical shards to hosts, verify the copy, then cut over with a brief pause."
         : inv.answerSummary ??
             `${howTo(inv.searchTitle)}, step by step: ${inv.system.components.map((c) => c.label).join(", ")}. ${inv.premise}`,
     ),

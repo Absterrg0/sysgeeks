@@ -25,11 +25,13 @@ export async function generateMetadata(props: PageProps<"/investigations/[invest
   if (!inv) return {};
   const systemName =
     inv.id === "shard-live-database"
-      ? "Live Database Sharding"
+      ? "Postgres Sharding"
       : systemNameForTitle(inv.searchTitle).replace(/ System$/, "");
   return pageMetadata({
     title:
-      inv.id === "news-feed"
+      inv.id === "shard-live-database"
+        ? "Postgres Sharding System Design Interview"
+        : inv.id === "news-feed"
         ? "Twitter System Design Interview: Home Timeline"
         : inv.id === "file-storage-sync"
           ? "Dropbox System Design Interview: File Sync Practice"
@@ -37,6 +39,8 @@ export async function generateMetadata(props: PageProps<"/investigations/[invest
     description: clip(
       inv.id === "url-shortener"
         ? "Practice a Bitly-style URL shortener system design interview: estimate traffic, choose IDs, and test caching, click analytics, and urgent takedowns."
+        : inv.id === "shard-live-database"
+          ? "Free interactive Postgres sharding interview practice. Choose a workspace key, plan a live backfill, verify the copy, and schedule a controlled cutover."
         : inv.id === "news-feed"
           ? "Practice a Twitter/X system design interview: choose timeline fan-out, handle celebrity accounts, and reason through freshness, deletes, and failures."
           : inv.id === "file-storage-sync"
