@@ -441,7 +441,7 @@ export default function SystemDesignInterviewPage() {
           </p>
           <p>
             A strong answer covers the transition and its safety conditions alongside the target architecture. The{" "}
-            <Link href="/investigations/shard-live-database" className="text-accent hover:underline">
+            <Link href="/investigations/shard-live-database" className="link">
               live database sharding exercise
             </Link>{" "}
             walks through the write log, version checks, backfill, dark reads, verification, and cutover.
