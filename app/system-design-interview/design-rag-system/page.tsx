@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ContentUsefulness } from "@/components/content-usefulness";
 import { PageHeader, Section } from "@/components/page-header";
 import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
@@ -35,7 +36,7 @@ const FAQ = [
   {
     question: "Can I practise this design on SysGeeks?",
     answer:
-      "Use the walkthrough as a reference, then rehearse the scope, retrieval trade-offs, access boundaries, and failure cases in a timed system design mock interview.",
+      "Start with the four follow-up drills on this page, then use a timed system design mock interview to rehearse the full answer. Focus on scope, retrieval trade-offs, access boundaries, and failure handling.",
   },
 ];
 
@@ -269,6 +270,45 @@ export default function DesignRagSystemPage() {
         </blockquote>
       </Section>
 
+      <Section id="practice" title="RAG system design interview practice: four follow-up questions">
+        <p className="max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
+          Set a ten-minute timer. Sketch the ingestion and query paths, then answer each follow-up before opening its
+          comparison. Focus on the guarantee and the mechanism that enforces it; naming a vector database is not an
+          answer to a failure question.
+        </p>
+        <ol className="mt-4 max-w-[72ch] divide-y divide-rule border-y border-rule">
+          {[
+            [
+              "A new document version is only half indexed. What should a query see?",
+              "Keep the new version pending. Continue serving the last complete version until the expected chunks and metadata are queryable, then switch the active-version pointer as one logical change. A retry must be idempotent for the source, document, and version; it must not expose a partial index.",
+            ],
+            [
+              "A user's permission is revoked while an answer is being generated. Where must the check happen?",
+              "Derive the retrieval scope from the trusted identity and enforce it before document text enters model context. Recheck authorization before returning the answer and citations. If access changed during generation, discard that response. A prompt instruction cannot retract private text already sent to the model, and a shared cache must account for permission changes or be bypassed.",
+            ],
+            [
+              "A deleted document reappears after a delayed connector retry. How do you stop it?",
+              "Record a tombstone keyed by the source and document version, and make connector checkpoints and retries respect it. Apply deletion to lexical and vector indexes and invalidate affected caches; do not let an older retry resurrect the document.",
+            ],
+            [
+              "Answers sound fluent, but users say the right evidence is missing. Which metric do you inspect first?",
+              "Inspect retrieval recall at k against expected source passages before changing the generation prompt. Then measure claim support, citation accuracy, and abstention separately. If the needed passage never reaches the model, a more fluent model cannot fix retrieval coverage.",
+            ],
+          ].map(([question, answer], index) => (
+            <li key={question} className="py-4">
+              <h3 className="text-[0.9375rem] font-medium">
+                <span className="mr-2 font-mono text-[0.75rem] text-ink-3">{index + 1}.</span>
+                {question}
+              </h3>
+              <details className="mt-2 text-[0.875rem] leading-relaxed text-ink-2">
+                <summary className="cursor-pointer font-medium text-accent hover:underline">Compare your reasoning</summary>
+                <p className="mt-2">{answer}</p>
+              </details>
+            </li>
+          ))}
+        </ol>
+      </Section>
+
       <Section id="sources" title="Primary sources and scope">
         <ul className="max-w-[72ch] list-disc space-y-2 pl-5 text-[0.9375rem] leading-relaxed text-ink-2">
           <li>
@@ -311,6 +351,7 @@ export default function DesignRagSystemPage() {
           </Link>
         </div>
       </section>
+      <ContentUsefulness />
     </article>
   );
 }

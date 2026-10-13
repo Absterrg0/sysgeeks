@@ -43,7 +43,7 @@ export function GET() {
     `- [About ${SITE_NAME}](${SITE_URL}/about): How the exercises are built, where the material comes from, and how answers are checked.`,
     `- [How ${SITE_NAME} uses AI](${SITE_URL}/ai): Which features use AI, what is sent to model providers, which models run, how long data is kept, and how AI output is labelled.`,
     "",
-    "- [Design a RAG system](" + SITE_URL + "/system-design-interview/design-rag-system): An original interview walkthrough for private-document ingestion, permission-scoped retrieval, citations, freshness, evaluation, and failure handling.",
+    "- [Design a RAG system](" + SITE_URL + "/system-design-interview/design-rag-system): An original interview walkthrough for private-document ingestion, permission-scoped retrieval, citations, freshness, evaluation, and failure handling, with four self-check follow-up drills on index publication, access revocation, deletion, and retrieval quality.",
     "",
     "- [Design an AI agent](" +
       SITE_URL +
