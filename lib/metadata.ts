@@ -12,23 +12,35 @@ export function pageMetadata({
   title,
   description,
   path,
+  imagePath = "/opengraph-image",
   noindex = false,
 }: {
   title: string;
   description: string;
   /** Path from the site root, e.g. "/concepts/idempotency". */
   path: string;
+  /** Path to this page's generated card image. Defaults to the site-wide image. */
+  imagePath?: string;
   /** For pages that only show the visitor's own browser data: followed, never listed. */
   noindex?: boolean;
 }): Metadata {
   const absoluteTitle = title.length > 68 ? clip(title, 68) : title;
+  const imageUrl = `${SITE_URL}${imagePath}`;
   return {
     // Keep title text concise enough that the important words fit after HTML escaping and result decoration.
     title: `${title}${TITLE_SUFFIX}`.length > 55 ? { absolute: absoluteTitle } : title,
     description,
     alternates: { canonical: path },
-    openGraph: { title, description, url: path, siteName: SITE_NAME, type: "website", locale: "en_US" },
-    twitter: { card: "summary_large_image", title, description },
+    openGraph: {
+      title,
+      description,
+      url: path,
+      siteName: SITE_NAME,
+      type: "website",
+      locale: "en_US",
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: title }],
+    },
+    twitter: { card: "summary_large_image", title, description, images: [imageUrl] },
     ...(noindex && { robots: { index: false, follow: true } }),
   };
 }

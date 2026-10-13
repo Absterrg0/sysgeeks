@@ -44,6 +44,7 @@ export async function generateMetadata(props: PageProps<"/investigations/[invest
             : `Free interactive system design practice: ${inv.searchTitle}. Make design choices, test failure cases, and read the worked answer.`,
     ),
     path: `/investigations/${inv.id}`,
+    imagePath: `/investigations/${inv.id}/opengraph-image`,
   });
 }
 

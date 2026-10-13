@@ -44,6 +44,7 @@ export async function generateMetadata(
         : `${question} ${proseToPlainText(stage.context)}`,
     ),
     path: `/investigations/${investigation.id}/${stage.id}`,
+    imagePath: `/investigations/${investigation.id}/${stage.id}/opengraph-image`,
   });
 }
 

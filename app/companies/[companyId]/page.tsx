@@ -24,6 +24,7 @@ export async function generateMetadata(props: PageProps<"/companies/[companyId]"
     title: `${company.name} system design: ${company.topic}`,
     description: `${company.name} system design case study: ${company.topic}. Read original engineering sources, then practise the trade-offs in a free interactive exercise.`,
     path: `/companies/${company.id}`,
+    imagePath: `/companies/${company.id}/opengraph-image`,
   });
 }
 

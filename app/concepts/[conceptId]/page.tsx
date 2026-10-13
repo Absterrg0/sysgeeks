@@ -33,9 +33,15 @@ export async function generateMetadata(props: PageProps<"/concepts/[conceptId]">
       description:
         "Compare token bucket, leaky bucket, fixed and sliding windows, then see when to share limiter state across servers and how to handle store failure.",
       path: `/concepts/${c.id}`,
+      imagePath: `/concepts/${c.id}/opengraph-image`,
     });
   }
-  return pageMetadata({ title: `${c.title} in System Design`, description: clip(c.summary), path: `/concepts/${c.id}` });
+  return pageMetadata({
+    title: `${c.title} in System Design`,
+    description: clip(c.summary),
+    path: `/concepts/${c.id}`,
+    imagePath: `/concepts/${c.id}/opengraph-image`,
+  });
 }
 
 function Terms({ items }: { items: { title: string; body: string }[] }) {
