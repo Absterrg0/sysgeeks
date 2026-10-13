@@ -23,6 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/investigations": "2026-10-14",
     "/concepts": "2026-10-13",
     "/concepts/rate-limiting": "2026-10-14",
+    "/concepts/webhooks": "2026-10-14",
     "/companies": "2026-10-12",
     "/companies/dropbox": "2026-10-14",
     "/concepts/object-storage": "2026-10-12",

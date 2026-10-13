@@ -36,6 +36,15 @@ export async function generateMetadata(props: PageProps<"/concepts/[conceptId]">
       imagePath: `/concepts/${c.id}/opengraph-image`,
     });
   }
+  if (c.id === "webhooks") {
+    return pageMetadata({
+      title: "Webhooks in System Design: Delivery and Recovery",
+      description:
+        "Handle webhook retries, duplicates, and out-of-order events with signature checks, idempotency, fast acknowledgements, and reconciliation.",
+      path: `/concepts/${c.id}`,
+      imagePath: `/concepts/${c.id}/opengraph-image`,
+    });
+  }
   return pageMetadata({
     title: `${c.title} in System Design`,
     description: clip(c.summary),
@@ -142,7 +151,13 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
         }}
       />
       <PageHeader
-        title={concept.id === "rate-limiting" ? "How to design a rate limiter" : concept.title}
+        title={
+          concept.id === "rate-limiting"
+            ? "How to design a rate limiter"
+            : concept.id === "webhooks"
+              ? "Webhooks: delivery, retries, and recovery"
+              : concept.title
+        }
         meta="By SysGeeks"
         eyebrow={
           <>
