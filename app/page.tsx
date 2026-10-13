@@ -17,6 +17,10 @@ import { visibleAfter } from "@/lib/domain/visibility";
 import { itemList, jsonLd } from "@/lib/metadata";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import { PLAYGROUNDS } from "@/lib/content/playground";
+import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
+import { SYSTEM_DESIGN_FUNDAMENTALS } from "@/lib/content/system-design-fundamentals";
+
+const QUESTION_COUNT = SYSTEM_DESIGN_ANSWERS.length + SYSTEM_DESIGN_FUNDAMENTALS.length;
 
 type LogLine = { at: string; who: string; what: string; failed?: boolean };
 
@@ -179,7 +183,7 @@ export default function Home() {
             </div>
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[0.875rem] font-medium text-ink-3">
               <Link href="/investigations" className="transition-colors hover:text-accent">
-                Browse {investigations.length} system design interview questions →
+                Browse {QUESTION_COUNT} system design interview questions and answers →
               </Link>
               <PracticeEntryLink
                 href="/system-design-playground"

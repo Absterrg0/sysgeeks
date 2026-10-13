@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Only include dates for pages with a known material edit. Avoid refreshing every
   // URL on each deploy, which would make the sitemap's update hints unreliable.
   const lastModified: Record<string, string> = {
-    "/": "2026-10-11",
+    "/": "2026-10-13",
     "/system-design-interview": "2026-10-13",
     "/system-design-interview/failure-scenarios": "2026-10-12",
     "/system-design-interview/drills": "2026-10-13",
