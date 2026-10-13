@@ -7,7 +7,7 @@ import { PLAYGROUNDS } from "@/lib/content/playground";
 import { breadcrumbs, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 
 const PATH = "/system-design-playground";
-const TITLE = "Free System Design Interview Simulator";
+const TITLE = "System Design Interview Simulator: Postgres Sharding";
 const DESCRIPTION =
   `Try ${Object.keys(PLAYGROUNDS).length} free system design simulations, including Postgres sharding based on Notion's published migration. Test shard placement, capacity, and failures. No signup.`;
 
@@ -44,7 +44,7 @@ export default function SystemDesignPlaygroundPage() {
       />
 
       <PageHeader
-        title="Free system design interview simulator"
+        title="System design interview simulator: Postgres sharding and more"
         meta={`${playgrounds.length} simulations · Free · No account needed`}
         actions={
           <>
