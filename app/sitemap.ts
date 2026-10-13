@@ -22,7 +22,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/system-design-interview/ai-system-design": "2026-10-11",
     "/system-design-interview/worksheet": "2026-10-11",
     "/investigations": "2026-10-13",
-    "/investigations/url-shortener/review": "2026-10-13",
     "/concepts": "2026-10-13",
     "/companies": "2026-10-12",
     "/companies/dropbox": "2026-10-12",
@@ -48,6 +47,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/companies/amazon": "2026-10-11",
     "/companies/uber": "2026-10-11",
     ...Object.fromEntries(updatedInvestigationReviews),
+    "/investigations/url-shortener/review": "2026-10-13",
     "/investigations/ride-dispatch/review": "2026-10-11",
     "/investigations/file-storage-sync/review": "2026-10-12",
   };
