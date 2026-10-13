@@ -1,7 +1,8 @@
+import argparse
+import json
+from html import escape
 from pathlib import Path
 from shutil import copyfile
-from html import escape
-import json
 import reportlab
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT
@@ -236,7 +237,7 @@ def answers_page(canvas, doc):
     canvas.saveState()
     canvas.setTitle(doc.title)
     canvas.setAuthor("SysGeeks")
-    canvas.setSubject("Free printable system design interview answer outlines")
+    canvas.setSubject(doc.answer_subject)
     canvas.setStrokeColor(RULE)
     canvas.setLineWidth(0.5)
     canvas.line(LEFT, 12 * mm, PAGE_W - RIGHT, 12 * mm)
@@ -249,18 +250,22 @@ def answers_page(canvas, doc):
 
 def build_answers(path):
     answers_path = ROOT / "lib" / "content" / "system-design-answers.json"
+    fundamentals_path = ROOT / "lib" / "content" / "system-design-fundamentals.json"
     answers = json.loads(answers_path.read_text(encoding="utf-8"))
-    question_count = len(answers)
+    fundamentals = json.loads(fundamentals_path.read_text(encoding="utf-8"))
+    question_count = len(answers) + len(fundamentals)
     doc = SimpleDocTemplate(
         str(path), pagesize=A4, leftMargin=LEFT, rightMargin=RIGHT, topMargin=TOP, bottomMargin=BOTTOM,
         title=f"{question_count} System Design Interview Questions and Answers", author="SysGeeks",
-        subject="Free printable system design interview answer outlines",
+        subject=f"Free system design interview PDF with {question_count} questions and answers",
     )
+    doc.answer_subject = f"Free printable system design interview PDF with {question_count} questions and answers"
     story = [
         P("SYSTEM DESIGN INTERVIEW | FREE PRINTABLE GUIDE", "Kicker"),
         P(f"{question_count} questions and answers", "TitleCustom"),
         P(
-            f"{question_count} original system design prompts with concise answer outlines and links to full worked walkthroughs. "
+            f"{len(answers)} interactive design prompts with answer outlines and worked walkthroughs, plus "
+            f"{len(fundamentals)} system design fundamentals with direct answers and links to deeper guides. "
             "Free to download, with no account or email required.",
             "Sub",
         ),
@@ -283,21 +288,51 @@ def build_answers(path):
         if index in {5, 10}:
             story.append(PageBreak())
     story += [
+        PageBreak(),
+        P(f"{len(fundamentals)} fundamentals, with direct answers", "TitleCustom"),
+        P(
+            "Use these concise explanations to review common trade-offs, failure handling, and guarantees. "
+            "Each link opens a deeper SysGeeks guide.",
+            "Sub",
+        ),
+    ]
+    for item in fundamentals:
+        card = [
+            P(escape(item["question"], quote=False), "AnswerTitle"),
+            P(f"<b>Answer.</b> {escape(item['answer'], quote=False)}", "AnswerBody"),
+        ]
+        links = item["links"]
+        if links:
+            link_text = ", ".join(
+                f'<a href="https://www.sysgeeks.com{escape(link["href"], quote=True)}" color="#14655E">'
+                f'{escape(link["label"], quote=False)}</a>'
+                for link in links
+            )
+            card.append(P(f"Read more: {link_text}", "AnswerLink"))
+        story.append(KeepTogether(card))
+    story += [
         Spacer(1, 2 * mm),
         P("Continue practising", "SectionCustom"),
-        P("Try the interactive questions and complete walkthroughs at sysgeeks.com/investigations.", "BodyCustom"),
+        P(f"Practice all {question_count} questions and use the interactive exercises at sysgeeks.com/investigations.", "BodyCustom"),
     ]
     doc.build(story, onFirstPage=answers_page, onLaterPages=answers_page)
 
 worksheet_out = OUTPUT / "system-design-interview-practice-sheet.pdf"
 scorecard_out = OUTPUT / "system-design-interview-scorecard.pdf"
 answers_out = OUTPUT / "system-design-interview-questions-and-answers.pdf"
-build_worksheet(worksheet_out)
-build_scorecard(scorecard_out)
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--only", choices=("all", "answers"), default="all")
+args = parser.parse_args()
+
+if args.only == "all":
+    build_worksheet(worksheet_out)
+    build_scorecard(scorecard_out)
+    copyfile(worksheet_out, PUBLIC / worksheet_out.name)
+    copyfile(scorecard_out, PUBLIC / scorecard_out.name)
+    print(worksheet_out)
+    print(scorecard_out)
+
 build_answers(answers_out)
-copyfile(worksheet_out, PUBLIC / worksheet_out.name)
-copyfile(scorecard_out, PUBLIC / scorecard_out.name)
 copyfile(answers_out, PUBLIC / answers_out.name)
-print(worksheet_out)
-print(scorecard_out)
 print(answers_out)

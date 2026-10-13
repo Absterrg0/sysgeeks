@@ -7,6 +7,7 @@ import { TrackedDownloadLink } from "@/components/tracked-download-link";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { DashList, PageHeader, Section } from "@/components/page-header";
 import { getConcept, listInvestigations } from "@/lib/content";
+import { SYSTEM_DESIGN_FUNDAMENTALS } from "@/lib/content/system-design-fundamentals";
 import { DIMENSION_LABELS, DIMENSIONS } from "@/lib/domain/content";
 import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
@@ -524,7 +525,7 @@ export default function SystemDesignInterviewPage() {
             href="/downloads/system-design-interview-questions-and-answers.pdf"
             resource="system_design_questions_answers"
           >
-            Download the {investigations.length}-question answers PDF
+            Download the {investigations.length + SYSTEM_DESIGN_FUNDAMENTALS.length}-question answers PDF
           </TrackedDownloadLink>
         </div>
         <p className="mt-6 max-w-[66ch] text-[0.9375rem] leading-relaxed text-ink-2">

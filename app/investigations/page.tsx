@@ -55,7 +55,7 @@ export default function InvestigationsPage() {
                   ),
                   hasPart: {
                     "@type": "DigitalDocument",
-                    name: `${SYSTEM_DESIGN_ANSWERS.length} interactive system design interview questions and answers (PDF)`,
+                    name: `${TOTAL_QUESTION_COUNT} system design interview questions and answers (PDF)`,
                     encodingFormat: "application/pdf",
                     contentUrl: `${SITE_URL}${PDF_PATH}`,
                     inLanguage: "en",
@@ -152,7 +152,7 @@ export default function InvestigationsPage() {
             href={PDF_PATH}
             resource="system_design_questions_answers"
           >
-            Download the {questionCount} interactive questions and answers (PDF)
+            Download all {TOTAL_QUESTION_COUNT} questions and answers (PDF)
           </TrackedDownloadLink>
           <PracticeEntryLink
             href="/system-design-playground"

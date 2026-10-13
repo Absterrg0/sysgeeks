@@ -34,7 +34,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/concepts/concurrency-control": "2026-10-12",
     "/system-design-mock-interview": "2026-10-12",
     "/system-design-playground": "2026-10-11",
-    "/downloads/system-design-interview-questions-and-answers.pdf": "2026-10-12",
+    "/downloads/system-design-interview-questions-and-answers.pdf": "2026-10-13",
     "/capacity-estimator": "2026-10-11",
     "/concepts/server-push": "2026-10-11",
     "/system-design-interview/design-llm-inference": "2026-10-11",
