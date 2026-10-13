@@ -36,6 +36,7 @@ const TRAINING_AND_CORPUS_CRAWLERS = [
   "Google-Extended",
   "Applebot-Extended",
   "CCBot",
+  "Meta-ExternalAgent",
 ];
 
 export default function robots(): MetadataRoute.Robots {
