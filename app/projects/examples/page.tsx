@@ -5,10 +5,12 @@ import { AppHeader } from "@/components/page-header";
 import { listExampleProjects } from "@/lib/content/example-projects";
 import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 
+const EXAMPLE_COUNT = listExampleProjects().length;
+
 export const metadata: Metadata = pageMetadata({
-  title: "System Design Examples: Practice Architectures",
+  title: "System Design Interview Examples",
   description:
-    "Explore authored system design examples through components, request flows, scale assumptions and invariants. Practise with illustrative architectures, not company case studies.",
+    `Explore ${EXAMPLE_COUNT} system design interview examples with diagrams, request flows, component roles and invariants. Original models, not company case studies.`,
   path: "/projects/examples",
 });
 
@@ -28,13 +30,14 @@ export default function ExamplesPage() {
         }}
       />
       <AppHeader
-        title="System design examples"
+        title="System design interview examples"
         count={examples.length}
         description={
           <>
-            Explore {examples.length} authored practice architectures through their components, request flows, scale
-            assumptions and invariants. These are illustrative models, not reconstructions of a named company&apos;s
-            production system. For source-linked engineering writeups, browse our{" "}
+            Explore {examples.length} original practice architectures for system design interviews. Trace their
+            components, request flows, scale assumptions and invariants. These are illustrative models, not
+            reconstructions of a named company&apos;s production system. For source-linked engineering writeups, browse
+            our{" "}
             <Link href="/companies" className="link">
               company case studies
             </Link>
