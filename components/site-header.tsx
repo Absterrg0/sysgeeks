@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { StageBarInvestigation } from "@/components/investigation/stage-bar";
-import { Brand, DesktopLinks, DesktopNav, MobileNav } from "@/components/site-nav";
+import { Brand, DesktopLinks, DesktopNav } from "@/components/site-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const AccountMenu = dynamic(() => import("@/components/account/account-menu").then((module) => module.AccountMenu));
@@ -13,8 +13,13 @@ const LiveCredits = dynamic(() => import("@/components/account/live-credits").th
 const CreditsChip = dynamic(() => import("@/components/billing-ui").then((module) => module.CreditsChip));
 const SystemBar = dynamic(() => import("@/components/investigation/system-bar").then((module) => module.SystemBar));
 const ProjectBar = dynamic(() => import("@/components/investigation/system-bar").then((module) => module.ProjectBar));
+const MobileNav = dynamic(() => import("@/components/site-mobile-nav").then((module) => module.MobileNav));
 
 export type HeaderCredits = { balance: number; allotment?: number; renewsAt?: Date | null };
+
+function preloadMobileNav() {
+  void import("@/components/site-mobile-nav");
+}
 
 /**
  * The one bar at the top of every page: the brand, the sections, the account, and on small screens a menu.
@@ -81,6 +86,9 @@ export function SiteHeader({
               aria-expanded={open}
               aria-controls="mobile-nav"
               aria-label={open ? "Close menu" : "Open menu"}
+              onPointerEnter={preloadMobileNav}
+              onFocus={preloadMobileNav}
+              onTouchStart={preloadMobileNav}
               onClick={() => {
                 setOpenedAt(pathname);
                 setOpen((v) => !v);
