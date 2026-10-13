@@ -6,9 +6,9 @@ import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-interview/design-rag-system";
-const TITLE = "RAG System Design Interview: Retrieval, LLMs & Failure Modes";
+const TITLE = "RAG vs. LLM: System Design Interview Guide";
 const DESCRIPTION =
-  "Design a RAG system for a system design interview: private documents, hybrid retrieval, grounded LLM answers, access control, freshness, and failure handling.";
+  "RAG retrieves external material for an LLM to use as context. Compare them, then practise system design for retrieval, permissions, and failure handling.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
@@ -59,7 +59,7 @@ export default function DesignRagSystemPage() {
               ]),
               {
                 "@type": "Article",
-                headline: TITLE,
+                headline: "Design a RAG system for a system design interview",
                 description: DESCRIPTION,
                 url: SITE_URL + PATH,
                 mainEntityOfPage: SITE_URL + PATH,
@@ -76,7 +76,7 @@ export default function DesignRagSystemPage() {
         }}
       />
 
-      <PageHeader title="Design a RAG system with LLMs: a system design interview walkthrough" meta="By SysGeeks">
+      <PageHeader title="Design a RAG system for a system design interview" meta="By SysGeeks">
         Design a retrieval-augmented generation (RAG) service that uses a large language model (LLM) to answer questions
         over private, changing documents. The hard parts are keeping retrieval
         inside the caller&apos;s permissions, publishing updates without mixed versions, and showing when the evidence
@@ -93,16 +93,39 @@ export default function DesignRagSystemPage() {
         </Link>
       </div>
 
-      <Section id="what-is-rag" title="What is RAG, and how does it use an LLM?">
+      <Section id="what-is-rag" title="RAG vs. LLM: what is the difference?">
         <p className="max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
           <Link className="link" href="https://docs.cohere.com/docs/retrieval-augmented-generation-rag">
             Retrieval-augmented generation (RAG)
           </Link>{" "}
-          retrieves relevant information from an external source and supplies it as context to a large language model
-          (LLM) before the model answers. The LLM generates the response; a separate retrieval system finds the
-          supporting information. RAG is a system pattern built around a model, not a type of LLM, and retrieved
-          context does not guarantee a correct answer.
+          is a system pattern; a large language model (LLM) is the model that generates text. RAG retrieves relevant
+          information from an external source and supplies it to the LLM as context before the model answers. RAG is
+          built around a model, not a type of model.
         </p>
+        <dl className="mt-4 max-w-[72ch] divide-y divide-rule border-y border-rule">
+          <div className="grid gap-x-6 gap-y-1 py-3 sm:grid-cols-[12rem_minmax(0,1fr)]">
+            <dt className="text-[0.9375rem] font-medium">LLM</dt>
+            <dd className="text-[0.9375rem] leading-relaxed text-ink-2">
+              Generates a response from the prompt and information represented in its learned parameters. On its own,
+              it does not retrieve a private or changing document for the current question.
+            </dd>
+          </div>
+          <div className="grid gap-x-6 gap-y-1 py-3 sm:grid-cols-[12rem_minmax(0,1fr)]">
+            <dt className="text-[0.9375rem] font-medium">RAG</dt>
+            <dd className="text-[0.9375rem] leading-relaxed text-ink-2">
+              Retrieves external material for the current question and gives selected passages to an LLM as context.
+              The application must still enforce document permissions and keep its index fresh.
+            </dd>
+          </div>
+          <div className="grid gap-x-6 gap-y-1 py-3 sm:grid-cols-[12rem_minmax(0,1fr)]">
+            <dt className="text-[0.9375rem] font-medium">What neither guarantees</dt>
+            <dd className="text-[0.9375rem] leading-relaxed text-ink-2">
+              Correct answers. Retrieved material can be missing, stale, or irrelevant, and the model can still make
+              unsupported claims. Evaluate retrieval and answer quality separately; cite evidence or abstain when it
+              is weak.
+            </dd>
+          </div>
+        </dl>
         <p className="mt-3 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
           In a system design interview, that means designing both the document-ingestion and query-serving paths, then
           explaining how retrieval, permissions, freshness, citations, and failure handling fit together. The
