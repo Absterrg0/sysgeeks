@@ -5,13 +5,9 @@ import { SITE_URL } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const investigations = listInvestigations();
-  const updatedInvestigationReviews = investigations.flatMap((investigation) => {
-    const { id, searchTitle } = investigation;
-    const howTo = `How to ${searchTitle[0]?.toLowerCase()}${searchTitle.slice(1)}`;
-    return `${howTo}: Step-by-Step System Design`.length > 55
-      ? [[`/investigations/${id}/review`, "2026-10-11"] as const]
-      : [];
-  });
+  const updatedInvestigationReviews = investigations
+    .filter((investigation) => investigation.answerSummary)
+    .map(({ id }) => [`/investigations/${id}/review`, "2026-10-13"] as const);
   // Only include dates for pages with a known material edit. Avoid refreshing every
   // URL on each deploy, which would make the sitemap's update hints unreliable.
   const lastModified: Record<string, string> = {
@@ -47,9 +43,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/companies/amazon": "2026-10-11",
     "/companies/uber": "2026-10-11",
     ...Object.fromEntries(updatedInvestigationReviews),
-    "/investigations/url-shortener/review": "2026-10-13",
-    "/investigations/ride-dispatch/review": "2026-10-11",
-    "/investigations/file-storage-sync/review": "2026-10-12",
   };
   const paths = [
     "/",

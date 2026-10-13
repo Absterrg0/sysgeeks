@@ -5,6 +5,8 @@ export const distributedCache = {
   id: "distributed-cache",
   title: "A look-aside cache at Facebook's scale",
   searchTitle: "Design a Distributed Cache (Memcache)",
+  answerSummary:
+    "Use a look-aside cache in front of the database and delete cache entries after writes. Give one reader a short-lived lease to refill a missing key, which prevents concurrent misses from stampeding the database and stops an older read from restoring stale data after a delete. Rehash around failed cache nodes and propagate invalidations across clusters.",
   premise:
     "Built from Facebook's paper on scaling memcache: a look-aside cache serving billions of reads a second, Reads are fast; the hard parts are stale values, stampedes on popular keys, dead servers and invalidations that have to cross regions.",
   difficulty: "advanced",

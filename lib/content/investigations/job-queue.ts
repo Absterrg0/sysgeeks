@@ -5,6 +5,8 @@ export const jobQueue = {
   id: "job-queue",
   title: "A job queue that keeps working when workers fall behind",
   searchTitle: "Design a Distributed Job Queue",
+  answerSummary:
+    "Put a durable Kafka log in front of the existing Redis worker queues. A relay retries delivery until Redis accepts each job, while workers lease jobs and acknowledge only after success, so a crash can repeat work but cannot lose it. Separate queues by job type, throttle each against its dependencies, and drain backlogs at a rate downstream systems can handle.",
   premise:
     "Built from Slack's account of the outage that made it rebuild its job queue: make enqueues safe when workers fall behind, keep one slow job type from starving the rest, and drain a backlog without causing the next outage.",
   difficulty: "intermediate",

@@ -5,6 +5,8 @@ export const chatMessageStore = {
   id: "chat-message-store",
   title: "Storing trillions of chat messages",
   searchTitle: "Design Discord's Message Storage",
+  answerSummary:
+    "Partition messages by channel and ten-day time bucket, then sort each partition by a time-ordered message ID. Recent-page reads stay small, while old-message lookups can target the right bucket. Keep tombstones short-lived, repair partial rows, and use verified dual writes to move the dataset while it stays online.",
   premise:
     "Built from what Discord's engineers published about storing billions, then trillions, of messages: choose a partition key that keeps every read small, survive a channel full of deletions and a channel everyone opens at once, then move the whole thing to a new database while it is running.",
   difficulty: "advanced",

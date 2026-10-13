@@ -5,6 +5,8 @@ export const paymentWorkflow = {
   id: "payment-workflow",
   title: "A payment workflow that never double-charges",
   searchTitle: "Design a Payment System",
+  answerSummary:
+    "Create one payment attempt per order and call the provider with a stable idempotency key. Treat a timeout as unknown, then look up the provider's result instead of issuing a new charge. Record signed, duplicate or out-of-order webhooks in an append-only event ledger, apply only valid state transitions, and use an outbox for fulfillment and receipts.",
   premise:
     "Checkout calls a payment provider that can be slow, can time out after it succeeded, and sends webhooks more than once and out of order. Keep every order's payment state correct through retries, crashes and uncertainty.",
   difficulty: "advanced",

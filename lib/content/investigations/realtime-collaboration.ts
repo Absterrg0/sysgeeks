@@ -5,6 +5,8 @@ export const realtimeCollaboration = {
   id: "realtime-collaboration",
   title: "A real-time collaborative editor",
   searchTitle: "Design a Collaborative Editor (Google Docs)",
+  answerSummary:
+    "Route every document to one owner that sequences edits and appends them to a durable operation log before acknowledging them. Clients apply local edits immediately, then reconcile concurrent operations with a defined OT or CRDT algorithm; reconnecting clients replay missing operations by sequence. Keep cursors and presence as short-lived state outside the durable edit log.",
   premise:
     "Many people edit the same document at once over unreliable connections. Every client must converge on the same text, no acknowledged keystroke may be lost, and daily deploys must not kick anyone out.",
   difficulty: "advanced",

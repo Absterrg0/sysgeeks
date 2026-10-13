@@ -5,6 +5,8 @@ export const rateLimiter = {
   id: "api-rate-limiter",
   title: "Rate limiting a public API",
   searchTitle: "Design an API Rate Limiter",
+  answerSummary:
+    "Use a token bucket per API key, with the plan's rate and burst size stored alongside the counter. Run each refill and consume atomically in Redis so requests across API servers share one limit. Return 429 with Retry-After when empty. If Redis is unavailable, apply approximate local limits so the API stays available.",
   premise:
     "A public API must hold every customer to their plan across thirty stateless servers, absorb honest bursts, stop abuse, and never let the limiter itself become the outage.",
   difficulty: "intermediate",

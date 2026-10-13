@@ -5,6 +5,8 @@ export const liveQueries = {
   id: "live-queries",
   title: "Live queries: screens that update in real time",
   searchTitle: "Design a Reactive Database (Live Queries)",
+  answerSummary:
+    "Run each query against a versioned snapshot and record the index ranges it reads. After a commit, compare its writes with those read sets and rerun only affected subscriptions; tag results with one timestamp so a screen never mixes database moments. Validate mutations against the same read sets to preserve rules under concurrent writes.",
   premise:
     "Replace polling with live queries: work out which writes change which results, keep every screen consistent with itself, stop two people breaking a rule at the same moment, and survive one query that a whole company is watching.",
   difficulty: "advanced",

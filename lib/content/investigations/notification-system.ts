@@ -5,6 +5,8 @@ export const notificationSystem = {
   id: "notification-system",
   title: "Notifications across email, push and in-app",
   searchTitle: "Design a Notification System",
+  answerSummary:
+    "Write product events to an outbox, then let a planner create one deduplicated delivery per user and channel. Put critical, transactional and bulk work on separate queues, and apply preferences again just before sending so unsubscribes take effect. Provider outages delay queued notifications without blocking the product action that caused them.",
   premise:
     "Product events become emails, push notifications and inbox items for millions of users. Respect every preference immediately, never notify twice, survive provider outages, and get the security alert out while a five-million-email announcement is in flight.",
   difficulty: "intermediate",

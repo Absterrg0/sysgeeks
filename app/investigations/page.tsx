@@ -29,7 +29,7 @@ export default function InvestigationsPage() {
   const questionCount = PRACTICE_PATH.length;
   const practicePath = PRACTICE_PATH.flatMap(({ id, title, focus, answer }) => {
     const investigation = getInvestigation(id);
-    return investigation ? [{ investigation, title, focus, answer }] : [];
+    return investigation ? [{ investigation, title, focus, answer: investigation.answerSummary ?? answer }] : [];
   });
   const levels = (["foundational", "intermediate", "advanced"] as const).map((level) => ({
     level,

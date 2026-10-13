@@ -5,6 +5,8 @@ export const newsFeed = {
   id: "news-feed",
   title: "A home timeline at 300,000 reads a second",
   searchTitle: "Design Twitter’s Home Timeline (News Feed)",
+  answerSummary:
+    "Store each post once, then fan its ID out asynchronously to the recent timelines of active followers. Skip write-time fan-out for accounts with tens of millions of followers and merge their recent posts when a reader opens the feed. Keep timelines as bounded, rebuildable lists of IDs; hydrate and filter posts on the read path.",
   premise:
     "A system design interview exercise based on Twitter's public 2012–13 account of its home timeline, not a claim about X's current production system. Decide when the work of 'one post, many followers' happens, survive accounts with thirty million followers, and stop precomputing timelines for people who never come back.",
   difficulty: "intermediate",

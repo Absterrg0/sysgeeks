@@ -6,6 +6,8 @@ export const fileStorageSync = {
   id: "file-storage-sync",
   title: "Keeping files in sync across devices",
   searchTitle: "Design a Dropbox-Style File Sync Service",
+  answerSummary:
+    "Split files into verified immutable blocks and publish each version through a conditional metadata manifest. Devices resume uploads by sending only missing blocks, then catch up from a durable per-account change journal. Keep concurrent offline edits as separate versions when they cannot be merged, and check current permissions whenever a device reads shared content.",
   premise:
     "Design file storage that survives café Wi-Fi, laptop crashes and two devices editing offline: move large files without restarting, publish metadata only after its bytes are durable, and let every device catch up without polling the whole account.",
   difficulty: "intermediate",

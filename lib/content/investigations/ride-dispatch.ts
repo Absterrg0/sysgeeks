@@ -9,6 +9,8 @@ export const rideDispatch: InvestigationInput = {
   id: "ride-dispatch",
   title: "Matching riders and drivers across a busy city",
   searchTitle: "Design an Uber-Style Ride-Sharing System",
+  answerSummary:
+    "Store each ride request and driver reservation durably, then enqueue matching work through an outbox. Use a spatial cell index to find nearby drivers with fresh location pings, rank a small candidate set by road ETA, and issue expiring offers. Conditional state changes ensure one driver and one ride can be assigned only once, even when replies arrive late or twice.",
   premise:
     "Design the dispatch path for a ride-sharing marketplace: find nearby eligible drivers quickly, avoid assigning one driver twice, and recover when location data or notifications arrive late.",
   difficulty: "intermediate",

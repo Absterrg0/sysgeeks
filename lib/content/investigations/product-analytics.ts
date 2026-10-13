@@ -5,6 +5,8 @@ export const productAnalytics = {
   id: "product-analytics",
   title: "Product analytics over billions of events",
   searchTitle: "Design a Product Analytics System",
+  answerSummary:
+    "A capture API validates batches and appends events with stable IDs to a durable, partitioned stream. Workers resolve identities and insert large batches into a column store ordered for team and time-range queries. Keep rare properties in JSON, promote frequently filtered properties to typed columns, and deduplicate retries by stream partition and offset.",
   premise:
     "Take in billions of product events a day and answer questions nobody planned for in seconds: choose where events live, keep ingestion alive through spikes and outages, make filters on people fast, and decide what happens when two anonymous visitors turn out to be one person.",
   difficulty: "intermediate",

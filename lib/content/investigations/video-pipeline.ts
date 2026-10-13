@@ -5,6 +5,8 @@ export const videoPipeline = {
   id: "video-processing-pipeline",
   title: "A reliable video processing pipeline",
   searchTitle: "Design a Video Processing Pipeline",
+  answerSummary:
+    "Let browsers upload video directly to object storage with resumable multipart uploads. A durable job record and queue hand each video to a worker under a lease; fencing prevents an expired worker from publishing stale output. Verify every rendition, then atomically mark the video ready. Retries may repeat work, but they cannot expose partial or duplicate results.",
   premise:
     "Instructors upload multi-gigabyte lectures that take minutes to transcode. Workers crash, deploys interrupt jobs, and the same job can run twice. Every accepted upload must end in exactly one correct, visible outcome.",
   difficulty: "intermediate",
