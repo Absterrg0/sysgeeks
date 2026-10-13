@@ -13,7 +13,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const PATH = "/system-design-interview";
 const PUBLISHED = "2026-10-06";
-const MODIFIED = "2026-10-12";
+const MODIFIED = "2026-10-13";
 
 export const metadata: Metadata = pageMetadata({
   title: "How to Prepare for a System Design Interview in 1 Week",
@@ -553,6 +553,11 @@ export default function SystemDesignInterviewPage() {
             Instagram feed system design interview guide
           </Link>
           , which separates followed content from recommendations and works through staged ranking and bounded fan-out.
+          For typeahead search, read the{" "}
+          <Link href="/system-design-interview/design-search-autocomplete" className="link">
+            search autocomplete system design walkthrough
+          </Link>
+          , which compares prefix indexes, ranking, freshness, and query privacy.
         </p>
       </Section>
 

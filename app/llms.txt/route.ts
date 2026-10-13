@@ -48,6 +48,9 @@ export function GET() {
     "- [Design an AI agent](" +
       SITE_URL +
       "/system-design-interview/design-ai-agent): An original interview walkthrough for scoped tools, safe refunds, idempotent actions, prompt injection, durable runs, and evaluation.",
+    "- [Search autocomplete system design interview: typeahead](" +
+      SITE_URL +
+      "/system-design-interview/design-search-autocomplete): An original, assumption-labeled walkthrough for prefix completion. It estimates requests from typing, compares trie and finite-state prefix indexes with search-as-you-type indexes, ranks suggestions, and covers freshness, privacy, and failure handling.",
     "## System design interview questions",
     "",
     ...investigations.map((inv) => line(inv.searchTitle, `/investigations/${inv.id}`, inv.premise)),

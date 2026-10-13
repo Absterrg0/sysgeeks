@@ -86,6 +86,9 @@ A free, in-browser interview estimator for model-weight memory, KV-cache memory,
     "## Design an AI agent: system design interview walkthrough\nURL: " +
       SITE_URL +
       "/system-design-interview/design-ai-agent\nAn original practice prompt for a customer-support agent that can look up orders and issue refunds. It explains bounded orchestration, scoped tools, durable run and action state, idempotent external writes, uncertain outcomes, prompt injection boundaries, evaluation, and when a fixed workflow is simpler than an agent. Primary sources include OpenAI's agent guide, Anthropic's Building Effective Agents, and OWASP's excessive-agency guidance. It does not claim to describe an employer's interview loop or private architecture.",
+    "## Search autocomplete system design interview: typeahead\nURL: " +
+      SITE_URL +
+      "/system-design-interview/design-search-autocomplete\nAn original, assumption-labeled guide for search suggestions. It estimates request volume from daily searches and keystrokes, compares a trie or finite-state prefix index with an inverted search-as-you-type index, and covers candidate ranking, cache freshness, index publication, privacy thresholds, abuse controls, and regional failure handling. It links to OpenSearch and Redis documentation for the matching methods described. This is an interview proposal, not a claim about a search company's private production architecture.",
     "# System design interview questions, answered",
     ...listInvestigations().map(investigation),
     "# System design concepts",

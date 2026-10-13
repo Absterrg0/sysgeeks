@@ -41,7 +41,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // URL on each deploy, which would make the sitemap's update hints unreliable.
   const lastModified: Record<string, string> = {
     "/": "2026-10-11",
-    "/system-design-interview": "2026-10-12",
+    "/system-design-interview": "2026-10-13",
     "/system-design-interview/failure-scenarios": "2026-10-12",
     "/system-design-interview/ai-system-design": "2026-10-11",
     "/system-design-interview/worksheet": "2026-10-11",
@@ -63,6 +63,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/system-design-interview/design-llm-inference": "2026-10-11",
     "/system-design-interview/llm-inference-capacity": "2026-10-11",
     "/system-design-interview/design-instagram-feed": "2026-10-12",
+    "/system-design-interview/design-search-autocomplete": "2026-10-13",
     "/companies/google": "2026-10-11",
     "/companies/amazon": "2026-10-11",
     "/companies/uber": "2026-10-11",
@@ -87,6 +88,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/system-design-interview/llm-inference-capacity",
     "/system-design-interview/design-rag-system",
     "/system-design-interview/design-ai-agent",
+    "/system-design-interview/design-search-autocomplete",
     "/system-design-mock-interview",
     "/system-design-playground",
     "/capacity-estimator",
