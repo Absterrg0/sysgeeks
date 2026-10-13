@@ -557,7 +557,12 @@ export default function SystemDesignInterviewPage() {
           <Link href="/system-design-interview/design-search-autocomplete" className="link">
             search autocomplete system design walkthrough
           </Link>
-          , which compares prefix indexes, ranking, freshness, and query privacy.
+          , which compares prefix indexes, ranking, freshness, and query privacy. For secure real-time messaging,
+          read the{" "}
+          <Link href="/system-design-interview/design-whatsapp" className="link">
+            WhatsApp system design interview walkthrough
+          </Link>
+          , including offline delivery, retry safety, and multi-device fan-out.
         </p>
       </Section>
 

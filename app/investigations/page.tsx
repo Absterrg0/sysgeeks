@@ -6,7 +6,7 @@ import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { PageHeader } from "@/components/page-header";
 import { ShareButton } from "@/components/share";
 import { TrackedDownloadLink } from "@/components/tracked-download-link";
-import { getInvestigation, listInvestigations } from "@/lib/content";
+import { getInvestigation } from "@/lib/content";
 import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
 import { breadcrumbs, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
@@ -25,7 +25,6 @@ export const metadata: Metadata = pageMetadata({
 const PRACTICE_PATH = SYSTEM_DESIGN_ANSWERS;
 
 export default function InvestigationsPage() {
-  const investigations = listInvestigations();
   const questionCount = PRACTICE_PATH.length;
   const practicePath = PRACTICE_PATH.flatMap(({ id, title, focus, answer }) => {
     const investigation = getInvestigation(id);
@@ -234,6 +233,17 @@ export default function InvestigationsPage() {
             </h3>
             <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
               Work through uploads, transcoding, adaptive playback, CDN caching and failure cases.
+            </p>
+          </li>
+          <li className="py-4">
+            <h3 className="text-[0.9375rem] font-medium">
+              <Link href="/system-design-interview/design-whatsapp" className="transition-colors hover:text-accent">
+                Design WhatsApp: a secure chat system
+              </Link>
+            </h3>
+            <p className="mt-1 text-[0.875rem] leading-relaxed text-ink-2">
+              Trace encrypted messages through persistent connections, offline queues, delivery acknowledgements and
+              multi-device fan-out.
             </p>
           </li>
           <li className="py-4">
