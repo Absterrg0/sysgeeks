@@ -17,9 +17,9 @@ const PUBLISHED = "2026-10-06";
 const MODIFIED = "2026-10-13";
 
 export const metadata: Metadata = pageMetadata({
-  title: "How to Prepare for a System Design Interview in 1 Week",
+  title: "System Design Interview Guide: 1-Week Plan",
   description:
-    "A 45-minute interview plan, focused drills for common system design mistakes, and a one-week practice schedule. Free exercises, no signup.",
+    "A 45-minute plan for a system design interview, focused drills for common mistakes, and a one-week study schedule with free exercises. No signup.",
   path: PATH,
   imagePath: `${PATH}/opengraph-image`,
 });
