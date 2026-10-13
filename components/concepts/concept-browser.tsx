@@ -168,12 +168,18 @@ export function ConceptBrowser({
           What are system design concepts?
         </h2>
         <p className="mt-2 max-w-[78ch] text-[0.875rem] leading-relaxed text-ink-2">
-          They are the mechanisms engineers combine to meet requirements for scale, speed, reliability, and correct data.
-          Each choice has a cost: <Link href="/concepts/caching" className="link">caching</Link> speeds repeated reads but can
-          return stale data; <Link href="/concepts/replication" className="link">replication</Link> can improve availability but
-          may lag; <Link href="/concepts/message-queues" className="link">message queues</Link> absorb short bursts but build a
-          backlog when work arrives faster than it can be processed. Open a concept below to examine its assumptions,
-          trade-offs, and failure modes.
+          System design concepts are mechanisms engineers combine to meet requirements for scale, speed, reliability, and
+          correct data. In an interview, choose among them and explain each cost. <Link href="/concepts/caching" className="link">
+            Caching
+          </Link>{" "}
+          speeds repeated reads but can return stale data; <Link href="/concepts/replication" className="link">
+            replication
+          </Link>{" "}
+          can improve availability but may lag; <Link href="/concepts/message-queues" className="link">
+            message queues
+          </Link>{" "}
+          absorb short bursts but build a backlog when work arrives faster than it can be processed. Open a concept below to
+          examine its assumptions, trade-offs, and failure modes.
         </p>
       </section>
 

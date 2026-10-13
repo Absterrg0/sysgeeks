@@ -5,9 +5,9 @@ import { CONCEPT_DOMAINS, DOMAIN_LABELS } from "@/lib/domain/content";
 import { itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = pageMetadata({
-  title: "35 System Design Concepts with Examples",
+  title: "35 System Design Concepts for Interviews",
   description:
-    "Explore 35 system design concepts through concise lessons, interactive checks, and worked examples of caching, replication, queues, and failure handling.",
+    "35 concepts for system design interviews, with short lessons, interactive checks, and examples of caching, replication, queues, and failure handling. Free.",
   path: "/concepts",
 });
 
