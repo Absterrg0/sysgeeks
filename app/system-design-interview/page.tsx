@@ -24,7 +24,7 @@ export const metadata: Metadata = pageMetadata({
 });
 
 const LEAD =
-  "To prepare for a system design interview, practise complete designs out loud under a timer instead of memorising diagrams. In a high-level design (HLD) round, clarify requirements, estimate load, defend a design choice, and explain how the design fails. This guide gives you a 45-minute structure and a one-week practice plan using free interactive exercises: make each decision before seeing the worked reasoning, then test the design against a failure and a changed constraint.";
+  "Practise full designs out loud under a timer. In a high-level design (HLD) round, clarify requirements, estimate load, defend trade-offs, and explain failures. Use this 45-minute plan, one-week schedule, and free interactive exercises.";
 
 const PLAN = [
   {
