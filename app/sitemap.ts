@@ -1,42 +1,17 @@
 import type { MetadataRoute } from "next";
 import { listCompanies, listConcepts, listInvestigations } from "@/lib/content";
 import { listExampleProjects } from "@/lib/content/example-projects";
-import { PLAYGROUNDS } from "@/lib/content/playground";
 import { SITE_URL } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const rideDispatch = listInvestigations().find((investigation) => investigation.id === "ride-dispatch");
-  const rideDispatchPaths = rideDispatch
-    ? [
-        "/investigations/ride-dispatch",
-        "/investigations/ride-dispatch/review",
-        "/investigations/ride-dispatch/design",
-        ...rideDispatch.stages.map((stage) => `/investigations/ride-dispatch/${stage.id}`),
-    ]
-    : [];
-  const updatedInvestigationTitles = listInvestigations().flatMap((investigation) => {
+  const investigations = listInvestigations();
+  const updatedInvestigationReviews = investigations.flatMap((investigation) => {
     const { id, searchTitle } = investigation;
-    const paths = [`/investigations/${id}`];
-    for (const stage of investigation.stages) {
-      if (`${searchTitle}: ${stage.title}`.length > 55) paths.push(`/investigations/${id}/${stage.id}`);
-    }
-    if (`${searchTitle}: Practice Round from a Blank Page`.length > 55) {
-      paths.push(`/investigations/${id}/design`);
-    }
     const howTo = `How to ${searchTitle[0]?.toLowerCase()}${searchTitle.slice(1)}`;
-    if (`${howTo}: Step-by-Step System Design`.length > 55) paths.push(`/investigations/${id}/review`);
-    if (PLAYGROUNDS[id]) paths.push(`/investigations/${id}/playground`);
-    return paths.map((path) => [path, "2026-10-11"] as const);
+    return `${howTo}: Step-by-Step System Design`.length > 55
+      ? [[`/investigations/${id}/review`, "2026-10-11"] as const]
+      : [];
   });
-  const fileStorageSync = listInvestigations().find((inv) => inv.id === "file-storage-sync");
-  const newFileStorageSyncPaths = fileStorageSync
-    ? [
-        "/investigations/file-storage-sync",
-        "/investigations/file-storage-sync/review",
-        "/investigations/file-storage-sync/design",
-        ...fileStorageSync.stages.map((stage) => `/investigations/file-storage-sync/${stage.id}`),
-      ]
-    : [];
   // Only include dates for pages with a known material edit. Avoid refreshing every
   // URL on each deploy, which would make the sitemap's update hints unreliable.
   const lastModified: Record<string, string> = {
@@ -71,9 +46,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/companies/google": "2026-10-11",
     "/companies/amazon": "2026-10-11",
     "/companies/uber": "2026-10-11",
-    ...Object.fromEntries(rideDispatchPaths.map((path) => [path, "2026-10-11"])),
-    ...Object.fromEntries(updatedInvestigationTitles),
-    ...Object.fromEntries(newFileStorageSyncPaths.map((path) => [path, "2026-10-12"])),
+    ...Object.fromEntries(updatedInvestigationReviews),
+    "/investigations/ride-dispatch/review": "2026-10-11",
+    "/investigations/file-storage-sync/review": "2026-10-12",
   };
   const paths = [
     "/",
@@ -103,13 +78,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/review",
     "/about",
     "/ai",
-    ...listInvestigations().flatMap((inv) => [
-      `/investigations/${inv.id}`,
-      `/investigations/${inv.id}/review`,
-      `/investigations/${inv.id}/design`,
-      ...(PLAYGROUNDS[inv.id] ? [`/investigations/${inv.id}/playground`] : []),
-      ...inv.stages.map((s) => `/investigations/${inv.id}/${s.id}`),
-    ]),
+    // Keep the sitemap focused on complete, standalone search pages. Individual
+    // practice stages and interactive modes remain linked and crawlable in the site.
+    ...investigations.map((inv) => `/investigations/${inv.id}/review`),
     ...listConcepts().map((c) => `/concepts/${c.id}`),
     ...listCompanies().map((c) => `/companies/${c.id}`),
     "/projects/examples",
