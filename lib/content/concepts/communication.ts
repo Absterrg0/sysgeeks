@@ -714,7 +714,7 @@ export const communicationConcepts: ConceptInput[] = [
     title: "Persistent connections",
     domain: "communication",
     summary:
-      "Long-lived connections such as WebSockets turn a stateless request tier into one that holds per-client state, with consequences for routing, deploys and failure detection.",
+      "WebSockets keep a connection open and per-client state at the server. That cuts request overhead but complicates routing, reconnects and deployments.",
     problem: md`
       A stateless HTTP server forgets each client after the response, so any server can handle any request and deploys are trivial. A long-lived connection breaks that: a specific server now holds a specific client for minutes or days, along with buffers, subscriptions and session state.
     `,

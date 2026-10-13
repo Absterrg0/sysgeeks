@@ -8,7 +8,7 @@ import { Prose } from "@/components/prose";
 import { SystemMap } from "@/components/system-map";
 import { DashList, PageHeader, Section } from "@/components/page-header";
 import { getInvestigation, listInvestigations } from "@/lib/content";
-import { breadcrumbs, clip, faqPage, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
+import { breadcrumbs, clipDescription, faqPage, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 import { proseToPlainText } from "@/lib/prose";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -49,7 +49,7 @@ export async function generateMetadata(
         : fullTitle.length <= 55
           ? fullTitle
           : `System Design Walkthrough: ${systemName}`,
-    description: clip(
+    description: clipDescription(
       inv.id === "api-rate-limiter"
         ? "Design a distributed API rate limiter: choose a token bucket, share atomic counters across servers, return 429 and Retry-After, and plan for Redis failure."
         : inv.id === "shard-live-database"

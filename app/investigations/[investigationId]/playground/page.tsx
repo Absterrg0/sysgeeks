@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Playground } from "@/components/playground/playground";
 import { getCompany, getInvestigation, listConcepts, listInvestigations, listWriteups } from "@/lib/content";
 import { PLAYGROUNDS } from "@/lib/content/playground";
-import { breadcrumbs, clip, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
+import { breadcrumbs, clipDescription, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 
 export function generateStaticParams() {
   return listInvestigations()
@@ -25,7 +25,7 @@ export async function generateMetadata(
       : systemNameForTitle(inv.searchTitle).replace(/ System$/, "");
   return pageMetadata({
     title: `System Design Playground: ${systemName}`,
-    description: clip(
+    description: clipDescription(
       `Change the architecture of ${inv.title.toLowerCase()}: add caches, queues, load balancers and replicas, turn up the traffic and kill parts, and see what each change buys and costs.`,
     ),
     path: `/investigations/${inv.id}/playground`,

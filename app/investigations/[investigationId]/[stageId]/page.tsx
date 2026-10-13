@@ -11,7 +11,7 @@ import { getConcept, getStage, listInvestigations } from "@/lib/content";
 import { PHASE_LABELS } from "@/lib/domain/content";
 import { type ExerciseRef } from "@/lib/domain/learner";
 import { visibleAfter } from "@/lib/domain/visibility";
-import { breadcrumbs, clip, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
+import { breadcrumbs, clip, clipDescription, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 import { proseToPlainText } from "@/lib/prose";
 import { SITE_URL } from "@/lib/site";
 
@@ -38,7 +38,7 @@ export async function generateMetadata(
   const title = fullTitle.length <= 55 ? fullTitle : `${clip(stage.title, 55 - suffix.length)}${suffix}`;
   return pageMetadata({
     title,
-    description: clip(
+    description: clipDescription(
       stage.event
         ? `${proseToPlainText(stage.event.title)}. ${question} ${proseToPlainText(stage.event.detail)}`
         : `${question} ${proseToPlainText(stage.context)}`,

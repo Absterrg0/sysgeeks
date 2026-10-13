@@ -9,7 +9,7 @@ import { SystemMap } from "@/components/system-map";
 import { DashList, PageHeader } from "@/components/page-header";
 import { getCompany, getConcept, getInvestigation, listInvestigations, writeupsForInvestigation } from "@/lib/content";
 import { DESIGN_ROUND_MINUTES } from "@/lib/domain/design-round";
-import { breadcrumbs, clip, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
+import { breadcrumbs, clipDescription, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { PLAYGROUNDS } from "@/lib/content/playground";
 
@@ -36,7 +36,7 @@ export async function generateMetadata(props: PageProps<"/investigations/[invest
         : inv.id === "file-storage-sync"
           ? "Dropbox System Design Interview: File Sync Practice"
           : `${systemName}: System Design Interview`,
-    description: clip(
+    description: clipDescription(
       inv.id === "url-shortener"
         ? "Practice a Bitly-style URL shortener system design interview: estimate traffic, choose IDs, and test caching, click analytics, and urgent takedowns."
         : inv.id === "shard-live-database"

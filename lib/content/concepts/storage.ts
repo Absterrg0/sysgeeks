@@ -695,7 +695,7 @@ export const storageConcepts: ConceptInput[] = [
     title: "Online data migrations",
     domain: "storage",
     summary:
-      "Moving live data to a new schema or store without downtime: write to both, backfill the past, verify, switch reads, then switch writes, with a way back at every step.",
+      "Move live data safely through dual writes, backfill, verification and a staged read cutover. A rollback path at every step protects availability.",
     problem: md`
       Data outgrows its home: a table needs a new shape, a database needs sharding, a store needs replacing. The system cannot stop while billions of rows move, and every row keeps changing during the copy. A naive "copy, then switch" loses every write made during the copy, and a big-bang cutover has no way back if the new store is wrong.
     `,
@@ -821,7 +821,7 @@ export const storageConcepts: ConceptInput[] = [
     title: "Log-structured storage (LSM trees)",
     domain: "storage",
     summary:
-      "Storage engines that turn every write into a sequential append and merge files in the background: very fast writes, at the cost of compaction, tombstones and more expensive reads.",
+      "LSM trees batch writes as sequential appends and merge sorted files in the background. They improve write throughput but add compaction work and slower reads.",
     problem: md`
       Updating data in place (as B-tree databases do) means random disk writes, and random writes are the slowest thing a disk does. Write-heavy systems like chat history, metrics and event logs want writes as cheap as an append.
     `,
@@ -951,7 +951,7 @@ export const storageConcepts: ConceptInput[] = [
     title: "Columnar storage",
     domain: "storage",
     summary:
-      "Storing each column of a table separately, so analytical queries read only the columns they use and compress them well, at the cost of slow single-row lookups and updates.",
+      "Columnar storage keeps each field together so analytics scan only needed columns and compress well. It makes single-row reads and updates more expensive.",
     problem: md`
       An analytics query such as "how many signups per day from Germany this quarter" touches millions of rows but only two or three columns. A row store keeps each row's columns together on disk, so it must read every column of every matching row, most of which the query throws away. With wide event rows, that is most of the I/O.
     `,

@@ -9,7 +9,7 @@ import { SystemMap } from "@/components/system-map";
 import { getConcept, getInvestigation, listInvestigations } from "@/lib/content";
 import { designReference, interviewPrompt } from "@/lib/content/design-reference";
 import { DESIGN_ROUND_MINUTES, DESIGN_SECTION_IDS } from "@/lib/domain/design-round";
-import { breadcrumbs, clip, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
+import { breadcrumbs, clipDescription, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 
 export function generateStaticParams() {
   return listInvestigations().map((inv) => ({ investigationId: inv.id }));
@@ -30,7 +30,7 @@ export async function generateMetadata(
       : systemNameForTitle(inv.searchTitle).replace(/ System$/, "");
   return pageMetadata({
     title: fullTitle.length <= 55 ? fullTitle : `Blank-Page System Design: ${systemName}`,
-    description: clip(
+    description: clipDescription(
       `A ${DESIGN_ROUND_MINUTES}-minute system design round: ${inv.premise} Write requirements, estimates, the design, deep dives and failure handling yourself, then compare with a reference design.`,
     ),
     path: `/investigations/${inv.id}/design`,

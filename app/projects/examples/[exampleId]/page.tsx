@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ExampleDetail } from "@/components/examples/example-detail";
 import { getExampleProject, listExampleProjects } from "@/lib/content/example-projects";
-import { breadcrumbs, clip, jsonLd, pageMetadata } from "@/lib/metadata";
+import { breadcrumbs, clipDescription, jsonLd, pageMetadata } from "@/lib/metadata";
 
 export function generateStaticParams() {
   return listExampleProjects().map((e) => ({ exampleId: e.id }));
@@ -19,7 +19,10 @@ export async function generateMetadata(props: PageProps<"/projects/examples/[exa
   if (!example) return {};
   return pageMetadata({
     title: `${plainName(example.name)}: System Design Example`,
-    description: clip(example.summary),
+    description:
+      example.id === "ml-inference-api"
+        ? "Practice designing an ML inference API: batch requests on GPU workers, load models by version, enforce per-customer rate limits, and meter usage."
+        : clipDescription(example.summary),
     path: `/projects/examples/${example.id}`,
   });
 }

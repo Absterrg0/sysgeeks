@@ -7,7 +7,7 @@ import { SITE_URL } from "@/lib/site";
 const PATH = "/system-design-interview/design-whatsapp";
 const TITLE = "Design WhatsApp: System Design Interview Walkthrough";
 const DESCRIPTION =
-  "Work through a WhatsApp-style chat system design interview: persistent connections, encrypted delivery, offline queues, multi-device fan-out, capacity estimates, and failure cases.";
+  "Design a WhatsApp-style chat system: persistent connections, encrypted delivery, offline queues, multi-device fan-out, capacity estimates, and failure handling.";
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 

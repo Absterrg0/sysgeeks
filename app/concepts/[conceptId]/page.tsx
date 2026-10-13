@@ -13,7 +13,7 @@ import { resolveExercise } from "@/lib/content/exercises";
 import { conceptsReferencing, getConcept, getInvestigation, listConcepts, stagesUsingConcept, writeupsForConcept } from "@/lib/content";
 import { DOMAIN_LABELS } from "@/lib/domain/content";
 import { conceptQuestions } from "@/lib/concept-questions";
-import { breadcrumbs, clip, jsonLd, pageMetadata } from "@/lib/metadata";
+import { breadcrumbs, clipDescription, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -46,7 +46,7 @@ export async function generateMetadata(props: PageProps<"/concepts/[conceptId]">
   }
   return pageMetadata({
     title: `${c.title} in System Design`,
-    description: clip(c.summary),
+    description: clipDescription(c.summary),
     path: `/concepts/${c.id}`,
     imagePath: `/concepts/${c.id}/opengraph-image`,
   });

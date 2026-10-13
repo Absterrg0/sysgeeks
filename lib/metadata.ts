@@ -25,7 +25,7 @@ export function pageMetadata({
   noindex?: boolean;
 }): Metadata {
   const absoluteTitle = title.length > 68 ? clip(title, 68) : title;
-  const metaDescription = clip(description, 160);
+  const metaDescription = clipDescription(description);
   const imageUrl = `${SITE_URL}${imagePath}`;
   return {
     // Keep title text concise enough that the important words fit after HTML escaping and result decoration.
@@ -84,6 +84,30 @@ export function clip(text: string, max = 158): string {
   if (text.length <= max) return text;
   const cut = text.slice(0, max - 1);
   return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[\s,;:.—-]+$/, "")}…`;
+}
+
+/** Prefer a complete, informative sentence for search snippets when one fits. */
+export function clipDescription(text: string, max = 160): string {
+  const normalized = text.replace(/\s+/g, " ").trim();
+  if (normalized.length <= max) return normalized;
+
+  const withinLimit = normalized.slice(0, max);
+  const sentenceEndPattern = /[.!?]["'”’)}\]]?(?=\s+[A-Z0-9])/g;
+  const sentenceEnds = [...withinLimit.matchAll(sentenceEndPattern)];
+  const lastSentence = sentenceEnds.at(-1);
+  const sentenceEnd = lastSentence ? lastSentence.index! + lastSentence[0].length : 0;
+  if (sentenceEnd >= Math.ceil(max * 0.3)) return normalized.slice(0, sentenceEnd).trim();
+
+  // A useful sentence may run slightly past the usual snippet length. Google
+  // truncates snippets to fit the result anyway, so keep that sentence intact.
+  const extendedLimit = Math.min(normalized.length, max + 40);
+  const extendedEnds = [...normalized.slice(0, extendedLimit).matchAll(sentenceEndPattern)];
+  const extendedSentence = extendedEnds.find((match) => match.index! + match[0].length > max);
+  if (extendedSentence) {
+    return normalized.slice(0, extendedSentence.index! + extendedSentence[0].length).trim();
+  }
+
+  return clip(normalized, max);
 }
 
 /** A compact system name for titles that pair a long stage prompt with its system. */
