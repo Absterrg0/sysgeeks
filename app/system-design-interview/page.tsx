@@ -17,7 +17,7 @@ const PUBLISHED = "2026-10-06";
 const MODIFIED = "2026-10-13";
 
 export const metadata: Metadata = pageMetadata({
-  title: "System Design Interview Guide: 1-Week Plan",
+  title: "How to Prepare for a System Design Interview in 1 Week",
   description:
     "A 45-minute plan for a system design interview, focused drills for common mistakes, and a one-week study schedule with free exercises. No signup.",
   path: PATH,
