@@ -2,18 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, Section } from "@/components/page-header";
 import { PracticeEntryLink } from "@/components/practice-entry-link";
-import { listInvestigations } from "@/lib/content";
+import { listInvestigations, writeupsByCompany } from "@/lib/content";
 import { PLAYGROUNDS } from "@/lib/content/playground";
 import { breadcrumbs, itemList, jsonLd, pageMetadata } from "@/lib/metadata";
 
 const PATH = "/system-design-playground";
 const TITLE = "Free System Design Interview Simulator";
 const DESCRIPTION =
-  `Try ${Object.keys(PLAYGROUNDS).length} free system design interview simulations in your browser. Change components, raise traffic, test failures, and see where requests back up. No signup.`;
+  `Try ${Object.keys(PLAYGROUNDS).length} free system design simulations, including Postgres sharding based on Notion's published migration. Test shard placement, capacity, and failures. No signup.`;
 
 export const metadata: Metadata = pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 
 export default function SystemDesignPlaygroundPage() {
+  const notionWriteups = writeupsByCompany("notion");
   const playgrounds = listInvestigations().flatMap((investigation) => {
     const workload = PLAYGROUNDS[investigation.id];
     return workload ? [{ investigation, workload }] : [];
@@ -66,6 +67,33 @@ export default function SystemDesignPlaygroundPage() {
         models architecture behavior under an explicit interview workload. Use the results to compare bottlenecks;
         production sizing requires measured workloads and system-specific engineering.
       </PageHeader>
+
+      <Section id="postgres-sharding" title="How do you shard Postgres without downtime?">
+        <div className="max-w-[72ch] space-y-3 text-[0.9375rem] leading-relaxed text-ink-2">
+          <p>
+            Pick a shard key that keeps common reads and joins together. Notion chose workspace ID and mapped 480
+            logical shards across database hosts, so later growth could move whole shards without re-hashing rows.
+          </p>
+          <p>
+            Its first migration used a short scheduled maintenance window. In a later expansion, Notion used
+            replication to add hosts without downtime. Sharding can relieve a single Postgres host&apos;s write limit,
+            but cross-workspace queries and moving data between hosts take more care.
+          </p>
+          <div className="flex flex-wrap gap-x-4 gap-y-2 text-[0.8125rem] font-medium">
+            <Link href="/investigations/shard-live-database/playground" className="text-accent hover:underline">
+              Try the Postgres sharding simulator →
+            </Link>
+            <Link href="/companies/notion" className="text-accent hover:underline">
+              Read the sourced Notion case study →
+            </Link>
+          </div>
+          {notionWriteups.map((writeup) => (
+            <p key={writeup.id} className="text-[0.8125rem] text-ink-3">
+              Primary source: <a className="link" href={writeup.url} target="_blank" rel="noopener noreferrer">{writeup.title}</a>
+            </p>
+          ))}
+        </div>
+      </Section>
 
       <Section
         id="choose-a-playground"

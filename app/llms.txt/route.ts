@@ -88,7 +88,9 @@ export function GET() {
         line(
           `${inv.searchTitle}: architecture playground`,
           `/investigations/${inv.id}/playground`,
-          "Change the architecture, increase traffic, and test failures to see the costs and benefits of each design choice.",
+          inv.id === "shard-live-database"
+            ? "Model a live Postgres sharding migration based on Notion's published case study. Notion chose workspace ID as the shard key and used 480 logical shards, which could move between hosts without re-hashing rows. Compare the first migration's short maintenance window with its later zero-downtime expansion, then test reads, writes, and backfill traffic."
+            : "Change the architecture, increase traffic, and test failures to see the costs and benefits of each design choice.",
         ),
       ),
     "",
