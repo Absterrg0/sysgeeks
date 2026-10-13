@@ -4,7 +4,7 @@ import { WELCOME_CREDITS } from "@/lib/domain/pricing";
 import { ContinueStrip } from "@/components/continue-strip";
 import { ShareButton } from "@/components/share";
 import { PracticeEntryLink } from "@/components/practice-entry-link";
-import { SystemExplorer } from "@/components/home/system-explorer";
+import { DeferredSystemExplorer } from "@/components/home/deferred-system-explorer";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { InlineText } from "@/components/prose-core";
 import { CanceledNote } from "@/components/pricing/canceled-note";
@@ -296,7 +296,7 @@ export default function Home() {
             design the rest, then it fails.
           </p>
         </div>
-        <SystemExplorer
+        <DeferredSystemExplorer
           systems={investigations.map((inv) => ({
             id: inv.id,
             title: inv.title,
