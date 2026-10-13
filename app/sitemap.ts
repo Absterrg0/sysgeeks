@@ -69,7 +69,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/companies/google": "2026-10-11",
     "/companies/amazon": "2026-10-11",
     "/companies/uber": "2026-10-11",
-    "/legal/privacy": "2026-10-12",
     ...Object.fromEntries(rideDispatchPaths.map((path) => [path, "2026-10-11"])),
     ...Object.fromEntries(updatedInvestigationTitles),
     ...Object.fromEntries(newFileStorageSyncPaths.map((path) => [path, "2026-10-12"])),
@@ -100,9 +99,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/review",
     "/about",
     "/ai",
-    "/legal/privacy",
-    "/legal/refunds",
-    "/legal/terms",
     ...listInvestigations().flatMap((inv) => [
       `/investigations/${inv.id}`,
       `/investigations/${inv.id}/review`,

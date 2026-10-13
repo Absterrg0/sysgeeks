@@ -8,6 +8,7 @@ export const metadata: Metadata = pageMetadata({
   title: "Privacy policy",
   description: `What ${SITE_NAME} stores, what is sent to AI model providers, who processes data for us, and how to delete it.`,
   path: "/legal/privacy",
+  noindex: true,
 });
 
 export default function PrivacyPage() {

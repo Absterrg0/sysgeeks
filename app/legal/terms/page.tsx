@@ -8,6 +8,7 @@ export const metadata: Metadata = pageMetadata({
   title: "Terms of use",
   description: `The terms for using ${SITE_NAME}: free practice, optional AI features, credit packs, and what is not promised.`,
   path: "/legal/terms",
+  noindex: true,
 });
 
 export default function TermsPage() {

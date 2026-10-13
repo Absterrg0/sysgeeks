@@ -8,6 +8,7 @@ export const metadata: Metadata = pageMetadata({
   title: "Refunds",
   description: `When ${SITE_NAME} credits come back automatically, how to flag a wrong AI report, and how to refund an unused pack.`,
   path: "/legal/refunds",
+  noindex: true,
 });
 
 export default function RefundsPage() {
