@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { WELCOME_CREDITS } from "@/lib/domain/pricing";
-import { ContinueStrip } from "@/components/continue-strip";
 import { ShareButton } from "@/components/share";
 import { PracticeEntryLink } from "@/components/practice-entry-link";
+import { DeferredContinueStrip } from "@/components/home/deferred-continue-strip";
 import { DeferredSystemExplorer } from "@/components/home/deferred-system-explorer";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { InlineText } from "@/components/prose-core";
@@ -281,7 +281,7 @@ export default function Home() {
         )}
       </section>
 
-      <ContinueStrip investigations={outlines} />
+      <DeferredContinueStrip investigations={outlines} />
 
       <section aria-labelledby="systems" className="mt-24 sm:mt-32">
         <div className="max-w-2xl">

@@ -15,7 +15,7 @@ const PRIVATE = [
 const PUBLIC_EXCEPTIONS = ["/projects/examples"];
 
 /**
- * Search and AI answer engines are welcome everywhere public. They are named explicitly because
+ * Automatic search crawlers are welcome everywhere public. They are named explicitly because
  * some site operators block them by default and a few crawlers only read their own group.
  */
 const AI_CRAWLERS = [
@@ -35,8 +35,8 @@ const USER_REQUESTED_FETCHERS = [
   "Amzn-User",
 ];
 
-// These tokens control model-training or corpus access rather than web search. Keep live search
-// eligibility separate; Google Search AI inclusion is managed in Search Console.
+// These tokens control training or corpus access; Google-Extended also controls Gemini grounding.
+// Its rule does not affect Google Search inclusion. Google Search AI inclusion is managed in Search Console.
 const TRAINING_AND_CORPUS_CRAWLERS = [
   "GPTBot",
   "ClaudeBot",
