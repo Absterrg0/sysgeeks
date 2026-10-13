@@ -25,21 +25,25 @@ const AI_CRAWLERS = [
   "Claude-User",
   "PerplexityBot",
   "Perplexity-User",
+  "Applebot",
+];
+
+// These tokens control model-training or corpus access rather than web search. Keep live search
+// eligibility separate; Google Search AI inclusion is managed in Search Console.
+const TRAINING_AND_CORPUS_CRAWLERS = [
+  "GPTBot",
+  "ClaudeBot",
   "Google-Extended",
   "Applebot-Extended",
   "CCBot",
 ];
-
-// Search and user-directed retrieval don't depend on these training crawlers. Keep the site's
-// content discoverable in live answer engines without opting into model training by default.
-const MODEL_TRAINING_CRAWLERS = ["GPTBot", "ClaudeBot"];
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       { userAgent: "*", allow: ["/", ...PUBLIC_EXCEPTIONS], disallow: PRIVATE },
       { userAgent: AI_CRAWLERS, allow: ["/", ...PUBLIC_EXCEPTIONS], disallow: PRIVATE },
-      { userAgent: MODEL_TRAINING_CRAWLERS, disallow: "/" },
+      { userAgent: TRAINING_AND_CORPUS_CRAWLERS, disallow: "/" },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
