@@ -179,7 +179,7 @@ export default function Home() {
             </div>
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[0.875rem] font-medium text-ink-3">
               <Link href="/investigations" className="transition-colors hover:text-accent">
-                Browse all {investigations.length} systems →
+                Browse {investigations.length} system design interview questions →
               </Link>
               <PracticeEntryLink
                 href="/system-design-playground"

@@ -49,7 +49,7 @@ export const LEARN: NavItem[] = [
     href: "/investigations",
     label: "Systems",
     icon: <InvestigationsIcon />,
-    description: "Real systems to learn, play with and break",
+    description: "15 interactive system design interview questions with worked answers",
   },
   {
     href: "/system-design-mock-interview",
