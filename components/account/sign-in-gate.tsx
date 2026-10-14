@@ -6,6 +6,7 @@ import { FeatureUnavailable } from "@/components/account/feature-unavailable";
 import { Skeleton } from "@/components/feedback";
 import { useAccount } from "@/lib/client/account";
 import { WELCOME_CREDITS } from "@/lib/domain/pricing";
+import { trackAuthStarted } from "@/lib/analytics";
 
 /** Wraps an AI action. Signed-out visitors see a sign-in prompt in its place. */
 export function SignInGate({ children }: { children: ReactNode }) {
@@ -20,7 +21,7 @@ function SignInPrompt() {
   return (
     <div className="panel flex flex-wrap items-center justify-between gap-3 p-4">
       <p className="text-ui text-ink-2">Sign in to use AI features ({WELCOME_CREDITS} free credits)</p>
-      <Link href="/sign-in" className="btn btn-primary btn-sm">
+      <Link href="/sign-in" className="btn btn-primary btn-sm" onClick={() => trackAuthStarted("sign_in", "ai_gate")}>
         Sign in
       </Link>
     </div>

@@ -10,10 +10,13 @@ const INTERNAL_SESSION_KEY = "sysgeeks-internal-analytics";
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 const POSTHOG_QUEUE_KEY = "sysgeeks-posthog-pending-events";
+const AUTH_INTENT_KEY = "sysgeeks-auth-intent";
+const AUTH_INTENT_MAX_AGE_MS = 30 * 60 * 1_000;
 const MAX_QUEUED_EVENTS = 50;
 
 type EventProperties = Record<string, string | number | boolean | null>;
 type QueuedEvent = { event: string; properties?: EventProperties };
+type AuthIntent = { kind: "sign_in" | "sign_up"; sourcePath: string; placement: string; createdAt: number };
 
 let posthogPromise: Promise<PostHog> | undefined;
 
@@ -140,6 +143,56 @@ function sendToPostHog(event: string, properties?: EventProperties) {
 export function track(event: string, properties?: EventProperties) {
   if (typeof window === "undefined" || !shouldTrack(window.location.href)) return;
 
+  trackVercel(event, properties);
+  sendToPostHog(event, properties);
+}
+
+export function trackAuthStarted(kind: AuthIntent["kind"], placement: string) {
+  if (typeof window === "undefined" || !shouldTrack(window.location.href)) return;
+
+  const sourcePath = window.location.pathname;
+  try {
+    const intent: AuthIntent = { kind, sourcePath, placement, createdAt: Date.now() };
+    window.sessionStorage.setItem(AUTH_INTENT_KEY, JSON.stringify(intent));
+  } catch {
+    // Still record the start event when browser storage is unavailable.
+  }
+
+  track(`${kind}_started`, { source_path: sourcePath, placement });
+}
+
+export function trackAuthCompleted() {
+  if (typeof window === "undefined" || !shouldTrack(window.location.href)) return;
+
+  let intent: AuthIntent | undefined;
+  try {
+    const stored = window.sessionStorage.getItem(AUTH_INTENT_KEY);
+    window.sessionStorage.removeItem(AUTH_INTENT_KEY);
+    if (!stored) return;
+
+    const parsed: unknown = JSON.parse(stored);
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      !("kind" in parsed) ||
+      (parsed.kind !== "sign_in" && parsed.kind !== "sign_up") ||
+      !("sourcePath" in parsed) ||
+      typeof parsed.sourcePath !== "string" ||
+      !("placement" in parsed) ||
+      typeof parsed.placement !== "string" ||
+      !("createdAt" in parsed) ||
+      typeof parsed.createdAt !== "number" ||
+      Date.now() - parsed.createdAt > AUTH_INTENT_MAX_AGE_MS
+    ) {
+      return;
+    }
+    intent = parsed as AuthIntent;
+  } catch {
+    return;
+  }
+
+  const event = `${intent.kind}_completed`;
+  const properties = { source_path: intent.sourcePath, placement: intent.placement };
   trackVercel(event, properties);
   sendToPostHog(event, properties);
 }

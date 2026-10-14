@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { trackAuthStarted } from "@/lib/analytics";
 import { type FormEvent, useEffect, useState } from "react";
 import { FeatureUnavailable } from "@/components/account/feature-unavailable";
 import { InsufficientCredits } from "@/components/account/insufficient-credits";
@@ -228,7 +229,7 @@ export function IntakeForm({ method }: { method: IntakeSource }) {
                     Draft the architecture <CostTag credits={cost} />
                   </button>
                 ) : (
-                  <Link href="/sign-in" className="btn btn-primary">
+                  <Link href="/sign-in" className="btn btn-primary" onClick={() => trackAuthStarted("sign_in", "project_intake")}>
                     Sign in to draft
                   </Link>
                 )}

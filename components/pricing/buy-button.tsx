@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { trackAuthStarted } from "@/lib/analytics";
 import { useRef, useState } from "react";
 import { useAccount } from "@/lib/client/account";
 import { creditCost, DAILY_LIMITS, type PACKS } from "@/lib/domain/pricing";
@@ -116,7 +117,11 @@ export function BuyButton({ pack, name, featured }: { pack: Pack; name: string; 
                 Purchases open soon
               </button>
             ) : !data.signedIn ? (
-              <Link href="/sign-up?redirect_url=/%23pricing" className="btn btn-accent">
+              <Link
+                href="/sign-up?redirect_url=/%23pricing"
+                className="btn btn-accent"
+                onClick={() => trackAuthStarted("sign_up", "pricing")}
+              >
                 Sign up to buy
               </Link>
             ) : (

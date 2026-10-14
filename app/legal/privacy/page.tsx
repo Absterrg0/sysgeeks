@@ -87,7 +87,10 @@ export default function PrivacyPage() {
               page route, not written feedback. The calculator event records that the tool was used, not values
               entered. The resource_download_clicked event records a fixed label for the public PDF link selected, not
               file contents. Events include only the event name and limited context such as public route, exercise,
-              interview length, focus and question count; answer text and private project content are not sent. PostHog uses
+              interview length, focus and question count; answer text and private project content are not sent. Public
+              sign-in and sign-up links record a start event, then an anonymous completion event if Clerk confirms the
+              visitor is signed in within 30 minutes. Those events include only the public source route and link
+              placement; they do not include account IDs, email addresses or private page URLs. PostHog uses
               session storage for an anonymous identifier that lasts for the browser tab session. Autocapture and
               session recordings are disabled, and the site does not identify visitors by account or email. PostHog
               may process an IP address, referrer and browser/device details; its project settings can be configured
