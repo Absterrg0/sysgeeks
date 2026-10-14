@@ -6,8 +6,9 @@ import { ShareResult } from "@/components/investigation/share-result";
 import { StageWalkthrough } from "@/components/investigation/walkthrough";
 import { Prose } from "@/components/prose";
 import { SystemMap } from "@/components/system-map";
+import { SourceList } from "@/components/writeup";
 import { DashList, PageHeader, Section } from "@/components/page-header";
-import { getInvestigation, listInvestigations } from "@/lib/content";
+import { getInvestigation, listInvestigations, writeupsForInvestigation } from "@/lib/content";
 import { breadcrumbs, clipDescription, faqPage, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 import { proseToPlainText } from "@/lib/prose";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
@@ -66,6 +67,7 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
   const inv = getInvestigation(investigationId);
   if (!inv) notFound();
   const { synthesis, system } = inv;
+  const sources = writeupsForInvestigation(inv.id);
   const componentName = new Map(system.components.map((c) => [c.id, c.label]));
   const lastStage = inv.stages[inv.stages.length - 1];
   const firstStage = inv.stages[0];
@@ -99,6 +101,11 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
                 isAccessibleForFree: true,
                 inLanguage: "en",
                 provider: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+                citation: sources.map((source) => ({
+                  "@type": "CreativeWork",
+                  name: source.title,
+                  url: source.url,
+                })),
               },
               faqPage([
                 { question: `How do you ${lowerFirst(inv.searchTitle)}?`, answer: shortAnswer },
@@ -157,6 +164,16 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
       </section>
 
       <div className="measure">
+        {sources.length > 0 && (
+          <Section
+            id="sources"
+            title="Primary sources behind this design"
+            description="Published engineering accounts inform the assumptions and trade-offs in this worked example. The design here is an interview practice proposal, not a claim about any company’s private architecture."
+          >
+            <SourceList writeups={sources} showCompany />
+          </Section>
+        )}
+
         <Section id="why" title="Why does this design work?">
           <div className="max-w-[66ch]">
             <Prose text={synthesis.whyItWorks} />

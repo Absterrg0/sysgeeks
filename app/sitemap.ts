@@ -5,12 +5,10 @@ import { SITE_URL } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const investigations = listInvestigations();
-  const updatedInvestigationReviews = investigations
-    .filter((investigation) => investigation.answerSummary)
-    .map(({ id }) => [
-      `/investigations/${id}/review`,
-      id === "shard-live-database" ? "2026-10-14" : "2026-10-13",
-    ] as const);
+  const updatedInvestigationReviews = investigations.map(({ id }) => [
+    `/investigations/${id}/review`,
+    "2026-10-14",
+  ] as const);
   // Only include dates for pages with a known material edit. Avoid refreshing every
   // URL on each deploy, which would make the sitemap's update hints unreliable.
   const lastModified: Record<string, string> = {
