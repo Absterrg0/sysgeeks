@@ -1,4 +1,5 @@
 import { listCompanies, listConcepts, listInvestigations } from "@/lib/content";
+import { listExampleProjects } from "@/lib/content/example-projects";
 import { proseToPlainText } from "@/lib/prose";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import { PLAYGROUNDS } from "@/lib/content/playground";
@@ -13,6 +14,9 @@ export const dynamic = "force-static";
  */
 export function GET() {
   const investigations = listInvestigations();
+  const concepts = listConcepts();
+  const companies = listCompanies();
+  const examples = listExampleProjects();
   const line = (title: string, path: string, text: string) => `- [${title}](${SITE_URL}${path}): ${proseToPlainText(text)}`;
 
   const body = [
@@ -25,6 +29,12 @@ export function GET() {
     "Good fit for: software engineers preparing for system design (high-level design) interviews, and anyone who wants to understand why distributed systems are built the way they are and how they fail.",
     "",
     `The complete text of every walkthrough and concept is at ${SITE_URL}/llms-full.txt.`,
+    "",
+    "## Browse the library",
+    "",
+    `- [System design concepts](${SITE_URL}/concepts): Browse ${concepts.length} concise references to distributed-systems concepts and trade-offs.`,
+    `- [Company engineering case studies](${SITE_URL}/companies): Browse ${companies.length} source-linked accounts of how engineering teams approached real systems problems.`,
+    `- [System design interview examples](${SITE_URL}/projects/examples): Browse ${examples.length} original practice architectures with diagrams, request flows, scale assumptions and invariants; these are illustrative models, not company case studies.`,
     "",
     "## Start here",
     "",
@@ -71,11 +81,11 @@ export function GET() {
     "",
     "## System design concepts",
     "",
-    ...listConcepts().map((c) => line(c.title, `/concepts/${c.id}`, c.summary)),
+    ...concepts.map((c) => line(c.title, `/concepts/${c.id}`, c.summary)),
     "",
     "## How real companies solved these problems",
     "",
-    ...listCompanies().map((c) => line(`${c.name}: ${c.topic}`, `/companies/${c.id}`, c.summary)),
+    ...companies.map((c) => line(`${c.name}: ${c.topic}`, `/companies/${c.id}`, c.summary)),
     "",
     "## Practice",
     "",
