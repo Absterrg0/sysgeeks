@@ -36,7 +36,8 @@ const USER_REQUESTED_FETCHERS = [
 ];
 
 // These tokens control training or corpus access; Google-Extended also controls Gemini grounding.
-// Its rule does not affect Google Search inclusion. Google Search AI inclusion is managed in Search Console.
+// Google Search, including its AI features, relies on Googlebot access and Search eligibility.
+// Google-Extended does not affect inclusion in Google Search.
 const TRAINING_AND_CORPUS_CRAWLERS = [
   "GPTBot",
   "ClaudeBot",
