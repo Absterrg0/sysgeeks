@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useDraft } from "@/components/exercise/use-draft";
+import { ComparePanel } from "@/components/playground/compare-panel";
+import { DefendPanel } from "@/components/playground/defend-panel";
 import { PlaygroundAi } from "@/components/playground/playground-ai";
 import {
   Debrief,
@@ -200,39 +202,7 @@ export function Playground({
   }, [fresh, scenario, discard]);
   const [helpBy, setHelpBy] = useState<Record<string, Help>>({});
 
-  const annotations = Object.fromEntries(
-    model.components
-      .filter((c) => c.role !== "client")
-      .map((c) => {
-        const r = sim.components[c.id];
-        const t = model.tuning[c.id];
-        const load = (r?.reads ?? 0) + (r?.writes ?? 0);
-        const copies = c.role === "database" ? (r?.alive ?? 1) * (1 + (t?.replicas ?? 0)) : (r?.alive ?? 1);
-        const tone =
-          r?.status === "over" || (r?.lost ?? 0) > 0
-            ? ("over" as const)
-            : r?.status === "hot"
-              ? ("hot" as const)
-              : undefined;
-        const text =
-          r?.status === "down"
-            ? "down"
-            : r && r.lost > 0
-              ? `${percent(r.lost)} lost`
-              : load > 0
-                ? `${formatRate(load)}${ROLES[c.role].managed ? "" : ` · ${percent(r?.utilization ?? 0)}`}`
-                : undefined;
-        return [
-          c.id,
-          {
-            text,
-            tone,
-            stack: ROLES[c.role].managed ? 1 : copies,
-            utilization: ROLES[c.role].managed || load === 0 ? undefined : (r?.utilization ?? 0),
-          },
-        ];
-      }),
-  );
+  const annotations = mapAnnotations(model, sim);
 
   const trafficLabel = scenario
     ? `${scenario.title.toLowerCase()} traffic`
@@ -367,13 +337,23 @@ export function Playground({
                 onPick={setSelected}
               />
               {check.passed && (
-                <Debrief
-                  scenario={scenario}
-                  sources={sources}
-                  concepts={concepts}
-                  next={nextScenario}
-                  onNext={pickScenario}
-                />
+                <>
+                  <Debrief
+                    scenario={scenario}
+                    sources={sources}
+                    concepts={concepts}
+                    next={nextScenario}
+                    onNext={pickScenario}
+                  />
+                  <DefendPanel
+                    key={scenario.id}
+                    model={check.model}
+                    workload={check.workload}
+                    traffic={scenario.traffic}
+                    onPick={setSelected}
+                    intro="It holds. Now the interviewer follows up about your design, in this situation. Say what you expect, then see what the model says."
+                  />
+                </>
               )}
             </>
           ) : (
@@ -386,6 +366,23 @@ export function Playground({
             writeups={writeups}
             onPick={setSelected}
             baseline={scenario ? "the scenario's starting design" : "the reference design"}
+          />
+          <ComparePanel
+            key={scenario?.id ?? "free"}
+            storageKey={scenario ? `playground-compare:${investigation.id}:${scenario.id}` : `playground-compare:${investigation.id}`}
+            model={model}
+            workload={workload}
+            traffic={traffic}
+            prepare={
+              scenario
+                ? (m) => checkScenario({ model: m, reference, workload: baseWorkload, scenario }).model
+                : undefined
+            }
+            trafficLabel={trafficLabel}
+            onRestore={(m) => {
+              setModel(m);
+              setSelected(null);
+            }}
           />
           <PlaygroundAi
             investigation={investigation}
@@ -441,7 +438,44 @@ export function Playground({
   );
 }
 
-function Summary({ sim, referenceSim, changed }: { sim: Simulation; referenceSim: Simulation; changed: boolean }) {
+/** What the diagram shows on each part: its load and how busy it is, stacked copies, and trouble. */
+export function mapAnnotations(model: PlayModel, sim: Simulation) {
+  return Object.fromEntries(
+    model.components
+      .filter((c) => c.role !== "client")
+      .map((c) => {
+        const r = sim.components[c.id];
+        const t = model.tuning[c.id];
+        const load = (r?.reads ?? 0) + (r?.writes ?? 0);
+        const copies = c.role === "database" ? (r?.alive ?? 1) * (1 + (t?.replicas ?? 0)) : (r?.alive ?? 1);
+        const tone =
+          r?.status === "over" || (r?.lost ?? 0) > 0
+            ? ("over" as const)
+            : r?.status === "hot"
+              ? ("hot" as const)
+              : undefined;
+        const text =
+          r?.status === "down"
+            ? "down"
+            : r && r.lost > 0
+              ? `${percent(r.lost)} lost`
+              : load > 0
+                ? `${formatRate(load)}${ROLES[c.role].managed ? "" : ` · ${percent(r?.utilization ?? 0)}`}`
+                : undefined;
+        return [
+          c.id,
+          {
+            text,
+            tone,
+            stack: ROLES[c.role].managed ? 1 : copies,
+            utilization: ROLES[c.role].managed || load === 0 ? undefined : (r?.utilization ?? 0),
+          },
+        ];
+      }),
+  );
+}
+
+export function Summary({ sim, referenceSim, changed }: { sim: Simulation; referenceSim: Simulation; changed: boolean }) {
   const failed = sim.operations.reduce((sum, o) => sum + o.failed, 0);
   const offered = sim.operations.filter((o) => !o.background).reduce((sum, o) => sum + o.offered, 0);
   const backlog = sim.operations.reduce((sum, o) => sum + o.backlog, 0);
@@ -481,7 +515,7 @@ function Summary({ sim, referenceSim, changed }: { sim: Simulation; referenceSim
   );
 }
 
-function Operations({
+export function Operations({
   sim,
   referenceSim,
   labelOf,
@@ -496,7 +530,7 @@ function Operations({
         What goes through it
       </h2>
       <div className="plate mt-3 overflow-x-auto">
-        <table className="data-table min-w-[36rem] [&_td]:px-4 [&_th]:px-4">
+        <table className="data-table min-w-[38rem] [&_td]:px-4 [&_th]:px-4 [&_thead_th]:whitespace-nowrap">
           <thead>
             <tr>
               <th scope="col">Operation</th>
@@ -505,7 +539,10 @@ function Operations({
               </th>
               <th scope="col">Outcome</th>
               <th scope="col" className="text-right">
-                Wait
+                Avg wait
+              </th>
+              <th scope="col" className="text-right">
+                p99
               </th>
               <th scope="col" className="text-right">
                 Up
@@ -526,6 +563,10 @@ function Operations({
                 before &&
                 before.reachable &&
                 Math.abs(before.latencyMs - o.latencyMs) > 0.05 * Math.max(1, before.latencyMs);
+              const tailChanged =
+                before &&
+                before.reachable &&
+                (before.saturated !== o.saturated || Math.abs(before.p99Ms - o.p99Ms) > 0.05 * Math.max(1, before.p99Ms));
               return (
                 <tr key={o.id}>
                   <th scope="row">
@@ -548,6 +589,22 @@ function Operations({
                     )}
                   </td>
                   <td className="text-right font-mono tabular-nums">
+                    {o.background || !o.reachable ? (
+                      "–"
+                    ) : o.saturated ? (
+                      <span className="text-signal-gap" title="A part it waits on is over capacity, so its queue keeps growing">
+                        no limit
+                      </span>
+                    ) : (
+                      formatLatency(o.p99Ms)
+                    )}
+                    {tailChanged && !o.background && o.reachable && (
+                      <span className="block text-[0.6875rem] text-ink-3">
+                        was {before.saturated ? "no limit" : formatLatency(before.p99Ms)}
+                      </span>
+                    )}
+                  </td>
+                  <td className="text-right font-mono tabular-nums">
                     {o.background ? "–" : formatAvailability(o.availability)}
                   </td>
                 </tr>
@@ -557,13 +614,54 @@ function Operations({
         </table>
       </div>
       <p className="mt-2 text-[0.75rem] text-ink-3">
-        Wait is the expected time a caller waits; Up is the share of time every part it waits on is running.
+        Avg wait is the expected time a caller waits, and p99 the time 99 in 100 callers finish within. Up is the share of
+        time every part it waits on is running.
       </p>
+      <TailAssumptions />
     </section>
   );
 }
 
-function Insights({
+/** What the p99 assumes, in plain words, for anyone who wants to check it. */
+export function TailAssumptions() {
+  return (
+    <details className="group mt-2 text-[0.75rem] text-ink-3">
+      <summary className="cursor-pointer list-none underline decoration-dotted underline-offset-2 hover:text-ink [&::-webkit-details-marker]:hidden">
+        How the p99 is worked out
+      </summary>
+      <ul className="mt-2 max-w-[72ch] list-disc space-y-1 pl-4 leading-relaxed text-ink-2">
+        <li>
+          It is calculated, not sampled, so the same design always gives the same number. Change one thing and only what
+          that change caused moves.
+        </li>
+        <li>
+          Each instance is a queue: requests arrive at random, and the time each takes varies like an exponential (most
+          are quick, a few take several times the average). A part at utilisation <i>u</i> then takes its normal time ÷
+          (1 − <i>u</i>) on average, which is the average wait shown.
+        </li>
+        <li>
+          Times at queues in a row are independent of each other (Reich, 1957), so a request’s total is a sum of
+          exponentials, and its p99 can be worked out exactly from them.
+        </li>
+        <li>
+          A cache or CDN that answers a request ends its trip early. If more than 1 in 100 requests miss, the p99 is set
+          by the misses, however fast the hits are.
+        </li>
+        <li>
+          Parts a provider runs (a CDN, a managed store, a third-party API) scale out rather than queue, so only their own
+          time counts. A round trip between regions is a fixed delay.
+        </li>
+        <li>
+          Over capacity there is no steady state: the queue grows until requests time out, so the p99 shows “no limit”.
+          Real queues have time limits and real work is less regular than this; read the numbers as how a design
+          behaves, not as a promise.
+        </li>
+      </ul>
+    </details>
+  );
+}
+
+export function Insights({
   insights,
   concepts,
   writeups,
@@ -694,7 +792,7 @@ function Stepper({
   );
 }
 
-function Inspector({
+export function Inspector({
   model,
   sim,
   id,
@@ -953,7 +1051,7 @@ function Inspector({
 }
 
 /** With nothing selected: a few things worth trying on this design, at this traffic. */
-function Ideas({
+export function Ideas({
   model,
   sim,
   onPick,
