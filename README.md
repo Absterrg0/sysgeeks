@@ -194,4 +194,8 @@ A schema in `lib/domain/content.ts`, a response schema in `lib/domain/learner.ts
 
 `lib/domain/project-questions.ts` generates questions from a project's model: trace entry-point requests, durability of stateful components, slow dependencies, redelivery of asynchronous flows, enforcement of invariants, the concurrency model, 100x scale, and why workers are separate. Answers are ordinary attempts, so they feed the same evidence model and appear in interviews.
 
+**Play** (`lib/domain/project-play.ts`) runs a project under the learner's own numbers: reads and writes per second, payload sizes, a peak multiplier, regions and a p99 target. Reads and writes are found from the drawing (a client to the store it ends at, through the edge when there is one); background work follows async flows and the workers that read what writes leave behind. It checks the design at peak, against any single part losing an instance, and against losing a region, using the same model as the curated playgrounds. Everything runs in the browser.
+
+The playground's p99 (`lib/domain/tail-latency.ts`) is computed, not sampled: each instance is an M/M/1 queue (the same assumption as the average wait), times at queues in series are independent, and cache hits end a request's trip early, so an operation's time is a mixture of sums of exponentials. `compare.ts` puts two designs side by side under one traffic level and failure; `defend.ts` asks follow-ups the model answers.
+
 Repository analysis is designed to fill the same `Project` shape (`source: repository`, `codeLocation` evidence on components and invariants). The question templates, evidence and interview composition then work unchanged.

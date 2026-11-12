@@ -95,10 +95,20 @@ Each item is ranked by how much it improves what a learner can do afterwards, wi
 | **P6** | **Scenarios come back in Review**: solve again from a blank start after 3, 10 and 30 days, plus untried ones. | Retrieval practice on design moves, not just facts. Attached to Review, so no new section. | **Built** |
 | **P7** | **Every scenario has an address** (`/investigations/<id>/playground#scenario=<id>`), and titles render in the statically generated page. | Fixes B8. Shareable, and adds no per-request server work. | **Built** |
 | **P8** | **Accessibility**: goal status announced through a live region, scenario switch as pressed buttons, frozen controls explained via `aria-describedby`. | Partial fix for B9 on our side. | **Built** (goals); map narration deferred |
-| P9 | **Play tab for Your systems**, with their own traffic numbers: operations, rates, and paths through their parts. | Breakscale's real strength is "build *your* system and load it". This is the known open gap, and the next highest-value piece. | Deferred: needs a traffic editor and the Design-tab move to the playground editor |
-| P10 | **Tail latency**: add a deterministic p99 estimate per operation (M/M/c / Erlang-C) next to the mean wait. | Interviews talk in p99, and breakscale shows it. It must stay deterministic and be honest that it's an approximation. | Deferred |
+| P9 | **Play tab for Your systems**, with their own traffic numbers: operations, rates, and paths through their parts. | Breakscale's real strength is "build *your* system and load it". This is the known open gap, and the next highest-value piece. | **Built** (play-depth): reads/writes, payloads, peak, regions and a p99 target; paths found from the drawing and choosable; checks at peak, single failures and region loss |
+| P10 | **Tail latency**: add a deterministic p99 estimate per operation next to the mean wait. | Interviews talk in p99, and breakscale shows it. It must stay deterministic and be honest that it's an approximation. | **Built** (play-depth): M/M/1 per instance, which is what the mean already assumed; tandem sojourn times are independent (Reich 1957), so the p99 is computed from a sum of exponentials mixed over cache hits and misses. Tested against closed forms in `lib/domain/tail-latency.test.ts` |
 | P11 | **Scenarios for the remaining systems** (rate limiter fail-open/closed, notification bulkheads, Discord hot partitions, Convex single committer). | Several need model features first: per-client limits, per-pool workers, skew. Doing them without those features would recreate B2. | Deferred, with notes in `lib/content/scenarios.ts` |
 | P12 | **AI explainer aware of the scenario.** The existing explainer already receives the scenario's design and traffic. A next step is to let it cite the scenario's own sources. | Optional and labelled, per the owner's constraint. | Partial |
+
+### Added after the first round (play-depth)
+
+| | Improvement | Learner value | Status |
+|---|---|---|---|
+| P13 | **Compare two designs** under the same traffic and the same failure, row by row, with instances paid for and single points of failure. | Interviews probe trade-offs. Breakscale shows one design at a time and its random numbers make before/after comparisons unreliable (B3). | **Built** |
+| P14 | **Defend it**: after a scenario passes (and in your own system's Play), three follow-ups, such as what runs out first, losing an instance or an empty cache, answered by the model with its numbers. | Practises saying what happens next, which is what the interviewer asks once the design looks done (B7). No AI and nothing to grade by hand. | **Built** |
+| P15 | **Capacity estimation feeding traffic**: people a day × actions each ÷ 86,400, with the arithmetic shown, straight into your system's reads and writes. | Estimation and design stop being separate exercises. | **Built** |
+| P16 | **A dead cache at the end of a route cuts it off.** Before, an operation that ended at a cache (a live location index, a timeline cache) kept "succeeding" with it dead. | Another B2-class false lesson removed. | **Built** |
+| P17 | **Ride-dispatch scenario** (a hot cell at a stadium). | Needs per-cell skew in the model; a citywide multiplier would teach the wrong fix. | Deferred |
 
 ## 5. What was not copied
 
