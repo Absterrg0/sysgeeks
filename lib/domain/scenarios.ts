@@ -189,7 +189,7 @@ export type ScenarioCheck = {
 const share = (n: number) => {
   if (n <= 0) return "0%";
   if (n < 0.001) return "<0.1%";
-  return `${(n * 100).toFixed(n < 0.1 ? 1 : 0)}%`;
+  return `${(n * 100).toFixed(n < 0.1 ? 1 : 0).replace(/\.0$/, "")}%`;
 };
 const ms = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)} s` : `${Math.round(n)} ms`);
 
