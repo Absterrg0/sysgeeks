@@ -25,15 +25,14 @@ describe("curated content", () => {
     expect(unsourced).toEqual([]);
   });
 
-  it("pairs each company with one investigation, and each investigation with one company", () => {
-    const pairs = listCompanies().map((c) => ({
-      company: c.id,
-      investigations: [...new Set(listWriteups().filter((w) => w.companyId === c.id).flatMap((w) => w.investigationIds))],
-    }));
-    expect(pairs.filter((p) => p.investigations.length !== 1)).toEqual([]);
-    const byInvestigation = new Map<string, string[]>();
-    for (const p of pairs) byInvestigation.set(p.investigations[0]!, [...(byInvestigation.get(p.investigations[0]!) ?? []), p.company]);
-    expect([...byInvestigation].filter(([, companies]) => companies.length !== 1)).toEqual([]);
+  // Most companies are here for one idea and one system. Case studies such as Google's and Amazon's papers
+  // inform several systems, so the rule is: every company leads to practice, and every system has a company.
+  it("links every company to an investigation, and every investigation to a company", () => {
+    const investigationsOf = (companyId: string) =>
+      new Set(listWriteups().filter((w) => w.companyId === companyId).flatMap((w) => w.investigationIds));
+    expect(listCompanies().filter((c) => investigationsOf(c.id).size === 0).map((c) => c.id)).toEqual([]);
+    const covered = new Set(listCompanies().flatMap((c) => [...investigationsOf(c.id)]));
+    expect(listInvestigations().filter((inv) => !covered.has(inv.id)).map((inv) => inv.id)).toEqual([]);
   });
 
   it("links every concept from at least one investigation or concept", () => {

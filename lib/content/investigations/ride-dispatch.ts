@@ -160,7 +160,7 @@ export const rideDispatch: InvestigationInput = {
         reasoning: md`The location path dominates request count, so putting every ping into the same durable relational write path as trips couples cheap refreshes to expensive lifecycle guarantees. Keep a compact current-position index with a short TTL and a monotonic sequence. Durable storage owns the request, offer, acceptance, pickup, completion, and cancellation transitions. If a location is too old or out of order, discard it rather than making a confident match from stale data.`,
         otherwise: "Persisting a full location history can be appropriate for safety, billing, or regulation, but stream it to separate partitioned storage with an explicit retention policy; do not make the matcher scan that history.",
       },
-      reveals: { components: ["locations", "trip-store"], flows: ["ping", "persist"] },
+      reveals: { components: ["api", "trip-store", "locations"], flows: ["request", "persist", "ping"] },
     },
     {
       id: "find-nearby-drivers",
@@ -176,6 +176,24 @@ export const rideDispatch: InvestigationInput = {
       `,
       lesson: [
         { kind: "read", body: md`A spatial grid maps a coordinate to a cell. Query the pickup cell and its neighbors, reject unavailable or stale drivers, and expand outward if the candidate set is too small. Cell distance is a coarse filter: lakes, bridges, and one-way roads mean the closest point may not have the shortest pickup time.` },
+        {
+          kind: "estimate",
+          id: "eta-calls",
+          prompt: "At the peak of about 167 ride requests a second, each match asks the routing service for road ETAs to 20 nearby candidates. About how many ETA lookups a second is that?",
+          answer: 3340,
+          unit: "lookups/second",
+          working: md`167 × 20 ≈ **3,300 ETA lookups a second**. Routing every one of 60,000 online drivers for every request would be 167 × 60,000 ≈ **10 million a second**, about 3,000 times more. The cell filter is what makes route-aware ranking affordable.`,
+        },
+        {
+          kind: "choice",
+          id: "cell-edge",
+          prompt: "The pickup is a few metres inside the edge of its cell. Why query the neighbouring cells as well?",
+          options: [
+            { id: "edge", label: "A driver just across the boundary can be closer than every driver inside the pickup cell.", correct: true, why: "Cells are an indexing convenience. Distance does not stop at their edges, so the first ring of neighbours is part of the normal search." },
+            { id: "load", label: "To spread the query load evenly across index partitions.", why: "Querying more cells adds load. The reason is correctness of the candidate set, not balancing." },
+            { id: "eta", label: "Because neighbouring cells always have shorter road ETAs.", why: "Nothing makes a neighbouring cell faster by road. It may contain closer drivers, which ETA ranking then orders." },
+          ],
+        },
       ],
       interaction: {
         kind: "decision",
@@ -242,6 +260,16 @@ export const rideDispatch: InvestigationInput = {
       `,
       lesson: [
         { kind: "read", body: md`A read followed by a write is not an exclusive claim. The reservation must be atomic with the state transition that creates the offer. Give each offer an ID and expiry, and make a driver's reply conditional on that exact ID and current trip version.` },
+        {
+          kind: "choice",
+          id: "atomic-reserve",
+          prompt: "Workers A and B both read driver D as AVAILABLE for different rides. Which write lets exactly one of them reserve D?",
+          options: [
+            { id: "cas", label: "`UPDATE drivers SET state = 'RESERVED', offer_id = :offer WHERE id = :d AND state = 'AVAILABLE'`, and treat zero rows updated as losing.", correct: true, why: "The condition and the write happen as one step in the database. The second worker's update matches no row, so it moves on to another candidate." },
+            { id: "reread", label: "Read D's state again just before writing RESERVED, and skip the write if it changed.", why: "The second read narrows the window but does not close it: both workers can still read AVAILABLE before either writes." },
+            { id: "push-first", label: "Send the offer to D from both workers and reserve D for whichever ride D accepts.", why: "The rider whose offer loses has already been told a driver is coming, and D sees two offers at once. The reservation has to exist before the offer goes out." },
+          ],
+        },
       ],
       interaction: {
         kind: "open",
@@ -268,7 +296,7 @@ export const rideDispatch: InvestigationInput = {
         ],
         otherwise: "A market can send an offer to a small group at once to reduce wait time. Each candidate still needs a unique reservation, and the first valid acceptance wins through one conditional trip transition; losing reservations are released.",
       },
-      reveals: { components: ["trip-store", "outbox", "notify"], flows: ["offer", "push", "reply"] },
+      reveals: { components: ["outbox", "notify"], flows: ["enqueue", "work", "offer", "push", "reply"] },
     },
     {
       id: "stale-and-out-of-order",
@@ -285,6 +313,16 @@ export const rideDispatch: InvestigationInput = {
       context: md`Mobile networks reconnect and replay work. Arrival order is not event order, so both the live-location record and the trip state need a rule that makes stale messages harmless.`,
       lesson: [
         { kind: "read", body: md`Keep a monotonic sequence on driver pings and a version on each trip transition. A consumer applies an event only if it advances the stored value. This works only when the compare and update are atomic; checking the version in application code and writing later reopens the race.` },
+        {
+          kind: "choice",
+          id: "late-ping",
+          prompt: "The index holds driver D at sequence 82. A retried ping with sequence 79 arrives afterwards. What should the index do?",
+          options: [
+            { id: "overwrite", label: "Store it, because it is the most recent message to arrive.", why: "Arrival order is not event order. Storing 79 would move the driver back to where they were several seconds ago." },
+            { id: "discard", label: "Keep sequence 82 and discard 79, acknowledging it so the app stops retrying.", correct: true, why: "Only a higher sequence advances the stored position. Acknowledging the old ping stops a retry loop without changing state." },
+            { id: "average", label: "Average the two positions to smooth out GPS noise.", why: "Averaging a stale point into the current one produces a position the driver was never at. Smoothing, if wanted, belongs on ordered samples." },
+          ],
+        },
       ],
       interaction: {
         kind: "claims",
@@ -324,7 +362,7 @@ export const rideDispatch: InvestigationInput = {
         ],
         reasoning: md`The location index accepts a position only when its sequence exceeds the stored sequence and its age is within the TTL. The trip API makes every state transition conditional on the expected version and offer ID. If an old push arrives, the client ignores its lower version and fetches the current trip. If an accept arrives after the lease was replaced, the server rejects it and returns current state. Do not use wall-clock arrival time alone to order events from mobile clients.`,
       },
-      reveals: { components: ["api", "locations", "notify"], flows: ["ping", "reply", "updates"] },
+      reveals: { flows: ["updates"] },
     },
     {
       id: "venue-hotspot",
@@ -339,6 +377,34 @@ export const rideDispatch: InvestigationInput = {
         detail: "Requests in a few neighboring cells jump to 20× their normal rate. Thousands of drivers are crossing the same pickup area, and the routing service starts timing out.",
       },
       context: md`The city average hides local hotspots. A single popular cell can overload a partition, while increasing every worker's concurrency can send even more traffic to an already slow routing dependency.`,
+      lesson: [
+        {
+          kind: "read",
+          body: md`
+            A hot cell hurts in three ways at once. Many requests compete for the same few nearby drivers, so more conditional reservations lose and retry. Searches widen to find anyone free, so each match asks for more ETAs. And when the routing service slows down, every call holds a worker slot for longer.
+
+            The last one is Little's law: calls in flight = call rate × time per call. A dependency that gets slower holds more work open even if the request rate does not change.
+          `,
+        },
+        {
+          kind: "estimate",
+          id: "in-flight-routing",
+          prompt: "Dispatch makes 3,300 routing calls a second, each normally taking 50 ms. The routing service slows to 2 seconds a call. How many calls are in flight now, if nothing caps them?",
+          answer: 6600,
+          unit: "calls in flight",
+          working: md`Before: 3,300 × 0.05 s ≈ **165 in flight**. After: 3,300 × 2 s = **6,600 in flight**, 40 times as many, at the same request rate. Each one holds a worker slot and a connection. Unless something caps them, the slow dependency takes the workers with it.`,
+        },
+        {
+          kind: "choice",
+          id: "slow-routing",
+          prompt: "Routing calls are timing out at the stadium. Which response keeps the rest of the city matching?",
+          options: [
+            { id: "more-concurrency", label: "Raise every dispatch worker's concurrency so more calls run at once.", why: "The routing service is the slow part. More concurrent calls add to its queue and spread the stadium's problem to every cell." },
+            { id: "cap", label: "Cap concurrent routing calls per cell with a short timeout, and fall back to a labelled coarse ETA or a pending state.", correct: true, why: "The cap bounds what the hot cell can hold, so other cells keep their share. The fallback is honest about lower accuracy instead of waiting indefinitely." },
+            { id: "retry", label: "Retry each timed-out routing call immediately, up to three times.", why: "Immediate retries multiply the load on a dependency that is already overloaded: a retry storm. Retries need a budget and backoff." },
+          ],
+        },
+      ],
       interaction: {
         kind: "open",
         prompt: "How do you keep matching responsive at the stadium without letting a routing slowdown or one hot cell take down the whole city?",
@@ -363,7 +429,67 @@ export const rideDispatch: InvestigationInput = {
           { choice: "Coarse cells", gains: "Simpler index and fewer workers at ordinary traffic.", costs: "A popular venue can become one hot key and contaminate nearby requests." },
         ],
       },
-      reveals: { components: ["outbox", "matcher", "geo", "routing"], flows: ["work", "candidates", "eta"] },
+    },
+    {
+      id: "defend-dispatch",
+      title: "Defend the split between live locations and trip state",
+      phase: "defend",
+      dimensions: ["defend"],
+      conceptIds: ["partitioning", "transactions", "leases-and-fencing"],
+      competencyIds: ["location-load", "exclusive-assignment"],
+      context: md`
+        Your interviewer: "This is a lot of moving parts. Why not keep every driver in one Postgres table with a geospatial index, update the row on each ping, and match with \`ORDER BY distance LIMIT 1 FOR UPDATE\`? One database, one transaction."
+      `,
+      lesson: [
+        {
+          kind: "read",
+          body: md`
+            Take the challenge seriously: the single-database design is a real alternative, and for a small fleet it is the right one. Answer with the numbers that separate the two, concede what the simpler design gets right, and say when you would choose it.
+          `,
+        },
+        {
+          kind: "choice",
+          id: "strongest-argument",
+          prompt: "What is the strongest argument against writing every ping to the trip database?",
+          options: [
+            { id: "write-volume", label: "It is 20,000 durable row updates a second, each with an index change and a log record, for data that is worthless ten seconds later.", correct: true, why: "In Postgres an update writes a new row version, and because the indexed location changed, the spatial index changes too. That is durable-write cost spent on short-lived data, competing with trip transitions that do need it." },
+            { id: "no-geo", label: "Relational databases cannot answer geospatial queries.", why: "They can: PostGIS and similar extensions provide spatial indexes. The objection is to the write rate, not the capability." },
+            { id: "slow", label: "A relational database cannot handle more than about a thousand writes a second.", why: "Well-provisioned databases handle far more. The question is what those writes cost and what they compete with." },
+          ],
+        },
+      ],
+      interaction: {
+        kind: "open",
+        prompt: "Answer the interviewer. Use numbers, concede what is true about the simpler design, and say when you would choose it.",
+        placeholder: "Pings outnumber peak ride requests about 120 to one…",
+        rubric: [
+          { id: "numbers", text: "Uses the rates: about 20,000 pings a second against about 167 peak ride requests a second." },
+          { id: "durability-mismatch", text: "Explains that pings are short-lived hints while trip transitions need durable, conditional writes, so they should not share one write path." },
+          { id: "contention", text: "Notes that `FOR UPDATE` on the nearest driver makes concurrent requests in a busy area queue on the same rows, and that distance ordering is not road ETA." },
+          { id: "concede", text: "Concedes that one database is simpler to run and is a sound choice for a smaller fleet or less frequent pings, and names that threshold." },
+        ],
+        reference: md`
+          **The numbers.** 60,000 drivers pinging every three seconds is 20,000 writes a second; peak ride requests are about 167 a second. Pings outnumber the transitions that matter by about 120 to one.
+
+          **Why they don't share a path.** A ping is a hint that expires in ten seconds. In Postgres, each update writes a new row version and, because the indexed location changed, a new spatial-index entry and a log record, and later vacuum work. That spends durable-write capacity on data nobody needs tomorrow, and it competes with the reservation and acceptance writes that do. An expiring in-memory index is built for latest-value-wins data.
+
+          **Contention.** At a stadium, every request's nearest driver is the same handful of rows, so \`FOR UPDATE\` makes them queue behind each other. \`SKIP LOCKED\` helps, but the order is still straight-line distance, not road ETA.
+
+          **What I concede.** One database is one thing to operate, back up and reason about, and its transaction makes the assignment invariant easy. For a smaller fleet, or with pings every 15–30 seconds, the write rate is modest and I would start there. I would split the location path out when ping writes start to compete with trip writes, measured as commit latency on the trip table.
+        `,
+      },
+      reveal: {
+        takeaways: [
+          "Location pings are 120 times as frequent as ride requests and expire in seconds; they belong in an expiring index, not the durable trip path.",
+          "The trip store keeps the conditional reservation and acceptance writes, which are few and must never be lost.",
+          "A single database with a spatial index is a sound start for a small fleet; say the write rate at which you would split it.",
+        ],
+        reasoning: md`The design separates state by how long it matters and how often it changes. Driver positions change 20,000 times a second and are useless after ten seconds; trip transitions are a few hundred a second and must be durable and exclusive. Putting both in one table makes the cheap, frequent writes pay for durability they don't need and makes the important writes wait behind them. The simpler design is still right below some scale, and naming that scale is a stronger answer than claiming the complex design is always better.`,
+        tradeoffs: [
+          { choice: "One database for locations and trips", gains: "One system to run, and one transaction covers matching and assignment.", costs: "Every ping is a durable write with index and vacuum cost; nearest-driver locks contend in busy areas." },
+          { choice: "Expiring location index plus trip store", gains: "Ping writes are cheap and isolated from trip commits; each store fits its data.", costs: "Two systems, and the matcher must recheck freshness because the index and trip store can disagree briefly." },
+        ],
+      },
     },
   ],
   synthesis: {
