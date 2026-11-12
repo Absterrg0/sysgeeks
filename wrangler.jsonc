@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sysgeeks",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    // Self-reference used by OpenNext for internal requests; the service name must match "name".
+    { "binding": "WORKER_SELF_REFERENCE", "service": "sysgeeks" }
+  ],
+  // www.sysgeeks.com serves the site; the apex is redirected to www by next.config.ts.
+  "routes": [
+    { "pattern": "www.sysgeeks.com", "custom_domain": true },
+    { "pattern": "sysgeeks.com", "custom_domain": true }
+  ],
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": { "enabled": true, "head_sampling_rate": 0.1 },
+  "vars": {
+    "SITE_URL": "https://www.sysgeeks.com"
+  }
+}

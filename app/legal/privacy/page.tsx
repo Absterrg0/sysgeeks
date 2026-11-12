@@ -67,13 +67,9 @@ export default function PrivacyPage() {
               browser. They reach us only when you run an AI feature that sends them, such as an assessment of an answer.
             </li>
             <li>
-              <strong>Analytics and performance.</strong> Vercel Web Analytics records page views and daily visitor
-              counts on public pages, along with page URL and route, referrer, timestamp, location, device, operating
-              system and browser summaries. Vercel says Web Analytics does not use cookies and its visitor hash expires
-              after 24 hours. Vercel Speed Insights records page performance measurements, such as loading and
-              interaction metrics, along with page URL and route, network speed, browser, device, operating system and
-              country. Both tools exclude sign-in and sign-up pages, account pages, saved reports, interview sessions
-              and private project URLs. The site sends these explicit events to Vercel Web Analytics and, if configured,
+              <strong>Analytics.</strong> If configured, PostHog records anonymous page views on public pages, along
+              with page URL and route, referrer and browser summaries. It excludes sign-in and sign-up pages, account
+              pages, saved reports, interview sessions and private project URLs. The site sends these explicit events to
               PostHog: practice_entry_clicked, practice_started, walkthrough_opened, resource_download_clicked, share,
               answer_submitted,
               design_round_saved, mock_interview_started, mock_interview_completed, llm_capacity_estimator_used and
@@ -115,7 +111,10 @@ export default function PrivacyPage() {
               <strong>Neon</strong> for the database, through the Vercel Marketplace.
             </li>
             <li>
-              <strong>Vercel</strong> for hosting, Web Analytics, Speed Insights and the AI Gateway.
+              <strong>Cloudflare</strong> for hosting, caching and blocking abusive automated traffic.
+            </li>
+            <li>
+              <strong>Vercel</strong> for the AI Gateway.
             </li>
             <li>
               <strong>PostHog</strong> for anonymous product analytics, only when a project key is configured.
@@ -132,24 +131,6 @@ export default function PrivacyPage() {
           </ul>
           <p>
             Read{" "}
-            <a
-              href="https://vercel.com/docs/analytics/privacy-policy"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link"
-            >
-              Vercel Web Analytics privacy details
-            </a>{" "}
-            and{" "}
-            <a
-              href="https://vercel.com/docs/speed-insights/privacy-policy"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link"
-            >
-              Vercel Speed Insights privacy details
-            </a>{" "}
-            and{" "}
             <a href="https://posthog.com/docs/privacy" target="_blank" rel="noopener noreferrer" className="link">
               PostHog privacy controls
             </a>{" "}

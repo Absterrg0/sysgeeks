@@ -79,14 +79,29 @@ pnpm lint
 pnpm build
 ```
 
-Node 20.9+ and pnpm 10. Deploys to Vercel as-is; set `SITE_URL` (or rely on `VERCEL_PROJECT_PRODUCTION_URL`) for the sitemap.
+Node 20.9+ and pnpm 10.
+
+## Hosting: Cloudflare Workers
+
+Production runs on Cloudflare Workers through [OpenNext](https://opennext.js.org/cloudflare) (`wrangler.jsonc`, `open-next.config.ts`).
+
+```bash
+pnpm cf:preview   # build for Workers and serve it locally in workerd
+pnpm cf:deploy    # build and deploy to Cloudflare (needs `wrangler login`)
+```
+
+- **Every public page is prerendered and never revalidates.** The build output is the whole cache: OpenNext reads it from Workers static assets (`static-assets-incremental-cache`), so there is no R2, KV or ISR read quota for traffic or bots to use up. Adding `revalidate`, `"use cache"` with a lifetime, or on-demand revalidation needs a writable cache (R2) first; see the OpenNext caching docs.
+- **Files in `public/` are served before Next.js runs**, so `next.config.ts` headers don't apply to them. Repeat any such header in `public/_headers`.
+- **Keep pages light.** Don't turn on `experimental.inlineCss`: it copied the 110 kB stylesheet into every page and RSC payload three times, which is what used up Vercel's ISR reads in November 2026.
+- **Build-time values** (`SITE_URL`, the public PostHog key) are in `.env.production`. Runtime secrets go in with `wrangler secret put NAME`. Off Vercel, AI needs `AI_GATEWAY_API_KEY` because there is no OIDC token.
+- **Bots:** `app/robots.ts` turns away compliant SEO scrapers and training crawlers. The rest are stopped at Cloudflare's edge (Bot Fight Mode, AI Crawl Control and a rate-limit rule), before they can invoke the Worker.
 
 ## Setup: accounts, AI and billing
 
 Practice content needs nothing beyond `pnpm install`. Accounts, AI features and purchases need the variables in `.env.example`. Copy it to `.env.local` and fill in the groups you use. `pnpm build` passes with none of them set.
 
 - **Site:** `SITE_URL`.
-- **AI Gateway:** `AI_GATEWAY_API_KEY` locally (on Vercel, OIDC is used instead); `AI_ENABLED` (`0` switches all AI off); `AI_MODEL_STRONG`, `AI_MODEL_STRONG_FALLBACK`, `AI_MODEL_FAST` and `AI_MODEL_FAST_FALLBACK` (gateway model ids); `AI_ZERO_DATA_RETENTION` (`1` routes only to zero-data-retention providers); `AI_DAILY_BUDGET_USD` (the daily estimated spend that pauses free AI).
+- **AI Gateway:** `AI_GATEWAY_API_KEY` (required on Cloudflare; only on Vercel can OIDC stand in for it); `AI_ENABLED` (`0` switches all AI off); `AI_MODEL_STRONG`, `AI_MODEL_STRONG_FALLBACK`, `AI_MODEL_FAST` and `AI_MODEL_FAST_FALLBACK` (gateway model ids); `AI_ZERO_DATA_RETENTION` (`1` routes only to zero-data-retention providers); `AI_DAILY_BUDGET_USD` (the daily estimated spend that pauses free AI).
 - **GitHub:** `GITHUB_TOKEN`, a fine-grained read-only token for public repositories. It is optional; without it GitHub allows 60 requests an hour per IP.
 - **Clerk:** `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_SIGN_IN_URL` and `NEXT_PUBLIC_CLERK_SIGN_UP_URL`.
 - **Database:** `DATABASE_URL` (Neon Postgres, through the Vercel Marketplace). Once it is set, run `pnpm db:migrate`, and again after pulling new migrations. The migration script needs Node 22 or newer (it uses the built-in WebSocket).

@@ -10,7 +10,7 @@ const eslintConfig = defineConfig([
       "@typescript-eslint/no-explicit-any": "error",
     },
   },
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "docs/**"]),
+  globalIgnores([".next/**", ".open-next/**", ".wrangler/**", "cloudflare-env.d.ts", "videos/**", ".agents/**", ".claude/**", "out/**", "build/**", "next-env.d.ts", "docs/**"]),
 ]);
 
 export default eslintConfig;
