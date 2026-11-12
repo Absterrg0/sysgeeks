@@ -1,10 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDraft } from "@/components/exercise/use-draft";
 import { PlaygroundAi } from "@/components/playground/playground-ai";
+import {
+  Debrief,
+  GoalPlate,
+  ScenarioSwitch,
+  Stuck,
+  type Help,
+  useScenarioProgress,
+  type ScenarioSource,
+} from "@/components/playground/scenario";
 import { SystemMap } from "@/components/system-map";
+import { setHash, useHash } from "@/lib/client/use-hash";
 import type { ComponentKind, FlowKind } from "@/lib/domain/taxonomy";
 import {
   PART_INFO,
@@ -22,6 +32,7 @@ import {
   type Workload,
 } from "@/lib/domain/playground";
 import {
+  answeredShare,
   formatAvailability,
   formatLatency,
   formatRate,
@@ -29,6 +40,15 @@ import {
   playInsights,
   type Insight,
 } from "@/lib/domain/playground-insights";
+import {
+  checkScenario,
+  recordReveal,
+  recordSolve,
+  scenarioKey,
+  scenarioWorkload,
+  startOf,
+  type Scenario,
+} from "@/lib/domain/scenarios";
 
 type SystemInput = {
   components: {
@@ -82,41 +102,103 @@ const TONE_LED: Record<Insight["tone"], string> = {
 const TONE_LABEL: Record<Insight["tone"], string> = { gain: "Gain", cost: "Cost", risk: "Risk", info: "Note" };
 
 /**
+ * The scenario named in the URL's #fragment ("#scenario=campaign-launch"), so a scenario can be linked to.
+ * "&fresh=1" asks for it from its starting design: Review sends people back to solve it again from scratch.
+ */
+function scenarioOf(hash: string): { id: string | null; fresh: boolean } {
+  const params = new URLSearchParams(hash);
+  return { id: params.get("scenario"), fresh: params.get("fresh") === "1" };
+}
+
+/**
  * A system you can change and break. The diagram runs the simulation: parts carry their load, glow when
  * hot, stack when there are several, and go red when they fail. Everything is free and instant.
+ *
+ * Scenarios put the system in a situation and say what has to hold; the same model checks it on every
+ * edit, and a debrief says what it cost and how the real system dealt with it.
  */
 export function Playground({
   investigation,
   system,
-  workload,
+  workload: baseWorkload,
   concepts,
   writeups,
+  scenarios = [],
 }: {
   investigation: { id: string; title: string; searchTitle: string };
   system: SystemInput;
   workload: Workload;
   concepts: Record<string, { title: string; summary: string }>;
   writeups: PlaygroundWriteup[];
+  scenarios?: Scenario[];
 }) {
-  const reference = useMemo(() => playModelOf(system, workload), [system, workload]);
+  const reference = useMemo(() => playModelOf(system, baseWorkload), [system, baseWorkload]);
+  const { id: scenarioId, fresh } = scenarioOf(useHash());
+  const scenario = scenarios.find((s) => s.id === scenarioId);
+  const pickScenario = (id: string | null) => {
+    setHash(id ? `scenario=${id}` : "");
+    setSelected(null);
+  };
+  // The design each scenario starts from, and the one free play starts from.
+  const baseline = useMemo(() => (scenario ? startOf(reference, scenario) : reference), [reference, scenario]);
   const [draft, store, discard] = useDraft<Draft | undefined>(
-    `playground:${investigation.id}`,
+    scenario ? `playground:${investigation.id}:${scenario.id}` : `playground:${investigation.id}`,
     parseDraft,
     () => undefined,
   );
-  const model = draft?.model ?? reference;
+  const model = draft?.model ?? baseline;
   const setModel = (next: PlayModel) => store({ v: DRAFT_VERSION, model: next });
-  const levels = trafficLevels(workload);
+  const levels = trafficLevels(baseWorkload);
   const [level, setLevel] = useState<(typeof levels)[number]["id"]>("peak");
-  const traffic = levels.find((l) => l.id === level)?.multiplier ?? 1;
+  const workload = scenario ? scenarioWorkload(baseWorkload, scenario) : baseWorkload;
+  const traffic = scenario ? scenario.traffic : (levels.find((l) => l.id === level)?.multiplier ?? 1);
   const [selected, setSelected] = useState<string | null>(null);
 
-  // A few dozen parts at most: cheap enough to run on every render.
-  const sim = simulate(model, workload, traffic);
-  const referenceSim = simulate(reference, workload, traffic);
-  const insights = playInsights({ model, sim, reference, referenceSim, workload, traffic });
+  // A few dozen parts at most: cheap enough to run on every render. In a scenario the check runs the
+  // design with the situation's faults applied, and the baseline is the scenario's starting design.
+  const check = scenario ? checkScenario({ model, reference, workload: baseWorkload, scenario }) : undefined;
+  const baselineCheck = scenario
+    ? checkScenario({ model: baseline, reference, workload: baseWorkload, scenario })
+    : undefined;
+  const live = check?.model ?? model;
+  const sim = check?.sim ?? simulate(model, workload, traffic);
+  const referenceSim = baselineCheck?.sim ?? simulate(reference, workload, traffic);
+  const insights = playInsights({
+    model: live,
+    sim,
+    reference: baselineCheck?.model ?? reference,
+    referenceSim,
+    workload,
+    traffic,
+  });
   const changed = draft !== undefined;
   const selectedPart = selected ? model.components.find((c) => c.id === selected) : undefined;
+  const labelOf = (id: string) =>
+    model.components.find((c) => c.id === id)?.label ?? reference.components.find((c) => c.id === id)?.label ?? id;
+  const isDatabase = (id: string) =>
+    (model.components.find((c) => c.id === id) ?? reference.components.find((c) => c.id === id))?.role ===
+    "database";
+  const opLabel = (id: string) => workload.operations.find((o) => o.id === id)?.label ?? id;
+  const sources: Record<string, ScenarioSource> = Object.fromEntries(
+    writeups.map((w) => [w.id, { id: w.id, title: w.title, url: w.url, company: w.company }]),
+  );
+
+  // Remember a pass, so the switch can mark it and Review can bring it back later.
+  const [progress, storeProgress] = useScenarioProgress();
+  const passed = Boolean(check?.passed);
+  const key = scenario ? scenarioKey(investigation.id, scenario.id) : undefined;
+  useEffect(() => {
+    if (!passed || !key) return;
+    const next = recordSolve(progress, key, new Date().toISOString());
+    if (next !== progress) storeProgress(next);
+  }, [passed, key, progress, storeProgress]);
+  const nextScenario = scenario ? scenarios[scenarios.indexOf(scenario) + 1] : undefined;
+  useEffect(() => {
+    if (!fresh || !scenario) return;
+    discard();
+    setHash(`scenario=${scenario.id}`);
+  }, [fresh, scenario, discard]);
+  const [helpBy, setHelpBy] = useState<Record<string, Help>>({});
 
   const annotations = Object.fromEntries(
     model.components
@@ -126,13 +208,20 @@ export function Playground({
         const t = model.tuning[c.id];
         const load = (r?.reads ?? 0) + (r?.writes ?? 0);
         const copies = c.role === "database" ? (r?.alive ?? 1) * (1 + (t?.replicas ?? 0)) : (r?.alive ?? 1);
-        const tone = r?.status === "over" ? ("over" as const) : r?.status === "hot" ? ("hot" as const) : undefined;
+        const tone =
+          r?.status === "over" || (r?.lost ?? 0) > 0
+            ? ("over" as const)
+            : r?.status === "hot"
+              ? ("hot" as const)
+              : undefined;
         const text =
           r?.status === "down"
             ? "down"
-            : load > 0
-              ? `${formatRate(load)}${ROLES[c.role].managed ? "" : ` · ${percent(r?.utilization ?? 0)}`}`
-              : undefined;
+            : r && r.lost > 0
+              ? `${percent(r.lost)} lost`
+              : load > 0
+                ? `${formatRate(load)}${ROLES[c.role].managed ? "" : ` · ${percent(r?.utilization ?? 0)}`}`
+                : undefined;
         return [
           c.id,
           {
@@ -145,40 +234,72 @@ export function Playground({
       }),
   );
 
+  const trafficLabel = scenario
+    ? `${scenario.title.toLowerCase()} traffic`
+    : `${levels.find((l) => l.id === level)?.label.toLowerCase()} traffic`;
+
   return (
     <div className="relative isolate pt-10 sm:pt-14">
-      <header className="flex flex-wrap items-end justify-between gap-x-10 gap-y-3 border-b border-rule pt-8 pb-6 sm:pt-10">
+      <header className="flex flex-wrap items-end justify-between gap-x-10 gap-y-3 border-b border-rule pt-8 pb-5 sm:pt-10">
         <div className="min-w-0 max-w-3xl">
-          <p className="mb-2 text-[0.8125rem] text-ink-3">
+          <p className="mb-1.5 text-[0.8125rem] text-ink-3">
             <Link href={`/investigations/${investigation.id}`} className="hover:text-ink">
               {investigation.searchTitle}
             </Link>
             <span className="mx-1.5 text-rule-strong">/</span>
             Playground
           </p>
-          <h1 className="font-display text-[1.75rem] leading-[1.15] tracking-[-0.02em] text-balance sm:text-[2rem]">
+          <h1 className="font-display text-[1.625rem] leading-[1.15] tracking-[-0.02em] text-balance">
             {investigation.title}
+            {scenarios.length > 0 && (
+              <span className="ml-2.5 align-middle font-mono text-[0.8125rem] tracking-normal text-ink-3">
+                {scenarios.length} scenario{scenarios.length === 1 ? "" : "s"}
+              </span>
+            )}
           </h1>
-          <p className="mt-2.5 max-w-[68ch] text-[0.9375rem] leading-relaxed text-ink-2 text-pretty">
-            Click a part to change it, put something in front of it, or kill it. Turn the traffic up. Every number moves
-            as you go; nothing is graded. {workload.note}
+          <p className="mt-1.5 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2 text-pretty">
+            Change the design, break it, and see what each change buys and costs. The same design always gives the same
+            numbers, at once.
           </p>
         </div>
+        <button
+          type="button"
+          className="btn btn-secondary btn-sm"
+          disabled={!changed}
+          onClick={() => {
+            discard();
+            setSelected(null);
+          }}
+        >
+          {scenario ? "Start the scenario over" : "Back to the reference design"}
+        </button>
       </header>
 
-      <div className="mt-8 grid gap-x-6 gap-y-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="mt-6 grid gap-x-6 gap-y-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="min-w-0">
-          <figure
-            className="screen relative"
-            aria-label={`${investigation.title}, running at ${levels.find((l) => l.id === level)?.label.toLowerCase()} traffic`}
-          >
-            {/* The display's top edge carries its controls: how much traffic, and a way back. */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule-soft px-3 py-2.5 sm:px-4">
-              <span className="kicker flex items-center gap-2 pl-1">
-                <span className="led led-strong led-pulse" aria-hidden="true" />
-                Running
-              </span>
-              <div className="flex flex-wrap items-center gap-3">
+          <figure className="screen relative" aria-label={`${investigation.title}, running at ${trafficLabel}`}>
+            {/* The display's top edge carries its controls: which situation, and how much traffic. */}
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-rule-soft px-3 py-2.5 sm:px-4">
+              {scenarios.length > 0 ? (
+                <ScenarioSwitch
+                  investigationId={investigation.id}
+                  scenarios={scenarios}
+                  active={scenario}
+                  progress={progress}
+                  onPick={pickScenario}
+                />
+              ) : (
+                <span className="kicker flex items-center gap-2 pl-1">
+                  <span className="led led-strong led-pulse" aria-hidden="true" />
+                  Running
+                </span>
+              )}
+              {scenario ? (
+                <span className="kicker flex items-center gap-2 pr-1">
+                  <span className="led led-strong led-pulse" aria-hidden="true" />
+                  {traffic}× average traffic
+                </span>
+              ) : (
                 <fieldset className="min-w-0">
                   <legend className="sr-only">Traffic</legend>
                   <div className="inline-flex gap-0.5 rounded-[11px] bg-well p-[3px] shadow-[var(--shadow-well)]">
@@ -204,19 +325,11 @@ export function Playground({
                     ))}
                   </div>
                 </fieldset>
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  disabled={!changed}
-                  onClick={() => {
-                    discard();
-                    setSelected(null);
-                  }}
-                >
-                  Back to the reference design
-                </button>
-              </div>
+              )}
             </div>
+            <p className="border-b border-rule-soft px-4 py-2.5 text-[0.8125rem] leading-relaxed text-ink-2 text-pretty sm:px-5">
+              {scenario ? scenario.situation : workload.note}
+            </p>
             <div className="px-3 py-6 max-sm:overflow-x-auto sm:px-8">
               <SystemMap
                 bare
@@ -243,20 +356,44 @@ export function Playground({
             </div>
           </figure>
 
-          <Summary sim={sim} referenceSim={referenceSim} changed={changed} />
-          <Operations
-            sim={sim}
-            referenceSim={referenceSim}
-            labelOf={(id) => model.components.find((c) => c.id === id)?.label ?? id}
+          {scenario && check ? (
+            <>
+              <GoalPlate
+                check={check}
+                scenario={scenario}
+                opLabel={opLabel}
+                labelOf={labelOf}
+                isDatabase={isDatabase}
+                onPick={setSelected}
+              />
+              {check.passed && (
+                <Debrief
+                  scenario={scenario}
+                  sources={sources}
+                  concepts={concepts}
+                  next={nextScenario}
+                  onNext={pickScenario}
+                />
+              )}
+            </>
+          ) : (
+            <Summary sim={sim} referenceSim={referenceSim} changed={changed} />
+          )}
+          <Operations sim={sim} referenceSim={referenceSim} labelOf={labelOf} />
+          <Insights
+            insights={insights}
+            concepts={concepts}
+            writeups={writeups}
+            onPick={setSelected}
+            baseline={scenario ? "the scenario's starting design" : "the reference design"}
           />
-          <Insights insights={insights} concepts={concepts} writeups={writeups} onPick={setSelected} />
           <PlaygroundAi
             investigation={investigation}
-            model={model}
-            reference={reference}
+            model={live}
+            reference={baselineCheck?.model ?? reference}
             sim={sim}
             workload={workload}
-            trafficLabel={levels.find((l) => l.id === level)?.label ?? "average"}
+            trafficLabel={trafficLabel}
             writeups={writeups.filter((w) => w.forThis)}
             resolve={(id) => concepts[id]}
             onHighlight={(ids) => setSelected(ids[0] ?? null)}
@@ -270,13 +407,33 @@ export function Playground({
               model={model}
               sim={sim}
               id={selectedPart.id}
+              frozen={scenario?.frozen?.filter((f) => f.componentId === selectedPart.id) ?? []}
               onChange={setModel}
               onClose={() => setSelected(null)}
               onRemoved={() => setSelected(null)}
               onInserted={setSelected}
             />
+          ) : scenario ? (
+            <Stuck
+              scenario={scenario}
+              help={helpBy[scenario.id] ?? { hints: 0, answer: false }}
+              onHelp={(help) => setHelpBy({ ...helpBy, [scenario.id]: help })}
+              labelOf={labelOf}
+              isDatabase={isDatabase}
+              onPick={setSelected}
+              onReveal={() => {
+                if (key) storeProgress(recordReveal(progress, key, new Date().toISOString()));
+              }}
+            />
           ) : (
-            <Ideas model={model} sim={sim} onPick={setSelected} onTraffic={() => setLevel("growth")} />
+            <Ideas
+              model={model}
+              sim={sim}
+              onPick={setSelected}
+              onTraffic={() => setLevel("growth")}
+              scenarios={scenarios}
+              onScenario={pickScenario}
+            />
           )}
         </aside>
       </div>
@@ -411,11 +568,14 @@ function Insights({
   concepts,
   writeups,
   onPick,
+  baseline,
 }: {
   insights: { changes: Insight[]; now: Insight[] };
   concepts: Record<string, { title: string; summary: string }>;
   writeups: PlaygroundWriteup[];
   onPick: (id: string) => void;
+  /** What the changes are measured against, in words. */
+  baseline: string;
 }) {
   const sourceFor = (insight: Insight) => {
     const matching = writeups.filter((w) => w.conceptIds.some((id) => insight.conceptIds.includes(id)));
@@ -480,7 +640,7 @@ function Insights({
       {group(
         "What your changes did",
         insights.changes,
-        "Nothing yet. This is the reference design: change something to see what it buys and costs.",
+        `Nothing yet. This is ${baseline}: change something to see what it buys and costs.`,
       )}
       {group("At this traffic", insights.now, "Everything is running within capacity.")}
     </>
@@ -538,6 +698,7 @@ function Inspector({
   model,
   sim,
   id,
+  frozen,
   onChange,
   onClose,
   onRemoved,
@@ -546,6 +707,8 @@ function Inspector({
   model: PlayModel;
   sim: Simulation;
   id: string;
+  /** Settings the open scenario decides, and why. */
+  frozen: { field: "hitRate" | "limit"; why: string }[];
   onChange: (model: PlayModel) => void;
   onClose: () => void;
   onRemoved: () => void;
@@ -559,6 +722,10 @@ function Inspector({
   const load = r.reads + r.writes;
   const parts = partsFor(part.role);
   const meter = Math.min(1, r.utilization);
+  const database = part.role === "database";
+  const answered = answeredShare(sim, id);
+  const frozenHitRate = frozen.find((f) => f.field === "hitRate");
+  const slow = (t.slow ?? 1) > 1;
   const meterTone =
     r.status === "over"
       ? "bg-mark-gap"
@@ -590,6 +757,7 @@ function Inspector({
               {r.status === "down" ? "Down" : load > 0 ? formatRate(load) : "Idle"}
               {r.absorbed > 0 && <span className="text-ink-3"> · answers {formatRate(r.absorbed)}</span>}
               {r.rejected > 0 && <span className="text-signal-gap"> · rejects {formatRate(r.rejected)}</span>}
+              {r.lost > 0 && <span className="text-signal-gap"> · {percent(r.lost)} lost</span>}
             </span>
             {!spec.managed && <span className="font-mono tabular-nums">{percent(r.utilization)} busy</span>}
           </div>
@@ -601,7 +769,13 @@ function Inspector({
           {r.spof && r.status !== "down" && (
             <p className="mt-2 flex items-center gap-2 text-[0.75rem] text-signal-gap">
               <span className="led led-gap" aria-hidden="true" />
-              Single point of failure
+              {database && t.instances > 1 ? "Every shard is a single point of failure" : "Single point of failure"}
+            </p>
+          )}
+          {(part.role === "cache" || part.role === "cdn") && r.reads > 0 && t.hitRate - answered > 0.005 && (
+            <p className="mt-2 text-[0.75rem] leading-relaxed text-ink-3">
+              Answers {percent(answered)} of what reaches it, not {percent(t.hitRate)}: a cache in front already
+              answers the popular keys, so this one sees the long tail.
             </p>
           )}
         </div>
@@ -671,9 +845,16 @@ function Inspector({
             min={0}
             max={99}
             value={Math.round(t.hitRate * 100)}
+            disabled={Boolean(frozenHitRate)}
+            aria-describedby={frozenHitRate ? `${id}-frozen` : undefined}
             onChange={(e) => onChange(tune(model, id, { hitRate: Number(e.target.value) / 100 }))}
-            className="mt-2 w-full accent-[var(--accent-solid)]"
+            className="mt-2 w-full accent-[var(--accent-solid)] disabled:opacity-50"
           />
+          {frozenHitRate && (
+            <span id={`${id}-frozen`} className="mt-1 block text-[0.75rem] leading-relaxed text-ink-3">
+              Set by the scenario. {frozenHitRate.why}
+            </span>
+          )}
         </label>
       )}
 
@@ -690,31 +871,65 @@ function Inspector({
         <div className="mt-5">
           <p className="kicker text-[0.625rem]">Break it</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
-            {t.down < t.instances && t.instances > 1 && (
+            {database ? (
+              <>
+                {!t.outage && t.down < t.instances && (t.replicas > 0 || t.instances > 1) && (
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm"
+                    onClick={() => onChange(tune(model, id, { down: t.down + 1 }))}
+                  >
+                    {t.instances > 1 ? "Kill one shard's primary" : "Kill the primary"}
+                  </button>
+                )}
+                {!t.outage && (
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm"
+                    onClick={() => onChange(tune(model, id, { down: t.instances, outage: true }))}
+                  >
+                    {t.replicas > 0 || t.instances > 1 ? "Kill every node" : "Kill it"}
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                {t.down < t.instances && t.instances > 1 && (
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm"
+                    onClick={() => onChange(tune(model, id, { down: t.down + 1 }))}
+                  >
+                    Kill one instance
+                  </button>
+                )}
+                {t.down < t.instances && (
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm"
+                    onClick={() => onChange(tune(model, id, { down: t.instances }))}
+                  >
+                    {t.instances > 1 ? "Kill all" : "Kill it"}
+                  </button>
+                )}
+              </>
+            )}
+            {!slow && r.status !== "down" && (
               <button
                 type="button"
                 className="btn btn-danger btn-sm"
-                onClick={() => onChange(tune(model, id, { down: t.down + 1 }))}
+                onClick={() => onChange(tune(model, id, { slow: 5 }))}
               >
-                Kill one instance
+                Make it 5× slower
               </button>
             )}
-            {t.down < t.instances && (
-              <button
-                type="button"
-                className="btn btn-danger btn-sm"
-                onClick={() => onChange(tune(model, id, { down: t.instances }))}
-              >
-                {t.instances > 1 ? "Kill all" : "Kill it"}
-              </button>
-            )}
-            {t.down > 0 && (
+            {(t.down > 0 || t.outage || slow) && (
               <button
                 type="button"
                 className="btn btn-secondary btn-sm"
-                onClick={() => onChange(tune(model, id, { down: 0 }))}
+                onClick={() => onChange(tune(model, id, { down: 0, outage: false, slow: 1 }))}
               >
-                Bring it back
+                Back to normal
               </button>
             )}
           </div>
@@ -743,11 +958,15 @@ function Ideas({
   sim,
   onPick,
   onTraffic,
+  scenarios,
+  onScenario,
 }: {
   model: PlayModel;
   sim: Simulation;
   onPick: (id: string) => void;
   onTraffic: () => void;
+  scenarios: Scenario[];
+  onScenario: (id: string) => void;
 }) {
   const parts = model.components.filter((c) => c.role !== "client");
   const busiest = [...parts].sort(
@@ -760,7 +979,13 @@ function Ideas({
       id: busiest.id,
       text: `${busiest.label} is the busiest part at ${percent(sim.components[busiest.id]?.utilization ?? 0)}. Take load off it.`,
     },
-    spof && { id: spof.id, text: `${spof.label} runs as one instance. Kill it and watch what stops.` },
+    spof && {
+      id: spof.id,
+      text:
+        spof.role === "database"
+          ? `${spof.label} has no replica. Kill a primary and watch what stops.`
+          : `${spof.label} runs as one instance. Kill it and watch what stops.`,
+    },
     database &&
       database.id !== busiest?.id && {
         id: database.id,
@@ -787,6 +1012,25 @@ function Ideas({
           </button>
         </li>
       </ul>
+      {scenarios.length > 0 && (
+        <div className="mt-5 border-t border-rule-soft pt-4">
+          <p className="kicker text-[0.625rem]">Or take on a situation</p>
+          <ul className="mt-2 space-y-1">
+            {scenarios.map((s) => (
+              <li key={s.id}>
+                <button
+                  type="button"
+                  className="w-full rounded-lg px-2 py-1.5 text-left hover:bg-hover"
+                  onClick={() => onScenario(s.id)}
+                >
+                  <span className="block text-[0.8125rem] font-medium">{s.title}</span>
+                  <span className="block text-[0.75rem] text-ink-3">{s.summary}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <p className="mt-4 text-[0.75rem] leading-relaxed text-ink-3">
         Click any part in the diagram to size it, put a load balancer, cache, CDN, queue or rate limiter in front of it,
         or break it.

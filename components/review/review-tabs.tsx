@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { AppHeader } from "@/components/page-header";
-import { ReviewOverview, type ReviewSystem } from "@/components/review/review-overview";
+import { ReviewOverview, type ReviewScenario, type ReviewSystem } from "@/components/review/review-overview";
 import { setHash, useHash } from "@/lib/client/use-hash";
 import type { CuratedLabels } from "@/lib/exercise-labels";
 
@@ -22,12 +22,14 @@ type TabId = (typeof TABS)[number]["id"];
 export function ReviewTabs({
   panels,
   systems,
+  scenarios,
   conceptCount,
   exerciseCount,
   curated,
 }: {
   panels: Record<Exclude<TabId, "overview">, ReactNode>;
   systems: ReviewSystem[];
+  scenarios: ReviewScenario[];
   conceptCount: number;
   exerciseCount: number;
   curated: CuratedLabels;
@@ -71,6 +73,7 @@ export function ReviewTabs({
         <div role="tabpanel" id="panel-overview" aria-labelledby="tab-overview" hidden={tab !== "overview"}>
           <ReviewOverview
             systems={systems}
+            scenarios={scenarios}
             conceptCount={conceptCount}
             exerciseCount={exerciseCount}
             curated={curated}

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Playground } from "@/components/playground/playground";
 import { getCompany, getInvestigation, listConcepts, listInvestigations, listWriteups } from "@/lib/content";
 import { PLAYGROUNDS } from "@/lib/content/playground";
+import { scenariosFor } from "@/lib/content/scenarios";
 import { breadcrumbs, clipDescription, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 
 export function generateStaticParams() {
@@ -79,6 +80,7 @@ export default async function PlaygroundPage(props: PageProps<"/investigations/[
         workload={workload}
         concepts={concepts}
         writeups={writeups}
+        scenarios={scenariosFor(inv.id)}
       />
     </>
   );

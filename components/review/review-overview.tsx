@@ -8,10 +8,15 @@ import { daysAgo, daysUntil, reviewQueue } from "@/lib/domain/review";
 import { DIMENSION_LABELS, DIMENSIONS } from "@/lib/domain/taxonomy";
 import { awaitingAssessment, byConcept, byDimension, latestEvidence } from "@/lib/domain/understanding";
 import { labelFor, type CuratedLabels } from "@/lib/exercise-labels";
+import { useScenarioProgress } from "@/components/playground/scenario";
+import { scenarioDueAt, scenarioKey } from "@/lib/domain/scenarios";
 import { useLearnerState } from "@/lib/store/learner-store";
 import { useNow } from "@/lib/use-now";
 
 export type ReviewSystem = { id: string; title: string; stages: { id: string; title: string }[] };
+
+/** A playground scenario, as Review lists it. */
+export type ReviewScenario = { id: string; investigationId: string; title: string; summary: string; system: string };
 
 /** The three practice tools, each opening its own tab. */
 const TOOLS: { hash: string; title: string; body: string; meta: string; icon: ReactNode }[] = [
@@ -89,12 +94,14 @@ function Bar({ value, total }: { value: number; total: number }) {
  */
 export function ReviewOverview({
   systems,
+  scenarios,
   conceptCount,
   exerciseCount,
   curated,
   onOpen,
 }: {
   systems: ReviewSystem[];
+  scenarios: ReviewScenario[];
   conceptCount: number;
   exerciseCount: number;
   curated: CuratedLabels;
@@ -103,6 +110,7 @@ export function ReviewOverview({
 }) {
   const state = useLearnerState();
   const now = useNow();
+  const [scenarioProgress] = useScenarioProgress();
   if (!state || now === null) {
     return (
       <div aria-busy="true" className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
@@ -239,6 +247,8 @@ export function ReviewOverview({
             </ul>
           )}
         </section>
+
+        <ScenarioReview scenarios={scenarios} progress={scenarioProgress} now={now} />
       </div>
 
       <aside className="space-y-3" aria-label="Where you stand">
@@ -313,6 +323,71 @@ export function ReviewOverview({
         </section>
       </aside>
     </div>
+  );
+}
+
+/**
+ * Playground scenarios: solved ones come back to be solved again from scratch (3, 10, then 30 days later),
+ * then a few not yet tried. Solving from a blank start again is what makes the fix stick.
+ */
+function ScenarioReview({
+  scenarios,
+  progress,
+  now,
+}: {
+  scenarios: ReviewScenario[];
+  progress: ReturnType<typeof useScenarioProgress>[0];
+  now: number;
+}) {
+  if (scenarios.length === 0) return null;
+  const rows = scenarios.map((s) => {
+    const record = progress[scenarioKey(s.investigationId, s.id)];
+    const dueAt = scenarioDueAt(record);
+    return { ...s, solved: Boolean(record?.solvedAt), dueAt, due: dueAt !== undefined && dueAt.getTime() <= now };
+  });
+  const solved = rows.filter((r) => r.solved).length;
+  const due = rows.filter((r) => r.due);
+  const fresh = rows.filter((r) => !r.solved).slice(0, Math.max(0, 4 - due.length));
+  const later = rows.filter((r) => r.solved && !r.due).sort((a, b) => (a.dueAt?.getTime() ?? 0) - (b.dueAt?.getTime() ?? 0));
+  const list = [...due, ...fresh];
+  return (
+    <section aria-labelledby="scenarios">
+      <h2 id="scenarios" className="mb-2.5 flex items-baseline gap-2 text-[0.8125rem] font-semibold">
+        Playground scenarios
+        <span className="font-mono text-[0.6875rem] font-normal text-ink-3">
+          {solved} / {rows.length} solved
+        </span>
+      </h2>
+      {list.length === 0 ? (
+        <div className="sheet px-5 py-8 text-center">
+          <p className="text-[0.875rem] text-ink-2">Every scenario is solved and none is due.</p>
+          {later[0]?.dueAt && (
+            <p className="mt-1 text-[0.8125rem] text-ink-3">
+              {later[0].title} comes back {daysUntil(later[0].dueAt.toISOString(), now)}.
+            </p>
+          )}
+        </div>
+      ) : (
+        <ul className="sheet">
+          {list.map((r) => (
+            <li key={`${r.investigationId}/${r.id}`} className="sheet-row">
+              <Link
+                href={`/investigations/${r.investigationId}/playground#scenario=${r.id}${r.due ? "&fresh=1" : ""}`}
+                className="flex items-center justify-between gap-4 px-4 py-3"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate text-[0.875rem] font-medium">{r.title}</span>
+                  <span className="block truncate text-[0.75rem] text-ink-3">
+                    {r.system} · {r.summary}
+                  </span>
+                </span>
+                <span className="chip-flat shrink-0">{r.due ? "Solve again from scratch" : "Not tried"}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
