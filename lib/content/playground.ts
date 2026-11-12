@@ -69,6 +69,56 @@ export const PLAYGROUNDS: Record<string, Workload> = {
     tuning: { api: { instances: 2 }, workers: { instances: 100 }, cdn: { hitRate: 0.95 } },
   },
 
+  "file-storage-sync": {
+    peak: 3,
+    note: "20 million changed files on a busy day, about 230 a second. Each change is assumed to reach three other devices, which page the journal and download the new blocks; peaks at 3× are assumed.",
+    operations: [
+      {
+        id: "commits",
+        label: "File changes committed",
+        rps: 231,
+        kind: "write",
+        path: ["devices", "api", "metadata", "database"],
+      },
+      { id: "uploads", label: "Block uploads", rps: 231, kind: "write", path: ["devices", "api", "blocks"] },
+      {
+        id: "sync",
+        label: "Journal reads by devices",
+        rps: 700,
+        kind: "read",
+        path: ["devices", "api", "metadata", "database"],
+        assumed: true,
+      },
+      {
+        id: "downloads",
+        label: "Block downloads",
+        rps: 700,
+        kind: "read",
+        path: ["devices", "api", "blocks"],
+        assumed: true,
+      },
+      {
+        id: "wake",
+        label: "Device wake-ups",
+        rps: 700,
+        kind: "write",
+        background: true,
+        path: ["database", "notifier", "devices"],
+        assumed: true,
+      },
+      {
+        id: "reclaim",
+        label: "Block deletes",
+        rps: 50,
+        kind: "write",
+        background: true,
+        path: ["gc", "blocks"],
+        assumed: true,
+      },
+    ],
+    tuning: { metadata: { instances: 2 }, database: { replicas: 1 }, notifier: { instances: 2 } },
+  },
+
   "api-rate-limiter": {
     peak: 2.5,
     note: "About 40,000 requests a second at peak across 20–60 API instances; the average is assumed.",
