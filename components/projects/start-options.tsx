@@ -3,12 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
-import { FeatureUnavailable } from "@/components/account/feature-unavailable";
-import { CostTag } from "@/components/billing-ui";
-import { useAccount } from "@/lib/client/account";
+import { AiLabel } from "@/components/ai";
+import type { IntakeSource } from "@/lib/ai/requests";
 import { type Project } from "@/lib/domain/learner";
 import { uniqueSlug } from "@/lib/domain/layout";
-import { creditCost, type IntakeSource } from "@/lib/domain/pricing";
 import { saveProject, useLearnerState } from "@/lib/store/learner-store";
 
 export type StartMethod = IntakeSource | "blank";
@@ -33,11 +31,8 @@ const AI_METHODS: { method: IntakeSource; title: string; body: string }[] = [
 
 const CARD = "sheet-row block px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--hover)_70%,transparent)] aria-[current=page]:bg-accent-soft";
 
-/** Choose how to start: three AI drafts and a blank model. Cards link to `/projects/new?method=…`. */
+/** Choose how to start: three AI drafts (on the learner's own key) and a blank model. Cards link to `/projects/new?method=…`. */
 export function StartOptions({ selected = null }: { selected?: StartMethod | null }) {
-  const { data } = useAccount();
-  const aiOff = data?.features.ai === false;
-
   return (
     <div className="space-y-3">
       <div className="sheet overflow-hidden">
@@ -46,18 +41,11 @@ export function StartOptions({ selected = null }: { selected?: StartMethod | nul
             <>
               <span className="flex items-baseline justify-between gap-3">
                 <span className="text-[0.875rem] font-medium">{title}</span>
-                <CostTag credits={creditCost("intake", { source: method })} />
+                <AiLabel kind="draft" />
               </span>
               <span className="mt-0.5 block text-[0.8125rem] leading-snug text-ink-3">{body}</span>
             </>
           );
-          if (aiOff) {
-            return (
-              <div key={method} aria-disabled="true" className={`${CARD} opacity-45 hover:bg-transparent`}>
-                {content}
-              </div>
-            );
-          }
           return (
             <Link
               key={method}
@@ -76,14 +64,13 @@ export function StartOptions({ selected = null }: { selected?: StartMethod | nul
         >
           <span className="flex items-baseline justify-between gap-3">
             <span className="text-[0.875rem] font-medium">Start blank</span>
-            <span className="text-small text-ink-3">Free</span>
+            <span className="text-small text-ink-3">No AI</span>
           </span>
           <span className="mt-0.5 block text-[0.8125rem] leading-snug text-ink-3">
-            Name it and draw the parts yourself, with no AI and no credits.
+            Name it and draw the parts yourself.
           </span>
         </Link>
       </div>
-      {aiOff && <FeatureUnavailable />}
     </div>
   );
 }
@@ -128,7 +115,7 @@ export function BlankProjectForm() {
     <form className="sheet max-w-xl space-y-4 p-5" onSubmit={create}>
       <div>
         <h2 className="text-[1rem] font-semibold">Start blank</h2>
-        <p className="mt-1 text-small text-ink-3">No AI and no credits. You model the parts yourself.</p>
+        <p className="mt-1 text-small text-ink-3">No AI needed. You model the parts yourself.</p>
       </div>
       <div>
         <label htmlFor="project-name" className="eyebrow mb-2 block">

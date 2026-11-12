@@ -3,15 +3,7 @@ import { SITE_URL } from "@/lib/site";
 
 // Keep private, generated, and non-page endpoints out of crawler queues. The public
 // example gallery lives under /projects, so explicitly allow it below.
-const PRIVATE = [
-  "/account",
-  "/api/",
-  "/interview/session",
-  "/projects/",
-  "/reports/",
-  "/sign-in",
-  "/sign-up",
-];
+const PRIVATE = ["/ai/concepts.json", "/api/", "/interview/session", "/projects/", "/reports/"];
 const PUBLIC_EXCEPTIONS = ["/projects/examples"];
 
 /**

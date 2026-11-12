@@ -231,7 +231,7 @@
   ::selection { background: var(--highlight); color: var(--ink); }
   :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
   textarea, input, select { font: inherit; }
-  code, pre, .font-mono, .field-mono, .kicker, .cost, .ai-label {
+  code, pre, .font-mono, .field-mono, .kicker, .ai-label {
     font-variant-ligatures: none;
     font-feature-settings: "calt" 0, "liga" 0;
   }
@@ -720,12 +720,6 @@
   .btn-danger-solid { color: var(--on-signal); background: var(--signal-gap); }
   .btn-danger-solid:not(:disabled):hover { background: color-mix(in srgb, var(--signal-gap) 88%, var(--ink)); }
 
-  /* What an action costs, shown inside its button before the click. */
-  .cost {
-    display: inline-flex; align-items: center; height: 1.125rem; padding: 0 0.35rem; margin-right: -0.25rem;
-    border-radius: 4px; font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 400;
-    background: color-mix(in srgb, currentColor 14%, transparent);
-  }
   .spinner {
     width: 12px; height: 12px; border-radius: 9999px; border: 1.5px solid currentColor;
     border-right-color: transparent; animation: spin 700ms linear infinite;
@@ -811,34 +805,8 @@
     .stream-caret, .led-pulse { animation: none; }
   }
 
-  /* ---------- Commerce ---------- */
-  .credits {
-    display: inline-flex; align-items: center; gap: 0.5rem; height: 1.875rem; padding: 0 0.625rem;
-    border-radius: 8px; background: var(--well); box-shadow: var(--shadow-well);
-    font-size: 0.8125rem; color: var(--ink-2);
-  }
-  .credits-meter { width: 18px; height: 6px; border-radius: 2px; background: var(--sunken); overflow: hidden; }
-  .credits-meter > span { display: block; height: 100%; background: var(--accent-solid); box-shadow: 0 0 6px var(--glow); }
-  .credits-count { font-family: var(--font-mono); color: var(--ink); font-variant-numeric: tabular-nums; }
-  .credits[data-low="true"] .credits-count { color: var(--signal-partial); }
-
-  .paywall { background: var(--raised); border-radius: 14px; box-shadow: var(--shadow-card); padding: 1.25rem 1.5rem; }
-  /* Plans are columns of one sheet, split by hairlines; the recommended one is lit along its top. */
-  .price-card {
-    position: relative; display: flex; flex-direction: column; gap: 1.25rem; padding: 1.75rem 1.5rem;
-    background: var(--raised);
-  }
-  .price-card-featured { background: var(--accent-soft); }
-  .price-card-featured::before {
-    content: ""; position: absolute; inset: 0 0 auto; height: 2px; background: var(--accent-solid);
-    box-shadow: 0 0 12px var(--glow);
-  }
-  .price-card-band {
-    font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--accent);
-  }
-
-  /* A modal step, such as confirming a purchase: a raised sheet over a dimmed, blurred page. */
+  /* ---------- Dialogs ---------- */
+  /* A modal step, such as the AI key settings: a raised sheet over a dimmed, blurred page. */
   .dialog {
     margin: auto; padding: 0; border: 0; color: inherit; border-radius: 16px; background: var(--raised);
     box-shadow: var(--shadow-raised);

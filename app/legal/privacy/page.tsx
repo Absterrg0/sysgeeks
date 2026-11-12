@@ -6,7 +6,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
   title: "Privacy policy",
-  description: `What ${SITE_NAME} stores, what is sent to AI model providers, who processes data for us, and how to delete it.`,
+  description: `What ${SITE_NAME} stores (very little), what your browser sends to the AI provider you choose, who processes data for us, and how to delete it.`,
   path: "/legal/privacy",
   noindex: true,
 });
@@ -26,7 +26,8 @@ export default function PrivacyPage() {
         }}
       />
       <PageHeader title="Privacy policy">
-        What is stored, what is sent to AI model providers, who processes it for us, and how to delete it.
+        What is stored, what your browser sends to the AI provider you choose, who processes data for us, and how to
+        delete it.
         <br />
         <mark className="bg-highlight px-1">TODO(owner): draft for review by counsel before launch.</mark>
       </PageHeader>
@@ -44,36 +45,26 @@ export default function PrivacyPage() {
         <div className="prose max-w-[66ch]">
           <ul>
             <li>
-              <strong>Account.</strong> Your email address and sign-in details, held by Clerk, and an internal account
-              ID.
+              <strong>No account.</strong> There are no accounts and no sign-in. {SITE_NAME} does not ask for your name or
+              email address, and sells nothing, so it holds no payment details.
             </li>
             <li>
-              <strong>Credits and runs.</strong> Your credit balance and its ledger. For each AI run: the feature, the
-              model, token counts, estimated cost and any error code.
+              <strong>Learner state, in your browser.</strong> Your answers, progress, projects, tailored questions and
+              the output of your AI runs are stored in your browser&rsquo;s local storage. They are not sent to us.
             </li>
             <li>
-              <strong>AI reports.</strong> The output of each run, stored under your account so you can open it again.
-            </li>
-            <li>
-              <strong>Inputs you send.</strong> The text you submit to an AI feature, and any repository files you select
-              for a draft. Repository file contents are not stored; only the list of paths and the output are kept.
-            </li>
-            <li>
-              <strong>Purchases.</strong> The purchase record from Dodo Payments, such as the pack and payment ID. Card
-              details are entered with Dodo Payments, not on this site.
-            </li>
-            <li>
-              <strong>Learner state.</strong> Your answers, progress, projects and tailored questions are stored in your
-              browser. They reach us only when you run an AI feature that sends them, such as an assessment of an answer.
+              <strong>Your AI key, in your browser.</strong> If you add an API key, it is stored in your browser&rsquo;s
+              local storage, or in session storage if you choose &ldquo;This tab only&rdquo;, apart from your learner
+              state. It is never sent to us.
             </li>
             <li>
               <strong>Analytics.</strong> If configured, PostHog records anonymous page views on public pages, along
-              with page URL and route, referrer and browser summaries. It excludes sign-in and sign-up pages, account
-              pages, saved reports, interview sessions and private project URLs. The site sends these explicit events to
+              with page URL and route, referrer and browser summaries. It excludes saved reports, interview sessions and
+              private project URLs. The site sends these explicit events to
               PostHog: practice_entry_clicked, practice_started, walkthrough_opened, resource_download_clicked, share,
               answer_submitted,
-              design_round_saved, mock_interview_started, mock_interview_completed, llm_capacity_estimator_used and
-              content_feedback.
+              design_round_saved, mock_interview_started, mock_interview_completed, llm_capacity_estimator_used,
+              ai_key_saved and content_feedback.
               The practice_entry_clicked event records the public practice entry point and its source label; exercise
               links also include the selected exercise ID.
               The walkthrough_opened event records the public walkthrough slug and whether its title or exercise link
@@ -81,20 +72,18 @@ export default function PrivacyPage() {
               The practice_started event records the exercise, whether someone started or continued it, and the
               short label for the start control. The content_feedback event records only a yes/no response and public
               page route, not written feedback. The calculator event records that the tool was used, not values
-              entered. The resource_download_clicked event records a fixed label for the public PDF link selected, not
+              entered. The ai_key_saved event records which provider was chosen and whether the key is kept for the
+              browser or the tab, never the key or the model. The resource_download_clicked event records a fixed label for the public PDF link selected, not
               file contents. Events include only the event name and limited context such as public route, exercise,
-              interview length, focus and question count; answer text and private project content are not sent. Public
-              sign-in and sign-up links record a start event, then an anonymous completion event if Clerk confirms the
-              visitor is signed in within 30 minutes. Those events include only the public source route and link
-              placement; they do not include account IDs, email addresses or private page URLs. PostHog uses
+              interview length, focus and question count; answer text and private project content are not sent. PostHog uses
               session storage for an anonymous identifier that lasts for the browser tab session. Autocapture and
-              session recordings are disabled, and the site does not identify visitors by account or email. PostHog
+              session recordings are disabled, and the site does not identify visitors. PostHog
               may process an IP address, referrer and browser/device details; its project settings can be configured
               to discard IP addresses. The site also sends PostHog a request event when a public page is requested
               with a user-agent string matching a known search or AI crawler. That event contains the public path,
               hostname, request method, user-agent string and a derived crawler name/category; it omits query strings,
               referrer, the crawler&apos;s IP
-              address, cookies and account data, and is configured not to create a person profile or GeoIP data.
+              address and cookies, and is configured not to create a person profile or GeoIP data.
               User-agent matching is a heuristic and can be spoofed.
             </li>
           </ul>
@@ -105,28 +94,10 @@ export default function PrivacyPage() {
         <div className="prose max-w-[66ch]">
           <ul>
             <li>
-              <strong>Clerk</strong> for accounts and sign-in.
-            </li>
-            <li>
-              <strong>Neon</strong> for the database, through the Vercel Marketplace.
-            </li>
-            <li>
               <strong>Cloudflare</strong> for hosting, caching and blocking abusive automated traffic.
             </li>
             <li>
-              <strong>Vercel</strong> for the AI Gateway.
-            </li>
-            <li>
               <strong>PostHog</strong> for anonymous product analytics, only when a project key is configured.
-            </li>
-            <li>
-              <strong>Model providers</strong> reached through the gateway, currently Anthropic and OpenAI.
-            </li>
-            <li>
-              <strong>Dodo Payments</strong> for payments, as merchant of record.
-            </li>
-            <li>
-              <strong>GitHub</strong>, only when you fetch a public repository for a draft.
             </li>
           </ul>
           <p>
@@ -139,15 +110,18 @@ export default function PrivacyPage() {
         </div>
       </Section>
 
-      <Section id="providers" title="Model providers">
+      <Section id="providers" title="AI providers you choose">
         <div className="prose max-w-[66ch]">
           <p>
-            We ask providers not to train on prompts. By default, requests are routed only to providers that keep no data
-            (zero data retention). The{" "}
+            AI features are optional and run on your own API key. When you run one, your browser sends the input it
+            needs straight to the provider you chose (Anthropic, OpenAI, Google or OpenRouter), and, for a draft from a
+            public repository, reads the files from GitHub first. These requests do not pass through {SITE_NAME}, so we
+            do not receive or keep your key, your inputs or the replies. Your provider is not our processor: you use it
+            under your own agreement with it, and its terms, data retention and training settings apply. The{" "}
             <Link href="/ai" className="link">
               AI page
             </Link>{" "}
-            lists the models that run for each feature.
+            lists what each feature sends.
           </p>
         </div>
       </Section>
@@ -155,9 +129,9 @@ export default function PrivacyPage() {
       <Section id="retention" title="How long we keep data">
         <div className="prose max-w-[66ch]">
           <p>
-            You can delete your reports and run data at any time from your account.{" "}
-            <mark className="bg-highlight px-1">TODO(owner): set retention periods for the ledger, AI runs, payment
-            records and deleted accounts.</mark>
+            {SITE_NAME} keeps no learner data on its servers. What your browser stores stays until you delete it.
+            Analytics events are kept by PostHog.{" "}
+            <mark className="bg-highlight px-1">TODO(owner): state the PostHog retention period.</mark>
           </p>
         </div>
       </Section>
@@ -169,8 +143,9 @@ export default function PrivacyPage() {
             <Link href="/review#data" className="link">
               your progress
             </Link>
-            . You can delete your AI reports from your account. To ask for anything else, including deleting your
-            account, email <mark className="bg-highlight px-1">TODO(owner): support email</mark>.
+            , and delete AI runs there one at a time. Clearing this site&rsquo;s data in your browser deletes all of it.
+            The key settings in the header remove your API key. To ask about anything else, email{" "}
+            <mark className="bg-highlight px-1">TODO(owner): support email</mark>.
           </p>
           <p>
             <mark className="bg-highlight px-1">TODO(owner): describe the rights that apply to you in your jurisdiction,

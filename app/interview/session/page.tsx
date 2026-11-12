@@ -28,7 +28,7 @@ export default async function InterviewSessionPage(props: PageProps<"/interview/
         title: summary.title,
         source: summary.source,
         href: summary.href,
-        spec: { ref, interaction, tags },
+        spec: { ref, interaction, tags, title: summary.title, context },
         slots: buildSlots(interaction),
         context: (
           <>

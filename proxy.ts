@@ -1,8 +1,5 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
-import { features } from "@/lib/config";
 
-const AUTH_PATHS = ["/api/ai", "/api/billing", "/api/account", "/account", "/reports", "/sign-in", "/sign-up"];
 const PUBLIC_CONTENT_PATHS = [
   "/about",
   "/ai",
@@ -51,12 +48,6 @@ const CRAWLER_NAMES: Array<[string, RegExp]> = [
   ["Meta external agent", /\bmeta-externalagent\b/i],
   ["Meta external fetcher", /\bmeta-externalfetcher\b/i],
 ];
-
-const clerkProxy = features().auth ? clerkMiddleware() : undefined;
-
-function isAuthPath(pathname: string): boolean {
-  return AUTH_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
-}
 
 function isCrawlerRelevantPath(pathname: string): boolean {
   return (
@@ -155,24 +146,15 @@ function captureCrawlerRequest(request: NextRequest, event: NextFetchEvent) {
   );
 }
 
-// Clerk only runs where auth() is used. Public content requests are passed through;
-// recognized search and AI crawler requests are logged asynchronously without client IPs.
+// The matcher limits this to requests from recognized search and AI crawlers, which are logged
+// asynchronously without client IPs. Every request passes through unchanged.
 export function proxy(request: NextRequest, event: NextFetchEvent) {
-  if (isAuthPath(request.nextUrl.pathname) && clerkProxy) return clerkProxy(request, event);
-
   captureCrawlerRequest(request, event);
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    "/api/ai/:path*",
-    "/api/billing/:path*",
-    "/api/account",
-    "/account/:path*",
-    "/reports/:path*",
-    "/sign-in/:path*",
-    "/sign-up/:path*",
     {
       source: "/((?!api(?:/|$)|_next/static|_next/image|favicon.ico).*)",
       has: [

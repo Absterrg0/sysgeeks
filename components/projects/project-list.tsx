@@ -4,10 +4,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { SystemThumb } from "@/components/system-thumb";
 import { SignalMeter } from "@/components/ui";
-import { useAccount } from "@/lib/client/account";
 import { exerciseKey, type Project } from "@/lib/domain/learner";
 import { autoLayout } from "@/lib/domain/layout";
-import { creditCost } from "@/lib/domain/pricing";
 import { projectQuestions } from "@/lib/domain/project-questions";
 import { latestEvidence } from "@/lib/domain/understanding";
 import { useLearnerState } from "@/lib/store/learner-store";
@@ -84,9 +82,6 @@ const BRANCH = (
 /** Your systems as a gallery, with starting a new one as the first tile, then the curated examples. */
 export function ProjectList({ examples }: { examples?: ReactNode }) {
   const state = useLearnerState();
-  const { data } = useAccount();
-  const aiOff = data?.features.ai === false;
-  const importCost = `${creditCost("intake", { source: "readme" })}–${creditCost("intake", { source: "repository" })} credits`;
 
   const latest = state ? latestEvidence(state.attempts) : null;
   const projects = state?.projects ?? [];
@@ -162,8 +157,7 @@ export function ProjectList({ examples }: { examples?: ReactNode }) {
                 href="/projects/new"
                 icon={BRANCH}
                 title="Import from a README or GitHub"
-                body={aiOff ? `${importCost} · AI is switched off on this site` : `AI drafts the model for you to check · ${importCost}`}
-                disabled={aiOff}
+                body="AI drafts the model for you to check, on your own API key"
               />
             </li>
             {projects.length === 0 && (

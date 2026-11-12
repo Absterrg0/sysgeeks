@@ -10,7 +10,7 @@ import type { IntakeDraft } from "@/lib/ai/schemas";
 import { draftToProject, type DraftKeep } from "@/lib/domain/draft";
 import type { Project } from "@/lib/domain/learner";
 import { autoLayout, uniqueSlug } from "@/lib/domain/layout";
-import type { IntakeSource } from "@/lib/domain/pricing";
+import type { IntakeSource } from "@/lib/ai/requests";
 import { saveProject, useLearnerState } from "@/lib/store/learner-store";
 
 export type IntakeResult = {

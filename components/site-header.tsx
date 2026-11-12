@@ -6,34 +6,22 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { StageBarInvestigation } from "@/components/investigation/stage-bar";
 import { Brand, DesktopLinks, DesktopNav } from "@/components/site-nav";
+import { AiKeyButton } from "@/components/ai-key/ai-key-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-const AccountMenu = dynamic(() => import("@/components/account/account-menu").then((module) => module.AccountMenu));
-const LiveCredits = dynamic(() => import("@/components/account/live-credits").then((module) => module.LiveCredits));
-const CreditsChip = dynamic(() => import("@/components/billing-ui").then((module) => module.CreditsChip));
 const SystemBar = dynamic(() => import("@/components/investigation/system-bar").then((module) => module.SystemBar));
 const ProjectBar = dynamic(() => import("@/components/investigation/system-bar").then((module) => module.ProjectBar));
 const MobileNav = dynamic(() => import("@/components/site-mobile-nav").then((module) => module.MobileNav));
-
-export type HeaderCredits = { balance: number; allotment?: number; renewsAt?: Date | null };
 
 function preloadMobileNav() {
   void import("@/components/site-mobile-nav");
 }
 
 /**
- * The one bar at the top of every page: the brand, the sections, the account, and on small screens a menu.
+ * The one bar at the top of every page: the brand, the sections, the AI key, and on small screens a menu.
  * Inside an investigation's stages it grows a second row for moving between them.
  */
-export function SiteHeader({
-  investigations,
-  auth,
-  credits,
-}: {
-  investigations: StageBarInvestigation[];
-  auth: boolean;
-  credits?: HeaderCredits;
-}) {
+export function SiteHeader({ investigations }: { investigations: StageBarInvestigation[] }) {
   const pathname = usePathname();
   // Inside a system, the bar grows a second row: the system's workspace.
   const match = pathname.match(/^\/investigations\/([^/]+)/);
@@ -70,16 +58,10 @@ export function SiteHeader({
           <div className="ml-auto flex items-center gap-1.5">
             <DesktopLinks />
             <ThemeToggle />
-            {auth && <AccountMenu auth={auth} credits={credits ? <CreditsChip {...credits} /> : <LiveCredits />} />}
-            {!auth && (
-              <Link
-                href="/investigations"
-                prefetch={false}
-                className="btn btn-accent btn-sm ml-1.5 hidden sm:inline-flex"
-              >
-                Practice system design
-              </Link>
-            )}
+            <AiKeyButton />
+            <Link href="/investigations" prefetch={false} className="btn btn-accent btn-sm ml-1.5 hidden sm:inline-flex">
+              Practice system design
+            </Link>
             <button
               type="button"
               className="knob size-10 text-ink lg:hidden"

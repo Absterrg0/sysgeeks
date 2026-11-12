@@ -343,6 +343,7 @@ function QuestionList({
                             interaction: q.interaction,
                             tags: q.tags,
                             project,
+                            title: q.title,
                           }}
                           slots={{
                             ...EMPTY_SLOTS,

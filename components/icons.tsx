@@ -150,6 +150,16 @@ export function PlusIcon({ size, className }: ThemeGlyph) {
   );
 }
 
+/** A key, for the learner's own AI provider key. */
+export function KeyIcon({ size, className }: ThemeGlyph) {
+  return (
+    <Icon size={size} className={className ?? "shrink-0"}>
+      <circle cx="5.25" cy="10.75" r="2.75" />
+      <path d="M7.2 8.8L13.5 2.5M11.25 4.75l1.75 1.75M9.5 6.5l1.25 1.25" />
+    </Icon>
+  );
+}
+
 /** 8x8 cells; 1 = lit node, 2 = lit flow. Shared with the social card renderer. */
 export const PIXEL_MARK_GRID = [
   "11100000",

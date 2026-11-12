@@ -7,6 +7,7 @@ import type { ReviewScenario, ReviewSystem } from "@/components/review/review-ov
 import { ClaimDrill, type DrillConcept } from "@/components/practice/claim-drill";
 import { DimensionPractice, type PracticeExercise } from "@/components/practice/dimension-practice";
 import { Prose } from "@/components/prose";
+import { AiRunsList } from "@/components/ai-run/ai-runs-list";
 import { DataControls } from "@/components/understanding/data-controls";
 import { UnderstandingView, type InvestigationOutline } from "@/components/understanding/understanding-view";
 import { listConcepts, listInvestigations } from "@/lib/content";
@@ -112,6 +113,10 @@ export default function ReviewPage() {
               </Section>
               <Section id="data" title="Your data">
                 <DataControls />
+                <div className="mt-8">
+                  <h3 className="sheet-label mb-2">AI runs</h3>
+                  <AiRunsList />
+                </div>
               </Section>
             </div>
           </div>

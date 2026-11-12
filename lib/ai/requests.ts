@@ -1,6 +1,6 @@
 /**
- * Request bodies for the AI routes, checked on the server before any model
- * call or credit is spent.
+ * Inputs to the AI features, checked in the browser before any model call, so an oversized or malformed
+ * input fails with a clear message instead of spending the learner's tokens.
  */
 import { z } from "zod";
 import { slug } from "../domain/content";
@@ -108,20 +108,5 @@ export type QuestionsRequest = z.infer<typeof QuestionsRequestSchema>;
 export const GRADE_RESPONSE_KINDS = ["open", "decision", "diagnosis", "implementation"] as const;
 export type GradeResponseKind = (typeof GRADE_RESPONSE_KINDS)[number];
 
-export const GradeRequestSchema = z.object({
-  exerciseKey: z.string().min(1).max(200),
-  responseKind: z.enum(GRADE_RESPONSE_KINDS),
-  text: z.string().min(1).max(8000),
-  project: modelObject
-    .extend({ id: projectId, name: z.string().min(1).max(120) })
-    .refine(withinModelSize, "The model is too large to review.")
-    .optional(),
-  /** Names a stored tailored question. The server reads its text from the run, so any other fields are dropped. */
-  tailored: z
-    .object({
-      id: slug.max(40),
-      runId: z.string().min(1).max(100),
-    })
-    .optional(),
-});
-export type GradeRequest = z.infer<typeof GradeRequestSchema>;
+/** How a project draft starts: a description, a pasted README, or a public GitHub repository. */
+export type IntakeSource = IntakeRequest["method"];

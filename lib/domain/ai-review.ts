@@ -58,3 +58,38 @@ export function normalizeReview(review: Review, model: ProjectModel, knownConcep
     questionsToAsk: review.questionsToAsk.map((question) => prose(question)),
   };
 }
+
+const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
+const isText = (v: unknown): v is string => typeof v === "string";
+const isTextList = (v: unknown): v is string[] => Array.isArray(v) && v.every(isText);
+const CATEGORIES = new Set(["bottleneck", "failure-mode", "missing-invariant", "consistency", "scaling-cliff", "security", "operability"]);
+const LEVELS = new Set(["high", "medium", "low"]);
+
+/**
+ * A review read back from this browser's storage, or null if it no longer has the shape the report view needs.
+ * Checks shape only, not the generation limits, so a saved report still opens after those limits change.
+ */
+export function readStoredReview(value: unknown): Review | null {
+  if (!isRecord(value) || !isText(value.summary) || !isTextList(value.questionsToAsk)) return null;
+  const { strengths, findings, suggestedInvariants } = value;
+  if (!Array.isArray(strengths) || !Array.isArray(findings) || !Array.isArray(suggestedInvariants)) return null;
+  const strengthsOk = strengths.every(
+    (s) => isRecord(s) && isText(s.title) && isText(s.detail) && isTextList(s.componentIds),
+  );
+  const findingsOk = findings.every(
+    (f) =>
+      isRecord(f) &&
+      ["id", "title", "scenario", "impact", "recommendation", "tradeoff"].every((key) => isText(f[key])) &&
+      CATEGORIES.has(f.category as string) &&
+      LEVELS.has(f.severity as string) &&
+      LEVELS.has(f.confidence as string) &&
+      isTextList(f.componentIds) &&
+      isTextList(f.flowIds) &&
+      isTextList(f.conceptIds) &&
+      (f.assumes === undefined || isText(f.assumes)),
+  );
+  const invariantsOk = suggestedInvariants.every(
+    (i) => isRecord(i) && isText(i.statement) && isText(i.mechanism) && isTextList(i.enforcedBy),
+  );
+  return strengthsOk && findingsOk && invariantsOk ? (value as Review) : null;
+}

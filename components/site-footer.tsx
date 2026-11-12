@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ABOUT, COMPANIES, LEARN, LEGAL, PRICING, YOURS } from "@/components/nav-items";
+import { ABOUT, COMPANIES, LEARN, LEGAL, YOURS } from "@/components/nav-items";
 import { Brand } from "@/components/site-nav";
 import { SITE_REPO_URL } from "@/lib/site";
 
@@ -37,7 +37,7 @@ export function SiteFooter() {
         </div>
         {column("Learn", LEARN)}
         {column("Yours", YOURS)}
-        {column("Product", [PRICING, ...ABOUT])}
+        {column("Product", ABOUT)}
         {column("Company", [COMPANIES, ...LEGAL])}
       </div>
       <div className="shell">

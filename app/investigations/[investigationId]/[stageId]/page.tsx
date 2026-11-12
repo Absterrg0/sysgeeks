@@ -111,6 +111,8 @@ export default async function StagePage(props: PageProps<"/investigations/[inves
         ref,
         interaction: stage.interaction,
         tags: { dimensions: stage.dimensions, conceptIds: stage.conceptIds, competencyIds: stage.competencyIds },
+        title: stage.title,
+        context: stage.context ?? null,
       }}
       slots={buildSlots(stage.interaction)}
       reveal={reveal}

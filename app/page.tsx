@@ -1,15 +1,10 @@
 import Link from "next/link";
-import { Suspense } from "react";
-import { WELCOME_CREDITS } from "@/lib/domain/pricing";
 import { ShareButton } from "@/components/share";
 import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { DeferredContinueStrip } from "@/components/home/deferred-continue-strip";
 import { DeferredSystemExplorer } from "@/components/home/deferred-system-explorer";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
 import { InlineText } from "@/components/prose-core";
-import { CanceledNote } from "@/components/pricing/canceled-note";
-import { PricingFaq } from "@/components/pricing/faq";
-import { PricingTable } from "@/components/pricing/pricing-table";
 import { SystemMap } from "@/components/system-map";
 import { SystemThumb } from "@/components/system-thumb";
 import { getConcept, getInvestigation, listCompanies, listInvestigations, writeupsByCompany } from "@/lib/content";
@@ -339,7 +334,7 @@ export default function Home() {
         </ol>
       </section>
 
-      <section aria-labelledby="sources" className="mt-24 sm:mt-32">
+      <section aria-labelledby="sources" className="mt-24 mb-12 sm:mt-32">
         <div className="flex flex-wrap items-end justify-between gap-x-16 gap-y-4">
           <div className="max-w-2xl">
             <h2
@@ -423,54 +418,6 @@ export default function Home() {
         </ul>
       </section>
 
-      <section aria-labelledby="pricing" className="mt-24 mb-8 sm:mt-32">
-        <div className="flex flex-wrap items-end justify-between gap-x-16 gap-y-4">
-          <div className="max-w-2xl">
-            <h2
-              id="pricing"
-              className="font-display text-[clamp(1.875rem,1.4rem+1.4vw,2.625rem)] leading-[1.05] tracking-[-0.025em] text-balance"
-            >
-              Free to learn. Pay only for the AI.
-            </h2>
-            <p className="mt-4 text-[0.9375rem] leading-relaxed text-ink-2 text-pretty">
-              Every system, concept and mock interview is free, with no account. Credits are one-time packs for AI
-              drafts, reviews and question sets. They never expire, and a failed run gives them back.
-            </p>
-          </div>
-        </div>
-        <div className="mt-10">
-          <Suspense fallback={null}>
-            <CanceledNote />
-          </Suspense>
-          <PricingTable />
-          <p className="mt-3 text-[0.75rem] text-ink-3">
-            A verified account starts with {WELCOME_CREDITS} welcome credits, once. Payments by Dodo Payments; prices
-            include applicable taxes where shown.
-          </p>
-        </div>
-
-        <div id="faq" className="mx-auto mt-24 max-w-[46rem] scroll-mt-28">
-          <div className="text-center">
-            <h3 className="font-display text-[clamp(1.5rem,1.25rem+0.8vw,1.875rem)] leading-tight tracking-[-0.02em]">
-              Questions
-            </h3>
-            <p className="mt-2 text-[0.875rem] leading-relaxed text-ink-3">
-              The{" "}
-              <Link href="/legal/refunds" className="link font-normal">
-                refunds page
-              </Link>{" "}
-              and the{" "}
-              <Link href="/ai" className="link font-normal">
-                AI page
-              </Link>{" "}
-              have the details.
-            </p>
-          </div>
-          <div className="mt-8">
-            <PricingFaq />
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

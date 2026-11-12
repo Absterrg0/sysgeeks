@@ -14,6 +14,7 @@ import type { DesignRound } from "@/lib/domain/design-round";
 import { evaluate, type ExerciseTags } from "@/lib/domain/evaluate";
 import type {
   AiAssessment,
+  AiRun,
   Attempt,
   AttemptContext,
   Citations,
@@ -248,6 +249,19 @@ export function saveRound(round: DesignRound) {
 
 export function deleteRound(roundId: string) {
   commit(transitions.deleteRound(current(), roundId));
+}
+
+export function recordAiRun(run: AiRun) {
+  commit(transitions.recordAiRun(current(), run));
+}
+
+export function deleteAiRun(runId: string) {
+  commit(transitions.deleteAiRun(current(), runId));
+}
+
+/** A saved AI run, read outside React (an AI run in progress, a page loading its latest report). */
+export function readAiRuns(): readonly AiRun[] {
+  return current().aiRuns;
 }
 
 export function exportState(): string {

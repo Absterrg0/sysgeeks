@@ -6,7 +6,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
   title: "Terms of use",
-  description: `The terms for using ${SITE_NAME}: free practice, optional AI features, credit packs, and what is not promised.`,
+  description: `The terms for using ${SITE_NAME}: free practice, optional AI features on your own API key, and what is not promised.`,
   path: "/legal/terms",
   noindex: true,
 });
@@ -26,7 +26,8 @@ export default function TermsPage() {
         }}
       />
       <PageHeader title="Terms of use">
-        What you agree to when you use {SITE_NAME}: the free practice, the optional AI features and the credit packs.
+        What you agree to when you use {SITE_NAME}: the free practice, and the optional AI features that run on your
+        own API key.
         <br />
         <mark className="bg-highlight px-1">TODO(owner): draft for review by counsel before launch.</mark>
       </PageHeader>
@@ -35,31 +36,27 @@ export default function TermsPage() {
         <div className="prose max-w-[66ch]">
           <p>
             {SITE_NAME} is operated by <mark className="bg-highlight px-1">TODO(owner): legal entity name</mark>. The
-            practice content is free. Signed-in users can also use AI features and buy credit packs. Support is at{" "}
+            service is free, needs no account, and sells nothing. Support is at{" "}
             <mark className="bg-highlight px-1">TODO(owner): support email</mark>.
           </p>
         </div>
       </Section>
 
-      <Section id="accounts" title="Accounts">
+      <Section id="key" title="AI on your own API key">
         <div className="prose max-w-[66ch]">
           <p>
-            You sign in through Clerk. You are responsible for keeping your sign-in secure. Welcome credits are granted
-            once, after you verify your email address.
+            AI features are optional. To use them you add an API key from a provider you choose. Your browser calls that
+            provider directly, so your use of it is between you and the provider: its terms and prices apply, and it
+            bills you. {SITE_NAME} does not charge for AI, does not receive your key, and cannot refund what your
+            provider charges. You are responsible for keeping your key safe and for any spending limits on it.
           </p>
         </div>
       </Section>
 
-      <Section id="credits" title="Credits and payments">
+      <Section id="payments" title="Payments">
         <div className="prose max-w-[66ch]">
           <p>
-            Credits are bought in one-time packs and never expire. Prices are in US dollars. Payments are taken by Dodo
-            Payments, which acts as merchant of record and handles sales tax. There are no subscriptions and no automatic
-            charges. Refunds follow the{" "}
-            <Link href="/legal/refunds" className="link">
-              refunds policy
-            </Link>
-            .
+            {SITE_NAME} takes no payments: there are no plans, credits or subscriptions, so there is nothing to refund.
           </p>
         </div>
       </Section>
@@ -81,9 +78,7 @@ export default function TermsPage() {
       <Section id="content" title="Your content and ours">
         <div className="prose max-w-[66ch]">
           <p>
-            You keep ownership of the answers, projects and repository files you give us. You allow us to process them to
-            run the feature you asked for and to store its output under your account. Repository file contents are not
-            stored after the run.
+            You keep ownership of your answers, projects and AI outputs. They are stored in your browser, not by us.
           </p>
           <p>
             Lessons, investigations and concepts are our own writing. Company writeups belong to their authors, and we
@@ -96,8 +91,8 @@ export default function TermsPage() {
       <Section id="use" title="Acceptable use">
         <div className="prose max-w-[66ch]">
           <p>
-            Do not run automated scripts against the AI features, try to get around daily limits, share an account to
-            pool credits, or upload content you have no right to share.
+            Do not send content you have no right to share to an AI provider through {SITE_NAME}, or use the site to
+            break your provider&rsquo;s terms.
           </p>
         </div>
       </Section>

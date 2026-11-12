@@ -8,14 +8,17 @@
  * bundle does not carry a validator: a first visit has nothing to validate.
  */
 import {
+  AI_RUN_FEATURES,
   ATTEMPT_CONTEXTS,
   LEARNER_STATE_VERSION,
+  MAX_AI_RUNS,
   MAX_PROJECT_CONTEXT,
   MAX_TAILORED_QUESTIONS,
   PROJECT_QUESTION_ID_RE,
   RUBRIC_MARKS,
   SIGNALS,
   type AiAssessment,
+  type AiRun,
   type Attempt,
   type Citations,
   type Evidence,
@@ -37,6 +40,7 @@ export function createLearnerState(learnerId: string, now: string): LearnerState
     projects: [],
     interviews: [],
     rounds: [],
+    aiRuns: [],
   };
 }
 
@@ -86,6 +90,7 @@ export function deleteProject(state: LearnerState, projectId: string): LearnerSt
     attempts: state.attempts.filter(
       (a) => !(a.exercise.kind === "project-question" && a.exercise.projectId === projectId),
     ),
+    aiRuns: state.aiRuns.filter((run) => run.projectId !== projectId),
     interviews: state.interviews.map((s) => ({
       ...s,
       items: s.items.filter(
@@ -138,6 +143,16 @@ export function saveRound(state: LearnerState, round: DesignRound): LearnerState
 
 export function deleteRound(state: LearnerState, roundId: string): LearnerState {
   return { ...state, rounds: state.rounds.filter((r) => r.id !== roundId) };
+}
+
+/** Keeps a finished AI run's output. Past MAX_AI_RUNS, the oldest runs are dropped. */
+export function recordAiRun(state: LearnerState, run: AiRun): LearnerState {
+  const runs = [...state.aiRuns.filter((r) => r.id !== run.id), run];
+  return { ...state, aiRuns: runs.slice(-MAX_AI_RUNS) };
+}
+
+export function deleteAiRun(state: LearnerState, runId: string): LearnerState {
+  return { ...state, aiRuns: state.aiRuns.filter((r) => r.id !== runId) };
 }
 
 // ---------------------------------------------------------------------------
@@ -529,6 +544,26 @@ function roundCheck(value: unknown, path: string): Check {
   return null;
 }
 
+function aiRunCheck(value: unknown, path: string): Check {
+  if (!isRecord(value)) return `${path} must be an object.`;
+  const text =
+    textCheck(value.id, `${path}.id`, { max: 100 }) ??
+    textCheck(value.provider, `${path}.provider`, { max: 40 }) ??
+    textCheck(value.model, `${path}.model`, { max: 200 });
+  if (text) return text;
+  if (!oneOf(value.feature, AI_RUN_FEATURES)) return `${path}.feature is not an AI feature.`;
+  if (!isDateTime(value.createdAt)) return `${path}.createdAt must be a date.`;
+  for (const key of ["title", "projectId", "modelHash"] as const) {
+    if (value[key] !== undefined) {
+      const error = textCheck(value[key], `${path}.${key}`, { max: 300 });
+      if (error) return error;
+    }
+  }
+  if (value.inputSummary !== undefined && !isRecord(value.inputSummary)) return `${path}.inputSummary must be an object.`;
+  if (!isRecord(value.output)) return `${path}.output must be an object.`;
+  return null;
+}
+
 /**
  * Evidence gained `competencyIds` after the first states were written, so a
  * missing list is filled in rather than treated as corruption.
@@ -537,6 +572,7 @@ function normalize(state: LearnerState): LearnerState {
   return {
     ...state,
     rounds: state.rounds ?? [],
+    aiRuns: state.aiRuns ?? [],
     attempts: state.attempts.map((attempt) =>
       attempt.evidence && attempt.evidence.competencyIds === undefined
         ? { ...attempt, evidence: { ...attempt.evidence, competencyIds: [] } }
@@ -561,6 +597,10 @@ function readLearnerState(json: unknown): ParseResult {
   if (json.rounds !== undefined) {
     const rounds = listCheck(json.rounds, "rounds", roundCheck);
     if (rounds) return { ok: false, error: rounds };
+  }
+  if (json.aiRuns !== undefined) {
+    const runs = listCheck(json.aiRuns, "aiRuns", aiRunCheck);
+    if (runs) return { ok: false, error: runs };
   }
   return { ok: true, state: normalize(json as unknown as LearnerState) };
 }
