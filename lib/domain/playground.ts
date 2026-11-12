@@ -56,8 +56,15 @@ export type Tuning = {
   hitRate: number;
   /** Requests per second a rate limiter lets through. */
   limit: number;
-  /** Instances killed by the person playing. */
+  /**
+   * Instances killed by the person playing. For a database, primaries: with a read replica one is promoted
+   * in its place, without one that shard's data is unreachable.
+   */
   down: number;
+  /** Every node of it is down, replicas included. Absent means false. */
+  outage?: boolean;
+  /** Each request takes this many times longer than normal (a slow disk, a degraded provider). Absent means 1. */
+  slow?: number;
 };
 
 export type PlayModel = { components: PlayComponent[]; flows: PlayFlow[]; tuning: Record<string, Tuning> };
@@ -263,12 +270,15 @@ export function removePart(model: PlayModel, id: string): PlayModel {
 export function tune(model: PlayModel, id: string, patch: Partial<Tuning>): PlayModel {
   const current = model.tuning[id];
   if (!current) return model;
-  const next = { ...current, ...patch };
+  const next: Tuning = { ...current, ...patch };
   next.instances = Math.max(1, Math.round(next.instances));
   next.replicas = Math.max(0, Math.round(next.replicas));
   next.down = Math.min(Math.max(0, Math.round(next.down)), next.instances);
   next.hitRate = Math.min(0.99, Math.max(0, next.hitRate));
   next.limit = Math.max(1, Math.round(next.limit));
+  if (!next.outage) delete next.outage;
+  if (next.slow === undefined || !(next.slow > 1)) delete next.slow;
+  else next.slow = Math.min(100, next.slow);
   return { ...model, tuning: { ...model.tuning, [id]: next } };
 }
 
@@ -292,6 +302,11 @@ export type ComponentResult = {
   absorbed: number;
   /** Requests per second turned away by a rate limiter. */
   rejected: number;
+  /**
+   * Share of the requests reaching it that fail because the node holding their data is dead: a database shard
+   * with no replica to take over.
+   */
+  lost: number;
 };
 
 export type OperationResult = {
@@ -369,8 +384,13 @@ function findWay(
 export function simulate(model: PlayModel, workload: Workload, traffic: number): Simulation {
   const byId = new Map(model.components.map((c) => [c.id, c]));
   const tuningOf = (id: string) => model.tuning[id] ?? defaultTuning(byId.get(id)?.role ?? "service");
+  const slowOf = (id: string) => Math.max(1, tuningOf(id).slow ?? 1);
+  const databaseOf = (id: string) => databaseState(tuningOf(id));
+  /** Instances still working; for a database, shards that can still be reached. */
   const aliveOf = (id: string) => {
     const t = tuningOf(id);
+    if (t.outage) return 0;
+    if (byId.get(id)?.role === "database") return databaseOf(id).shards;
     return Math.max(0, t.instances - t.down);
   };
   // A dead cache is still in the way, but every read falls through it to what it fronts.
@@ -399,6 +419,16 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
 
   const absorbs = (c: PlayComponent, op: Operation) =>
     aliveOf(c.id) > 0 && ((c.role === "cdn" && op.cacheable) || (c.role === "cache" && op.kind === "read"));
+  /**
+   * What share of the reads arriving at a cache it answers. Hit rate is what a cache would answer on its own;
+   * behind another cache it only sees that cache's misses, and the popular keys it would have held were
+   * already answered upstream, so it answers only what lies beyond the first one's reach.
+   */
+  const shareAnswered = (c: PlayComponent, op: Operation, covered: number) => {
+    if (!absorbs(c, op)) return 0;
+    const h = tuningOf(c.id).hitRate;
+    return covered >= 1 ? 0 : Math.max(0, (h - covered) / (1 - covered));
+  };
 
   // Rate limiters shed in proportion across everything that reaches them, so total what they are offered first.
   const offeredAt = new Map<string, number>();
@@ -406,15 +436,20 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
     op: Operation,
     route: string[],
     limiterShare: (id: string) => number,
-    visit: (id: string, load: number, index: number) => void,
+    visit: (id: string, load: number, index: number, answered: number) => void,
   ) => {
     let load = op.rps * traffic;
+    let covered = 0;
     route.forEach((id, index) => {
       const c = byId.get(id);
       if (!c) return;
       if (c.role === "limiter") load *= limiterShare(id);
-      visit(id, load, index);
-      if (absorbs(c, op)) load *= 1 - tuningOf(id).hitRate;
+      const answered = shareAnswered(c, op, covered);
+      visit(id, load, index, answered);
+      if (absorbs(c, op)) {
+        load *= 1 - answered;
+        covered = Math.max(covered, tuningOf(id).hitRate);
+      }
     });
   };
   for (const { op, route } of routes) {
@@ -447,12 +482,13 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
       spof: false,
       absorbed: 0,
       rejected: 0,
+      lost: c.role === "database" ? databaseOf(c.id).lost : 0,
     };
   }
   for (const { op, route } of routes) {
     const write = op.kind === "write";
     let previous: string | undefined;
-    walk(op, route, limiterShare, (id, load, index) => {
+    walk(op, route, limiterShare, (id, load, index, answered) => {
       const r = results[id];
       const c = byId.get(id);
       if (!r || !c) return;
@@ -465,10 +501,12 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
       if (index === 0 || c.role === "client") return;
       if (write) r.writes += load;
       else r.reads += load;
-      const cost = op.work?.[id] ?? 1 / capacityOf(c, workload, write);
+      // A slow part spends longer on each request; a provider's quota is the same however slowly it answers.
+      const slowdown = ROLES[c.role].managed ? 1 : slowOf(id);
+      const cost = (op.work?.[id] ?? 1 / capacityOf(c, workload, write)) * slowdown;
       const busy = write ? writeBusy : readBusy;
       busy.set(id, (busy.get(id) ?? 0) + load * cost);
-      if (absorbs(c, op)) r.absorbed += load * tuningOf(id).hitRate;
+      r.absorbed += load * answered;
     });
   }
   for (const [id, offered] of offeredAt) {
@@ -484,10 +522,16 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
     if (ROLES[c.role].managed) {
       utilization = ((readBusy.get(c.id) ?? 0) + (writeBusy.get(c.id) ?? 0)) / Math.max(1, t.instances);
     } else if (c.role === "database") {
-      const primaries = Math.max(0, t.instances - t.down);
-      const readers = primaries * (1 + t.replicas);
+      // Every shard holds its own share of the data, so each carries 1/instances of the load whether or not
+      // the others are up; replicas share a shard's reads, and a promoted replica takes its primary's writes.
+      const db = databaseOf(c.id);
       utilization =
-        primaries === 0 ? 0 : Math.max((readBusy.get(c.id) ?? 0) / readers, (writeBusy.get(c.id) ?? 0) / primaries);
+        db.shards === 0
+          ? 0
+          : Math.max(
+              (readBusy.get(c.id) ?? 0) / (t.replicas > 0 ? db.readNodes : t.instances),
+              (writeBusy.get(c.id) ?? 0) / t.instances,
+            );
     } else {
       utilization = r.alive === 0 ? 0 : ((readBusy.get(c.id) ?? 0) + (writeBusy.get(c.id) ?? 0)) / r.alive;
     }
@@ -530,6 +574,7 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
     let availability = 1;
     let served = 1;
     let backlogShare = 0;
+    let covered = 0;
     let handoff: number | undefined;
     route.forEach((id, index) => {
       const c = byId.get(id) as PlayComponent;
@@ -541,18 +586,26 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
       const keepUp = r.utilization > 1 ? 1 / r.utilization : 1;
       if (waited) {
         const queueing = 1 / (1 - Math.min(r.utilization, 0.9));
-        latencyMs += reaching * latencyOf(c, workload, write) * queueing;
+        latencyMs += reaching * latencyOf(c, workload, write) * slowOf(id) * queueing;
         const spec = ROLES[c.role];
         const perInstance = spec.availability;
-        const up = spec.managed ? perInstance : 1 - (1 - perInstance) ** Math.max(r.alive, 0);
+        // Copies only help availability when another can take over a request. Shards cannot: each holds
+        // different data. A shard's replicas can, by being promoted.
+        const copies = c.role === "database" ? 1 + t.replicas : Math.max(r.alive, 0);
+        const up = spec.managed ? perInstance : 1 - (1 - perInstance) ** copies;
         // A cache that fails sends its reads on to what it fronts rather than failing them.
         if (c.role !== "cache") availability *= up;
-        if (!spec.managed && r.alive === 1 && c.role !== "cache") r.spof = true;
-        served *= keepUp;
+        if (!spec.managed && c.role !== "cache" && (c.role === "database" ? t.replicas === 0 : r.alive === 1)) {
+          r.spof = true;
+        }
+        served *= keepUp * (1 - r.lost);
       } else {
-        backlogShare = Math.max(backlogShare, 1 - keepUp);
+        backlogShare = Math.max(backlogShare, 1 - keepUp * (1 - r.lost));
       }
-      if (absorbs(c, op)) reaching *= 1 - t.hitRate;
+      if (absorbs(c, op)) {
+        reaching *= 1 - shareAnswered(c, op, covered);
+        covered = Math.max(covered, t.hitRate);
+      }
       if (c.role === "queue" && waited) {
         waited = false;
         handoff = index;
@@ -576,12 +629,35 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
 
   const instances = model.components.reduce((sum, c) => {
     if (ROLES[c.role].managed) return sum;
-    const t = tuningOf(c.id);
-    const alive = Math.max(0, t.instances - t.down);
-    return sum + (c.role === "database" ? alive * (1 + t.replicas) : alive);
+    if (c.role === "database") return sum + databaseOf(c.id).nodes;
+    return sum + aliveOf(c.id);
   }, 0);
 
   return { components: results, operations, flows, instances };
+}
+
+/**
+ * A database as primaries (one per shard) and read replicas. A dead primary with a replica is replaced by
+ * promoting it; without one, the data on that shard cannot be read or written until it comes back.
+ */
+export function databaseState(t: Tuning): {
+  /** Shards that can still serve their data. */
+  shards: number;
+  /** Nodes that can serve reads. */
+  readNodes: number;
+  /** Nodes running. */
+  nodes: number;
+  /** Share of requests whose data is on a shard that is gone. */
+  lost: number;
+} {
+  if (t.outage) return { shards: 0, readNodes: 0, nodes: 0, lost: 1 };
+  const down = Math.min(t.down, t.instances);
+  if (t.replicas > 0) {
+    const nodes = t.instances * (1 + t.replicas) - down;
+    return { shards: t.instances, readNodes: nodes, nodes, lost: 0 };
+  }
+  const shards = t.instances - down;
+  return { shards, readNodes: shards, nodes: shards, lost: shards === 0 ? 1 : down / t.instances };
 }
 
 /** Traffic levels to play at, as multiples of the average. */

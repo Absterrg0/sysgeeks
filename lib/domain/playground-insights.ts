@@ -5,6 +5,12 @@
  */
 import { ROLES, simulate, tune, type PlayModel, type Simulation, type Workload } from "./playground";
 
+/** Share of the reads reaching a cache that it answers itself, which is less than its hit rate behind another cache. */
+export function answeredShare(sim: Simulation, id: string): number {
+  const r = sim.components[id];
+  return r && r.reads > 0 ? r.absorbed / r.reads : 0;
+}
+
 export type InsightTone = "gain" | "cost" | "risk" | "info";
 
 export type Insight = {
@@ -72,11 +78,17 @@ export function playInsights(input: {
     const ids = [part.id, onward];
     switch (part.role) {
       case "cache": {
+        const answered = answeredShare(sim, part.id);
+        const behind = (t?.hitRate ?? 0) - answered > 0.005;
         changes.push({
           id: `${part.id}-gain`,
           tone: "gain",
           title: `${target} gets ${formatRate(load(sim, onward))} instead of ${formatRate(load(referenceSim, onward))}`,
-          detail: `The cache answers ${percent(t?.hitRate ?? 0)} of reads, so ${target} runs at ${percent(util(sim, onward))} instead of ${percent(util(referenceSim, onward))}.`,
+          detail: `The cache answers ${percent(answered)} of the reads that reach it, so ${target} runs at ${percent(util(sim, onward))} instead of ${percent(util(referenceSim, onward))}.${
+            behind
+              ? ` That is less than its ${percent(t?.hitRate ?? 0)} hit rate: another cache in front already answers the popular keys, so this one only sees the long tail.`
+              : ""
+          }`,
           conceptIds: ["caching"],
           componentIds: ids,
         });
@@ -218,7 +230,7 @@ export function playInsights(input: {
           id: `${c.id}-replicas`,
           tone: "cost",
           title: `${c.label}'s replicas lag behind its primary`,
-          detail: `${t.replicas} read replica${t.replicas === 1 ? "" : "s"} per primary take reads off it (${percent(util(sim, c.id))} busy, was ${percent(util(referenceSim, c.id))}), but a read just after a write can miss it. Send reads that must see their own writes to the primary.`,
+          detail: `${t.replicas} read replica${t.replicas === 1 ? "" : "s"} per primary take reads off it (${percent(util(sim, c.id))} busy, was ${percent(util(referenceSim, c.id))}) and can be promoted if a primary dies, but a read just after a write can miss it. Send reads that must see their own writes to the primary.`,
           conceptIds: ["replication"],
           componentIds: [c.id],
         });
@@ -228,7 +240,7 @@ export function playInsights(input: {
           id: `${c.id}-shards`,
           tone: "cost",
           title: `${c.label} is split into ${t.instances} shards`,
-          detail: `Each primary takes a share of the writes (${percent(util(sim, c.id))} busy, was ${percent(util(referenceSim, c.id))}). Queries that span shards have to ask all of them, and moving data between shards later is hard, so the shard key matters.`,
+          detail: `Each primary takes a share of the writes (${percent(util(sim, c.id))} busy, was ${percent(util(referenceSim, c.id))}). Shards add room, not availability: each still holds the only copy of its data unless it has a replica. Queries that span shards have to ask all of them, and moving data between shards later is hard, so the shard key matters.`,
           conceptIds: ["partitioning", "consistent-hashing"],
           componentIds: [c.id],
         });
@@ -303,6 +315,25 @@ export function playInsights(input: {
         conceptIds: ["replication"],
         componentIds: [c.id],
       });
+    } else if (c.role === "database" && r.lost > 0) {
+      const hit = ops.filter((o) => !o.background).map((o) => o.label);
+      now.push({
+        id: `${c.id}-lost`,
+        tone: "risk",
+        title: `${c.label} lost ${t.down} of ${t.instances} shards: ${percent(r.lost)} of its requests fail`,
+        detail: `${hit.length > 0 ? `${list(hit)} fail` : "Work fails"} whenever it needs data on a dead shard; the other shards cannot answer for it. A replica per shard could have been promoted.`,
+        conceptIds: ["replication", "partitioning"],
+        componentIds: [c.id],
+      });
+    } else if (c.role === "database" && t.down > 0) {
+      now.push({
+        id: `${c.id}-survived`,
+        tone: "gain",
+        title: `${c.label} lost ${t.down === 1 ? "a primary" : `${t.down} primaries`} and a replica took over`,
+        detail: `Reads and writes keep working, with ${percent(r.utilization)} in use. A real failover takes seconds to a minute, and writes the old primary had not yet replicated can be lost unless replication was synchronous.`,
+        conceptIds: ["replication"],
+        componentIds: [c.id],
+      });
     } else if (t.down > 0) {
       now.push({
         id: `${c.id}-survived`,
@@ -310,6 +341,18 @@ export function playInsights(input: {
         title: `${c.label} lost ${t.down} of ${t.instances} instances and kept serving`,
         detail: `The rest run at ${percent(r.utilization)}.`,
         conceptIds: ["replication"],
+        componentIds: [c.id],
+      });
+    }
+    if ((t.slow ?? 1) > 1 && r.status !== "down") {
+      now.push({
+        id: `${c.id}-slow`,
+        tone: "risk",
+        title: `${c.label} answers ${t.slow}× slower than normal`,
+        detail: ROLES[c.role].managed
+          ? "Everyone who waits on it waits longer, and anything holding a connection or a thread while it waits holds it longer too."
+          : `Each request holds an instance ${t.slow}× longer, so the same instances handle ${t.slow}× fewer requests a second: it runs at ${percent(r.utilization)}.`,
+        conceptIds: ["timeouts", "backpressure"],
         componentIds: [c.id],
       });
     }
@@ -333,11 +376,18 @@ export function playInsights(input: {
     if (r.spof && r.status !== "down") {
       const waited = ops.filter((o) => !o.background).map((o) => o.label);
       if (waited.length > 0) {
+        const shards = c.role === "database" && t.instances > 1;
         now.push({
           id: `${c.id}-spof`,
           tone: "risk",
-          title: `${c.label} is a single point of failure`,
-          detail: `${list(waited)} stop if its one instance does. Kill it to see.`,
+          title: shards
+            ? `Each of ${c.label}'s ${t.instances} shards is a single point of failure`
+            : `${c.label} is a single point of failure`,
+          detail: shards
+            ? `No shard has a replica, so losing one fails about ${percent(1 / t.instances)} of ${list(waited)}: its data lives nowhere else. Kill one to see.`
+            : `${list(waited)} stop if its one ${c.role === "database" ? "primary" : "instance"} does${
+                c.role === "database" ? ", with no replica to promote" : ""
+              }. Kill it to see.`,
           conceptIds: ["replication"],
           componentIds: [c.id],
         });

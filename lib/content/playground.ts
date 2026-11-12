@@ -454,7 +454,8 @@ export const PLAYGROUNDS: Record<string, Workload> = {
       api: { instances: 6 },
       gateway: { instances: 30 },
       "message-service": { instances: 6 },
-      store: { instances: 3 },
+      // Cassandra kept three copies of every message (replication factor 3): two can stand in for the third.
+      store: { instances: 3, replicas: 2 },
     },
   },
 };
