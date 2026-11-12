@@ -149,6 +149,7 @@ export function SystemBar({ investigation, path }: { investigation: StageBarInve
 /** Your own system's views, in the order you use them. */
 export const PROJECT_VIEWS = [
   { id: "design", label: "Design" },
+  { id: "play", label: "Play" },
   { id: "interview", label: "Interview" },
   { id: "ask-ai", label: "Ask AI" },
 ] as const;
