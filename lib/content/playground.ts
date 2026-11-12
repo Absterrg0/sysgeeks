@@ -261,6 +261,77 @@ export const PLAYGROUNDS: Record<string, Workload> = {
     },
   },
 
+  "ride-dispatch": {
+    peak: 5,
+    note: "2,000 ride requests a minute on average with 5× peaks, and 60,000 drivers pinging every 3 seconds at peak (20,000 a second). Offers per ride, route lookups per match and the time a match holds a worker are assumed.",
+    operations: [
+      { id: "requests", label: "Ride requests", rps: 33.3, kind: "write", path: ["rider", "api", "trip-store"] },
+      {
+        id: "pings",
+        label: "Location pings",
+        // 20,000 a second at the 5× peak, when the brief's 60,000 drivers are online; fewer drivers are
+        // online at average demand, so the average is a fifth of that.
+        rps: 4_000,
+        kind: "write",
+        path: ["driver", "locations"],
+        assumed: true,
+      },
+      {
+        id: "replies",
+        label: "Driver replies",
+        rps: 50,
+        kind: "write",
+        path: ["driver", "api", "trip-store"],
+        assumed: true,
+      },
+      {
+        id: "match",
+        label: "Driver searches",
+        rps: 33.3,
+        kind: "read",
+        background: true,
+        path: ["trip-store", "outbox", "matcher", "geo", "locations"],
+        // A match holds a dispatch worker while it waits for route ETAs on its candidates.
+        work: { matcher: 0.3 },
+        assumed: true,
+      },
+      {
+        id: "eta",
+        label: "Route ETA lookups",
+        rps: 667,
+        kind: "read",
+        background: true,
+        path: ["matcher", "routing"],
+        assumed: true,
+      },
+      {
+        id: "offers",
+        label: "Offers reserved",
+        rps: 50,
+        kind: "write",
+        background: true,
+        path: ["matcher", "trip-store"],
+        assumed: true,
+      },
+      {
+        id: "push",
+        label: "Offer and trip pushes",
+        rps: 50,
+        kind: "write",
+        background: true,
+        path: ["matcher", "notify", "rider"],
+        assumed: true,
+      },
+    ],
+    tuning: {
+      "trip-store": { replicas: 1 },
+      matcher: { instances: 64 },
+      locations: { instances: 3 },
+      geo: { instances: 2 },
+      notify: { instances: 2 },
+    },
+  },
+
   "notification-system": {
     peak: 10,
     note: "2 million events a day become about 8 million notifications, with work-hour peaks near 10×; the email provider takes 500 a second.",

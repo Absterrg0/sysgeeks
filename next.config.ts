@@ -31,8 +31,6 @@ const nextConfig: NextConfig = {
       { source: "/account/:path*", destination: "/review#standing", permanent: true },
       { source: "/sign-in/:path*", destination: "/ai", permanent: true },
       { source: "/sign-up/:path*", destination: "/ai", permanent: true },
-      // An old Bing-discovered URL for a ride-dispatch playground that no longer exists.
-      { source: "/investigations/ride-dispatch/playground", destination: "/investigations/ride-dispatch", permanent: true },
     ];
   },
   async headers() {
