@@ -187,3 +187,12 @@ describe("describeGoal", () => {
     ).toBe("If CDN edge restarts empty: App reads failing");
   });
 });
+
+describe("goal targets", () => {
+  it("format shares without a trailing .0", () => {
+    const s = SCENARIOS.find((x) => x.id === "edge-purge") as Scenario;
+    const targets = check(s, []).goals.map((g) => g.target);
+    expect(targets).toContain("≤ 1%");
+    expect(targets).toContain("≤ 0.1%");
+  });
+});
