@@ -6,6 +6,7 @@
  *
  * Pure and client-safe: the page runs it on every edit.
  */
+import { percentileOf, type Branch, type Stage } from "./tail-latency";
 import type { ComponentKind, FlowKind } from "./taxonomy";
 
 /** How a part behaves under load, which is more specific than how it is drawn. */
@@ -85,7 +86,17 @@ export type Operation = {
   work?: Record<string, number>;
   /** Our number, not the brief's. */
   assumed?: boolean;
+  /**
+   * Kilobytes each request carries. A part spends at least the time its network link takes to move them, so
+   * large payloads can make a part network-bound before it runs out of anything else.
+   */
+  payloadKB?: number;
+  /** A share of the requests that reach the end of the route cross between regions, adding a fixed round trip. */
+  remote?: { share: number; ms: number };
 };
+
+/** What one instance's network link moves: 10 Gbit/s, in kilobytes a second. */
+export const LINK_KB_PER_SECOND = 1_250_000;
 
 export type Workload = {
   /** Peak traffic as a multiple of the average. */
@@ -325,6 +336,10 @@ export type OperationResult = {
   backlog: number;
   /** Expected time a caller waits, in milliseconds. */
   latencyMs: number;
+  /** The time 99 in 100 callers finish within, in milliseconds (see `tail-latency.ts` for the assumptions). */
+  p99Ms: number;
+  /** A part the caller waits on gets more than it can handle, so its queue grows and the wait has no limit. */
+  saturated: boolean;
   availability: number;
   background: boolean;
   /** Index in the route where the caller stops waiting (a queue), if any. */
@@ -408,6 +423,10 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
   const routes = workload.operations.map((op) => {
     const missing = op.path.find((id) => !byId.has(id) || !passable(id));
     if (missing) return { op, route: [] as string[], blockedBy: missing };
+    // A dead cache passes reads on to what it fronts. When an operation ends at the cache, it fronts nothing:
+    // the cache is where that data lives, so with it gone there is nowhere to go.
+    const end = op.path.at(-1) as string;
+    if (byId.get(end)?.role === "cache" && aliveOf(end) === 0) return { op, route: [] as string[], blockedBy: end };
     let route = [op.path[0] as string];
     for (let i = 1; i < op.path.length; i++) {
       const way = findWay(op.path[i - 1] as string, op.path[i] as string, adjacent, byId);
@@ -503,7 +522,10 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
       else r.reads += load;
       // A slow part spends longer on each request; a provider's quota is the same however slowly it answers.
       const slowdown = ROLES[c.role].managed ? 1 : slowOf(id);
-      const cost = (op.work?.[id] ?? 1 / capacityOf(c, workload, write)) * slowdown;
+      const perRequest = op.work?.[id] ?? 1 / capacityOf(c, workload, write);
+      // Moving the payload takes the link at least this long, whatever else the part does.
+      const onTheWire = ROLES[c.role].managed ? 0 : (op.payloadKB ?? 0) / LINK_KB_PER_SECOND;
+      const cost = Math.max(perRequest, onTheWire) * slowdown;
       const busy = write ? writeBusy : readBusy;
       busy.set(id, (busy.get(id) ?? 0) + load * cost);
       r.absorbed += load * answered;
@@ -564,6 +586,8 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
         failed: background ? 0 : offered,
         backlog: background ? offered : 0,
         latencyMs: 0,
+        p99Ms: 0,
+        saturated: false,
         availability: 0,
         background,
       };
@@ -576,6 +600,10 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
     let backlogShare = 0;
     let covered = 0;
     let handoff: number | undefined;
+    let saturated = false;
+    // The trips a request can take: one per place a cache or CDN can answer it, plus the full route.
+    const branches: Branch[] = [];
+    const stages: Stage[] = [];
     route.forEach((id, index) => {
       const c = byId.get(id) as PlayComponent;
       const r = results[id] as ComponentResult;
@@ -586,7 +614,10 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
       const keepUp = r.utilization > 1 ? 1 / r.utilization : 1;
       if (waited) {
         const queueing = 1 / (1 - Math.min(r.utilization, 0.9));
-        latencyMs += reaching * latencyOf(c, workload, write) * slowOf(id) * queueing;
+        const meanMs = latencyOf(c, workload, write) * slowOf(id) * (ROLES[c.role].managed ? 1 : queueing);
+        latencyMs += reaching * meanMs;
+        stages.push({ meanMs });
+        if (!ROLES[c.role].managed && r.utilization >= 1 && reaching > 0) saturated = true;
         const spec = ROLES[c.role];
         const perInstance = spec.availability;
         // Copies only help availability when another can take over a request. Shards cannot: each holds
@@ -603,7 +634,9 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
         backlogShare = Math.max(backlogShare, 1 - keepUp * (1 - r.lost));
       }
       if (absorbs(c, op)) {
-        reaching *= 1 - shareAnswered(c, op, covered);
+        const answered = shareAnswered(c, op, covered);
+        if (waited) branches.push({ weight: reaching * answered, stages: [...stages] });
+        reaching *= 1 - answered;
         covered = Math.max(covered, t.hitRate);
       }
       if (c.role === "queue" && waited) {
@@ -611,6 +644,15 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
         handoff = index;
       }
     });
+    // Requests that reach the end of the route; some may cross to another region and back.
+    const remote = op.remote && op.remote.share > 0 && op.remote.ms > 0 ? op.remote : undefined;
+    if (remote) {
+      branches.push({ weight: reaching * (1 - remote.share), stages: [...stages] });
+      branches.push({ weight: reaching * remote.share, stages: [...stages, { fixedMs: remote.ms }] });
+      latencyMs += reaching * remote.share * remote.ms;
+    } else {
+      branches.push({ weight: reaching, stages: [...stages] });
+    }
     return {
       id: op.id,
       label: op.label,
@@ -621,6 +663,8 @@ export function simulate(model: PlayModel, workload: Workload, traffic: number):
       failed: background ? 0 : offered * (1 - served),
       backlog: offered * (background ? Math.max(backlogShare, 1 - served) : backlogShare),
       latencyMs: background ? 0 : latencyMs,
+      p99Ms: background ? 0 : percentileOf(branches),
+      saturated: !background && saturated,
       availability,
       background,
       handoff,

@@ -136,4 +136,110 @@ describe("simulate", () => {
     const back = removePart(insertInFront(model, "db", "cache"), "cache");
     expect(simulate(back, workload, 1).operations.every((o) => o.reachable)).toBe(true);
   });
+
+  it("cuts off an operation that ends at a dead cache, since that cache is where its data lives", () => {
+    const { model, workload } = play("ride-dispatch");
+    const op = (m: typeof model, id: string) => simulate(m, workload, 1).operations.find((o) => o.id === id);
+    expect(op(model, "pings")?.reachable).toBe(true);
+    const gone = tune(model, "locations", { down: 3 });
+    expect(op(gone, "pings")?.blockedBy).toBe("locations");
+    expect(op(gone, "match")?.backlog).toBeGreaterThan(0);
+    // One node of three down: the others carry its share.
+    expect(op(tune(model, "locations", { down: 1 }), "pings")?.failed).toBe(0);
+  });
+
+  it("still lets reads fall through a dead cache to what it fronts", () => {
+    const { model, workload } = play("news-feed");
+    const cached = tune(insertInFront(model, "posts", "cache"), "cache", { down: 1 });
+    const sim = simulate(cached, workload, 1);
+    expect(sim.operations.every((o) => o.reachable)).toBe(true);
+  });
 });
+
+describe("tail latency in the simulation", () => {
+  it("reports a p99 above the mean, from the same per-part numbers", () => {
+    for (const inv of listInvestigations()) {
+      const { model, workload } = play(inv.id);
+      for (const o of simulate(model, workload, workload.peak).operations) {
+        if (o.background || !o.reachable) continue;
+        expect(o.p99Ms, `${inv.id}: ${o.id}`).toBeGreaterThan(o.latencyMs);
+        // A sum of exponentials never has a p99 above ln(100) times its mean, and with branches
+        // it can be larger only because the slow branch is rarer: bounded by the slowest branch.
+        expect(o.saturated, `${inv.id}: ${o.id}`).toBe(false);
+      }
+    }
+  });
+
+  it("gives ln(100) × the wait when one part dominates", () => {
+    const { model, workload } = play("payment-workflow");
+    const charge = simulate(tune(model, "provider", { slow: 20 }), workload, 1).operations.find((o) => o.id === "charge");
+    expect(charge).toBeDefined();
+    const ratio = (charge?.p99Ms ?? 0) / (charge?.latencyMs ?? 1);
+    expect(ratio).toBeGreaterThan(4);
+    expect(ratio).toBeLessThan(Math.log(100) + 0.01);
+  });
+
+  it("lets the tail grow faster than the mean as a part fills up", () => {
+    const { model, workload } = play("url-shortener");
+    const create = (traffic: number) => simulate(model, workload, traffic).operations.find((o) => o.id === "create");
+    const calm = create(1);
+    const busy = create(5 * 1.6);
+    expect(calm && busy).toBeTruthy();
+    const meanGrowth = (busy?.latencyMs ?? 0) - (calm?.latencyMs ?? 0);
+    const tailGrowth = (busy?.p99Ms ?? 0) - (calm?.p99Ms ?? 0);
+    expect(tailGrowth).toBeGreaterThan(2 * meanGrowth);
+  });
+
+  it("sets the p99 by the miss path once more than 1% of reads miss", () => {
+    const { model, workload } = play("news-feed");
+    // A slow store behind a cache, so a miss costs far more than a hit.
+    const cached = tune(insertInFront(model, "posts", "cache"), "posts", { slow: 20 });
+    const hydrate = (hitRate: number) =>
+      simulate(tune(cached, "cache", { hitRate }), workload, 1).operations.find((o) => o.id === "hydrate");
+    const mostly = hydrate(0.9);
+    const nearly = hydrate(0.995);
+    const tailDrop = (mostly?.p99Ms ?? 0) - (nearly?.p99Ms ?? 0);
+    const meanDrop = (mostly?.latencyMs ?? 0) - (nearly?.latencyMs ?? 0);
+    // Once misses fall under 1 in 100, the p99 is a hit's time, and it falls much further than the mean.
+    expect((nearly?.p99Ms ?? 0) / (mostly?.p99Ms ?? 1)).toBeLessThan(0.6);
+    expect(tailDrop).toBeGreaterThan(5 * meanDrop);
+  });
+
+  it("flags a wait with no limit when a part it waits on is over capacity", () => {
+    const { model, workload } = play("url-shortener");
+    const over = simulate(model, workload, 50).operations.find((o) => o.id === "create");
+    expect(over?.saturated).toBe(true);
+  });
+
+  it("does not queue at a provider: its quota is not its latency", () => {
+    const { model, workload } = play("notification-system");
+    const a = simulate(model, workload, 1).operations.find((o) => o.id === "inbox");
+    expect(a?.p99Ms).toBeGreaterThan(0);
+    const sim = simulate(model, workload, 10);
+    expect(sim.components.email?.utilization).toBeGreaterThan(0.5);
+  });
+
+  it("adds a fixed round trip to the share of requests that cross regions", () => {
+    const { model, workload } = play("url-shortener");
+    const crossing: Workload = {
+      ...workload,
+      operations: workload.operations.map((o) => (o.id === "create" ? { ...o, remote: { share: 0.5, ms: 70 } } : o)),
+    };
+    const local = simulate(model, workload, 1).operations.find((o) => o.id === "create");
+    const remote = simulate(model, crossing, 1).operations.find((o) => o.id === "create");
+    expect((remote?.latencyMs ?? 0) - (local?.latencyMs ?? 0)).toBeCloseTo(35, 6);
+    expect(remote?.p99Ms ?? 0).toBeGreaterThan((local?.p99Ms ?? 0) + 50);
+  });
+
+  it("makes a part network-bound when each request carries a large payload", () => {
+    const { model, workload } = play("url-shortener");
+    const heavy: Workload = {
+      ...workload,
+      operations: workload.operations.map((o) => (o.id === "create" ? { ...o, payloadKB: 5_000 } : o)),
+    };
+    // 39 writes a second of 5 MB is 195 MB/s: a sixth of one 10 Gbit/s link, far more than the 39 requests cost.
+    const busy = simulate(model, heavy, 1).components.api?.utilization ?? 0;
+    expect(busy).toBeCloseTo((39 * 5_000) / 1_250_000 / 2, 2);
+  });
+});
+
