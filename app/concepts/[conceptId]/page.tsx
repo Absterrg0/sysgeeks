@@ -268,7 +268,7 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
               {claims && (
                 <Section id="check" title="Check yourself">
                   <ExerciseWorkspace
-                    spec={{ ref: claims.summary.ref, interaction: claims.interaction, tags: claims.tags }}
+                    spec={{ ref: claims.summary.ref, interaction: claims.interaction, tags: claims.tags, title: claims.summary.title }}
                     slots={buildSlots(claims.interaction)}
                     context="practice"
                   />
@@ -279,7 +279,7 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
           {explain && (
             <Section id="explain" title="Explain it in your own words">
               <ExerciseWorkspace
-                spec={{ ref: explain.summary.ref, interaction: explain.interaction, tags: explain.tags }}
+                spec={{ ref: explain.summary.ref, interaction: explain.interaction, tags: explain.tags, title: explain.summary.title }}
                 slots={buildSlots(explain.interaction)}
                 context="practice"
               />

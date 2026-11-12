@@ -21,9 +21,16 @@ const nextConfig: NextConfig = {
       })),
       // Practice, progress and the mock interview were merged into Review.
       { source: "/understanding", destination: "/review", permanent: true },
-      { source: "/pricing", destination: "/#pricing", permanent: true },
       { source: "/practice", destination: "/review#claims", permanent: true },
       { source: "/interview", destination: "/review#session", permanent: true },
+      // Accounts, credits and checkout were retired: everything is free, and AI runs on the learner's own key.
+      // /ai explains what replaced them; learner data and AI run history live on Review.
+      { source: "/pricing", destination: "/ai", permanent: true },
+      { source: "/legal/refunds", destination: "/legal/terms", permanent: true },
+      { source: "/account/billing/:path*", destination: "/ai", permanent: true },
+      { source: "/account/:path*", destination: "/review#standing", permanent: true },
+      { source: "/sign-in/:path*", destination: "/ai", permanent: true },
+      { source: "/sign-up/:path*", destination: "/ai", permanent: true },
       // An old Bing-discovered URL for a ride-dispatch playground that no longer exists.
       { source: "/investigations/ride-dispatch/playground", destination: "/investigations/ride-dispatch", permanent: true },
     ];

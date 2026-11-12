@@ -1,25 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { SignInGate } from "@/components/account/sign-in-gate";
 import { AiBlock, AiLabel, StreamStatus } from "@/components/ai";
+import { AiKeyGate, AiModelTag } from "@/components/ai-key/ai-key-gate";
 import { AiError } from "@/components/ai-run/ai-error";
 import { InlineText } from "@/components/prose-core";
 import { Segmented } from "@/components/ui";
 import { AiFailure } from "@/lib/ai/errors";
 import type { GradeResponseKind } from "@/lib/ai/requests";
-import { type Account, useAccount } from "@/lib/client/account";
 import { gradeAnswer } from "@/lib/client/ai";
+import type { GradeSubject } from "@/lib/ai/prompts/grade";
 import type { RubricPoint } from "@/lib/domain/content";
-import {
-  type AiAssessment,
-  type Attempt,
-  type Project,
-  type Response,
-  type SelfAssessment,
-  type TailoredQuestion,
-  exerciseKey,
-} from "@/lib/domain/learner";
+import type { AiAssessment, Attempt, Response, SelfAssessment } from "@/lib/domain/learner";
 import { assessAttempt, attachAiAssessment } from "@/lib/store/learner-store";
 import {
   MARK_CLASS,
@@ -33,15 +25,6 @@ import {
 import type { ExerciseSpec } from "./types";
 
 type Mode = "self" | "ai";
-type SignedIn = Extract<Account, { signedIn: true }>;
-type GradeBody = {
-  exerciseKey: string;
-  responseKind: GradeResponseKind;
-  text: string;
-  project?: Project;
-  tailored?: Pick<TailoredQuestion, "id" | "runId">;
-};
-type GradeResult = { ok: true; assessment: AiAssessment };
 
 const MODES: { value: Mode; label: string }[] = [
   { value: "self", label: "Assess it yourself" },
@@ -50,7 +33,7 @@ const MODES: { value: Mode; label: string }[] = [
 
 /**
  * "Assess your writing" under an answer. Self-assessment is always there and is
- * the default. When AI features are on, the learner can ask AI instead; the AI's
+ * the default. With their own API key, the learner can ask AI instead; the AI's
  * marks are kept on the attempt either way, so disagreements can be shown.
  */
 export function WritingAssessment({
@@ -64,7 +47,6 @@ export function WritingAssessment({
   rubric: readonly RubricPoint[];
   written: Written;
 }) {
-  const { data, refresh } = useAccount();
   const [mode, setMode] = useState<Mode>(attempt.aiAssessment ? "ai" : "self");
   const [revising, setRevising] = useState(false);
   const name = `assess-${attempt.id}`;
@@ -109,8 +91,7 @@ export function WritingAssessment({
   }
 
   const kind = gradeKind(attempt.response);
-  if (!data?.features.ai || kind === null) return self;
-  const account = data.signedIn ? data : null;
+  if (kind === null) return self;
 
   return (
     <div className="space-y-5">
@@ -138,16 +119,9 @@ export function WritingAssessment({
               onMyself={() => setMode("self")}
             />
           ) : (
-            <SignInGate>
-              {account && (
-                <AiRequest
-                  account={account}
-                  attemptId={attempt.id}
-                  body={gradeBody(spec, kind, written.text)}
-                  onAssessed={refresh}
-                />
-              )}
-            </SignInGate>
+            <AiKeyGate>
+              <AiRequest attemptId={attempt.id} subject={subjectOf(spec)} kind={kind} text={written.text} />
+            </AiKeyGate>
           )}
         </div>
       )}
@@ -261,56 +235,52 @@ function AiResult({
   );
 }
 
-/** Asks for the assessment. Grading is free but counted against the daily cap. */
+/** Asks for the assessment, on the learner's own key. */
 function AiRequest({
-  account,
   attemptId,
-  body,
-  onAssessed,
+  subject,
+  kind,
+  text,
 }: {
-  account: SignedIn;
   attemptId: string;
-  body: GradeBody;
-  onAssessed: () => void;
+  subject: GradeSubject;
+  kind: GradeResponseKind;
+  text: string;
 }) {
-  const [pending, setPending] = useState(false);
+  const [pending, setPending] = useState<AbortController | null>(null);
   const [failure, setFailure] = useState<AiFailure | null>(null);
-  const { used, limit } = account.quotas.grade;
-  const left = Math.max(0, limit - used);
-  const cost = account.costs.grade === 0 ? "Free" : `${account.costs.grade} credits`;
 
   async function ask() {
-    setPending(true);
+    const controller = new AbortController();
+    setPending(controller);
     setFailure(null);
     try {
-      const result = await gradeAnswer<GradeResult>(body);
-      attachAiAssessment(attemptId, result.assessment);
-      onAssessed();
+      attachAiAssessment(attemptId, await gradeAnswer(subject, kind, text, controller.signal));
     } catch (error) {
       setFailure(error instanceof AiFailure ? error : new AiFailure("ai_unavailable"));
     } finally {
-      setPending(false);
+      setPending(null);
     }
   }
 
-  if (pending) return <StreamStatus message="Assessing your answer against the rubric…" />;
+  if (pending) {
+    return <StreamStatus message="Assessing your answer against the rubric…" onStop={() => pending.abort()} />;
+  }
 
   return (
     <div className="space-y-3">
       <div className="panel flex flex-wrap items-center justify-between gap-3 p-4">
-        <p className="text-ui text-ink-2 max-w-[60ch]">
-          The AI marks each rubric point, quotes the passage that shows it, and says what is missing.
-        </p>
-        <div className="flex flex-wrap items-center gap-2.5">
-          <span className="chip-flat">
-            {cost} · {left} of {limit} left today
-          </span>
-          <button type="button" className="btn btn-primary btn-sm" disabled={left === 0} onClick={ask}>
-            Ask AI to assess
-          </button>
+        <div className="grid gap-1">
+          <p className="text-ui text-ink-2 max-w-[60ch]">
+            The AI marks each rubric point, quotes the passage that shows it, and says what is missing.
+          </p>
+          <AiModelTag />
         </div>
+        <button type="button" className="btn btn-primary btn-sm" onClick={ask}>
+          Ask AI to assess
+        </button>
       </div>
-      {failure && <AiError code={failure.code} refunded={failure.refunded} onRetry={ask} />}
+      {failure && <AiError code={failure.code} detail={failure.detail} onRetry={ask} />}
     </div>
   );
 }
@@ -328,13 +298,15 @@ function gradeKind(response: Response): GradeResponseKind | null {
   }
 }
 
-/** Project questions send the project; tailored ones name their stored question, whose text the server reads itself. */
-function gradeBody(spec: ExerciseSpec, responseKind: GradeResponseKind, text: string): GradeBody {
-  const { ref, project } = spec;
-  const body: GradeBody = { exerciseKey: exerciseKey(ref), responseKind, text };
-  if (ref.kind !== "project-question") return body;
-  const tailored = project?.tailoredQuestions?.find((question) => `ai.${question.id}` === ref.questionId);
-  return { ...body, project, tailored: tailored && { id: tailored.id, runId: tailored.runId } };
+/** The exercise as the grader needs it. Pages pass the title; the prompt's first line stands in when one doesn't. */
+function subjectOf(spec: ExerciseSpec): GradeSubject {
+  const prompt = "prompt" in spec.interaction ? spec.interaction.prompt : "";
+  return {
+    ref: spec.ref,
+    interaction: spec.interaction,
+    title: spec.title ?? (prompt.split("\n")[0]?.slice(0, 120) || "Written answer"),
+    context: spec.context,
+  };
 }
 
 /** Rubric points where your mark and the AI's differ. A point counts only when both sides marked it. */

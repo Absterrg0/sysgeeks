@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 import { StreamStatus } from "@/components/ai";
-import { CostTag, PaywallDialog, PaywallPrompt } from "@/components/billing-ui";
 import { Toaster, useToast } from "@/components/feedback";
-
-const noop = () => undefined;
 
 export function ToastDemo() {
   const { toast } = useToast();
@@ -57,46 +54,5 @@ export function StreamDemo() {
       elapsed="0:12"
       onStop={() => setStopped(true)}
     />
-  );
-}
-
-export function PaywallDemo() {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-2">
-        <PaywallPrompt
-          feature="Architecture review"
-          cost={2}
-          balance={12}
-          onUse={noop}
-          onDismiss={noop}
-        >
-          Checks the design against your stated constraints and lists the trade-offs it found.
-        </PaywallPrompt>
-        <PaywallPrompt
-          feature="Architecture review"
-          cost={2}
-          balance={1}
-          onUse={noop}
-          onDismiss={noop}
-        >
-          Checks the design against your stated constraints and lists the trade-offs it found.
-        </PaywallPrompt>
-      </div>
-      <button type="button" className="btn btn-accent" onClick={() => setOpen(true)}>
-        Review architecture <CostTag credits={2} />
-      </button>
-      <PaywallDialog
-        open={open}
-        feature="Architecture review"
-        cost={2}
-        balance={0}
-        onUse={noop}
-        onDismiss={() => setOpen(false)}
-      >
-        Checks the design against your stated constraints and lists the trade-offs it found.
-      </PaywallDialog>
-    </div>
   );
 }

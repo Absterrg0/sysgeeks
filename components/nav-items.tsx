@@ -12,22 +12,14 @@ export const ABOUT: NavItem[] = [
     icon: null,
     description: "How the system design interview works",
   },
-  { href: "/ai", label: "AI use", icon: null, description: "What AI does here and what is sent" },
+  { href: "/ai", label: "AI use", icon: null, description: "Bring your own key: what AI does here and what is sent" },
 ];
 
 /** Footer-only legal pages. */
 export const LEGAL: NavItem[] = [
   { href: "/legal/privacy", label: "Privacy", icon: null, description: "What is stored and who processes it" },
   { href: "/legal/terms", label: "Terms", icon: null, description: "The terms of use" },
-  { href: "/legal/refunds", label: "Refunds", icon: null, description: "When credits and purchases are refunded" },
 ];
-
-export const PRICING: NavItem = {
-  href: "/#pricing",
-  label: "Pricing",
-  icon: null,
-  description: "Credits and what they buy",
-};
 
 export const EXAMPLES: NavItem = {
   href: "/projects/examples",

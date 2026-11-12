@@ -22,6 +22,9 @@ export const ATTEMPT_CONTEXTS = ["investigation", "practice", "interview"] as co
 export const LEARNER_STATE_VERSION = 1;
 export const MAX_PROJECT_CONTEXT = 4_000;
 export const MAX_TAILORED_QUESTIONS = 24;
+/** AI runs kept in this browser. The oldest is dropped first, so a long history can't fill localStorage. */
+export const MAX_AI_RUNS = 30;
+export const AI_RUN_FEATURES = ["intake", "review", "questions"] as const;
 
 /**
  * Project question ids are `<template>` for whole-system questions or
@@ -226,6 +229,32 @@ export type InterviewSession = {
 };
 
 // ---------------------------------------------------------------------------
+// AI runs
+// ---------------------------------------------------------------------------
+
+export type AiRunFeature = (typeof AI_RUN_FEATURES)[number];
+
+/**
+ * One AI run's output, kept in this browser so it can be reopened: a draft, a review or a question set.
+ * Assessments of written answers are kept on their attempt instead.
+ */
+export type AiRun = {
+  id: string;
+  feature: AiRunFeature;
+  createdAt: string;
+  /** The provider and model id that ran it, e.g. "anthropic" and "claude-sonnet-4-5". */
+  provider: string;
+  model: string;
+  title?: string;
+  projectId?: string;
+  /** The project model the run read, hashed, so a stale review can be told apart. */
+  modelHash?: string;
+  /** What a draft read, without its text: the method, and the repository for a GitHub draft. */
+  inputSummary?: { method?: string; url?: string };
+  output: unknown;
+};
+
+// ---------------------------------------------------------------------------
 // Root
 // ---------------------------------------------------------------------------
 
@@ -238,4 +267,6 @@ export type LearnerState = {
   interviews: InterviewSession[];
   /** Blank-page design rounds. Added after the first states were written; filled in as empty when missing. */
   rounds: DesignRound[];
+  /** AI runs, oldest first. Added after the first states were written; filled in as empty when missing. */
+  aiRuns: AiRun[];
 };

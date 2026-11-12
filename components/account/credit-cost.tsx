@@ -1,12 +1,9 @@
-import { CostTag } from "@/components/billing-ui";
+"use client";
 
-/** "2 credits · you have 7". Pass `balance` only once it is known. */
-export function CreditCost({ credits, balance }: { credits: number; balance?: number }) {
-  if (credits === 0) return <span className="text-small text-ink-3">Free</span>;
-  return (
-    <span className="inline-flex flex-wrap items-center gap-x-1.5 text-small text-ink-2">
-      <CostTag credits={credits} />
-      {balance !== undefined && <span className="text-ink-3">· you have {balance}</span>}
-    </span>
-  );
-}
+import { AiModelTag } from "@/components/ai-key/ai-key-gate";
+
+/**
+ * @deprecated There are no credits: AI runs on the learner's own key. Shows the model the run will use instead.
+ * Kept only so components/playground/playground-ai.tsx compiles unchanged; use `AiModelTag`, then delete this file.
+ */
+export const CreditCost: (props: { credits: number; balance?: number }) => React.JSX.Element = () => <AiModelTag />;

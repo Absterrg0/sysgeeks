@@ -66,7 +66,7 @@ An environment for developing engineering judgment. Interview preparation is the
 
 The core unit is an **Investigation**: a real system worked through from requirements. The learner decides, explains why, sees the engineering reasoning, breaks the system, changes its constraints, and defends what is left. Concepts (idempotency, leases, replication, …) exist to support investigations and link back to every stage that uses them.
 
-Assessment comes in three kinds, and the progress view says which one each result rests on. **Checked** results are compared with an authored key: choices, verdicts and orderings. **Self-assessed** results are marked by you against specific rubric points. **AI-assessed** results are graded by a model against the same rubric points, for signed-in users only, and each one cites the passage of the answer it relied on. The model check on a project is deterministic and never uses AI. Every AI output is labelled; `/ai` says what is sent and which models run.
+Assessment comes in three kinds, and the progress view says which one each result rests on. **Checked** results are compared with an authored key: choices, verdicts and orderings. **Self-assessed** results are marked by you against specific rubric points. **AI-assessed** results are graded by a model against the same rubric points, on the learner's own API key, and each one cites the passage of the answer it relied on. The model check on a project is deterministic and never uses AI. Every AI output is labelled; `/ai` says what is sent, where, and which models you can pick.
 
 ## Running it
 
@@ -93,23 +93,26 @@ pnpm cf:deploy    # build and deploy to Cloudflare (needs `wrangler login`)
 - **Every public page is prerendered and never revalidates.** The build output is the whole cache: OpenNext reads it from Workers static assets (`static-assets-incremental-cache`), so there is no R2, KV or ISR read quota for traffic or bots to use up. Adding `revalidate`, `"use cache"` with a lifetime, or on-demand revalidation needs a writable cache (R2) first; see the OpenNext caching docs.
 - **Files in `public/` are served before Next.js runs**, so `next.config.ts` headers don't apply to them. Repeat any such header in `public/_headers`.
 - **Keep pages light.** Don't turn on `experimental.inlineCss`: it copied the 110 kB stylesheet into every page and RSC payload three times, which is what used up Vercel's ISR reads in November 2026.
-- **Build-time values** (`SITE_URL`, the public PostHog key) are in `.env.production`. Runtime secrets go in with `wrangler secret put NAME`. Off Vercel, AI needs `AI_GATEWAY_API_KEY` because there is no OIDC token.
+- **Build-time values** (`SITE_URL`, the public PostHog key) are in `.env.production`. There are no runtime secrets: the Worker serves pages and does no AI, auth, database or payment work.
 - **Bots:** `app/robots.ts` turns away compliant SEO scrapers and training crawlers. The rest are stopped at Cloudflare's edge (Bot Fight Mode, AI Crawl Control and a rate-limit rule), before they can invoke the Worker.
 
-## Setup: accounts, AI and billing
+## AI: bring your own key
 
-Practice content needs nothing beyond `pnpm install`. Accounts, AI features and purchases need the variables in `.env.example`. Copy it to `.env.local` and fill in the groups you use. `pnpm build` passes with none of them set.
+Everything is free and needs no account. AI features (assessing a written answer, drafting a project from a description, README or public repository, reviewing an architecture, writing tailored questions, and the playground's "Ask AI what your design does") are optional and run **in the learner's browser on their own API key**. SysGeeks resells nothing and has no AI secrets.
 
-- **Site:** `SITE_URL`.
-- **AI Gateway:** `AI_GATEWAY_API_KEY` (required on Cloudflare; only on Vercel can OIDC stand in for it); `AI_ENABLED` (`0` switches all AI off); `AI_MODEL_STRONG`, `AI_MODEL_STRONG_FALLBACK`, `AI_MODEL_FAST` and `AI_MODEL_FAST_FALLBACK` (gateway model ids); `AI_ZERO_DATA_RETENTION` (`1` routes only to zero-data-retention providers); `AI_DAILY_BUDGET_USD` (the daily estimated spend that pauses free AI).
-- **GitHub:** `GITHUB_TOKEN`, a fine-grained read-only token for public repositories. It is optional; without it GitHub allows 60 requests an hour per IP.
-- **Clerk:** `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_SIGN_IN_URL` and `NEXT_PUBLIC_CLERK_SIGN_UP_URL`.
-- **Database:** `DATABASE_URL` (Neon Postgres, through the Vercel Marketplace). Once it is set, run `pnpm db:migrate`, and again after pulling new migrations. The migration script needs Node 22 or newer (it uses the built-in WebSocket).
-- **Dodo Payments:** `DODO_PAYMENTS_API_KEY`, `DODO_PAYMENTS_WEBHOOK_KEY`, `DODO_PAYMENTS_ENVIRONMENT` (`test_mode` to start with), and the pack product ids `DODO_PRODUCT_PACK_STARTER`, `DODO_PRODUCT_PACK_STANDARD` and `DODO_PRODUCT_PACK_PLUS`. Create the products in the Dodo dashboard, once in test mode and once live.
+- **Providers:** Anthropic, OpenAI, Google Gemini and OpenRouter, through the AI SDK (`ai` v7 and `@ai-sdk/*`, `@openrouter/ai-sdk-provider`). All four accept browser (CORS) calls; Anthropic needs the `anthropic-dangerous-direct-browser-access` header, and Gemini rejects any request header it doesn't know. The model list and key links are in `lib/ai/providers.ts`; check them against each provider's model page when updating.
+- **The key** is stored by `lib/store/ai-key-store.ts` in localStorage ("this browser") or sessionStorage ("this tab only"), never in the learner state, so a progress export never contains it. The header's key button opens the settings (provider, key, model, test, remove); every AI action shows "Add your API key to use this" until one is saved.
+- **Runs** live in `lib/client/ai-runners.ts`, loaded on demand through `lib/client/ai.ts` so pages that only offer AI stay light. Prompts are in `lib/ai/prompts/`, the output schemas in `lib/ai/schemas.ts`; every answer is validated and normalized as before, and an answer that fails the schema is asked for once more. GitHub is read from the browser too (`lib/ai/github.ts`, unauthenticated, 60 API requests an hour per IP).
+- **Results** (drafts, reviews, question sets) are saved as `aiRuns` in the learner store, newest 30 kept, included in export and import, and listed on Review under Your data. Assessments stay on their attempt.
+- **The concept catalog** the review and question prompts cite is prerendered at `/ai/concepts.json`, so the content library stays out of the client bundle.
+
+## Setup
+
+Nothing beyond `pnpm install`. `.env.example` lists the optional build-time values (site URL, PostHog, search verification). `pnpm build` passes with none of them set.
 
 ## Architecture in one page
 
-- **Next.js 16 App Router, React 19, Tailwind 4, Zod 4.** Content pages are statically generated (`generateStaticParams`, `dynamicParams = false`). Only `/interview/session` and `/projects/[id]` render on demand.
+- **Next.js 16 App Router, React 19, Tailwind 4, Zod 4.** Content pages are statically generated (`generateStaticParams`, `dynamicParams = false`). Only `/interview/session`, `/projects/[id]` and `/reports/[runId]` render on demand; the last two render a shell and read their data from the browser.
 - **Curated content is TypeScript data** in `lib/content/`, validated by the Zod schemas in `lib/domain/content.ts` when the library loads (a malformed document fails the build). `lib/content/integrity.ts` checks the reference graph (concept ids, competencies, components, flows, prose `[[links]]`), and `lib/content/content.test.ts` runs it over the real library.
 - **Learner state lives in `localStorage`** behind one module, `lib/store/learner-store.ts`, exposed through `useSyncExternalStore`. It is validated on read (`lib/domain/learner.ts`), unreadable data is copied to a quarantine key rather than discarded, and users can export and import JSON. State transitions are pure functions in `lib/domain/learner-state.ts`, so a server-backed store could reuse them.
 - **Server renders prose, client runs exercises.** Authored markdown is rendered on the server (`components/prose.tsx`) and passed to client components as ready-made nodes (`components/exercise/slots.tsx`), so the content library never ships in client bundles.
@@ -120,7 +123,9 @@ components/exercise/      the exercise engine: workspace, interactions, rubric s
 components/system-map.tsx SVG architecture maps (curated grid or auto-layout)
 lib/domain/               pure domain logic: schemas, evaluation, understanding, interviews, project questions
 lib/content/              investigations, concepts, integrity checks, exercise resolution
-lib/store/                browser persistence
+lib/ai/                   AI prompts, schemas, providers and the GitHub reader (browser-side)
+lib/client/               AI runs on the learner's key, loaded on demand
+lib/store/                browser persistence: learner state, lesson progress, the AI key
 ```
 
 ## Domain model

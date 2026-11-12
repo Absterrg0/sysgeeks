@@ -1,50 +1,36 @@
-import { AI_ERROR_MESSAGES, AiFailure, type AiErrorCode } from "@/lib/ai/errors";
-import { type AiEvent, readNdjson } from "@/lib/ai/events";
+/**
+ * AI features, run in the learner's browser with their own key. A thin front: the AI SDK, the prompts and the
+ * provider packages load only when a run starts, so pages that merely offer AI stay light.
+ */
+import type { AiEvent } from "@/lib/ai/events";
+import type { GradeSubject } from "@/lib/ai/prompts/grade";
+import type { GradeResponseKind } from "@/lib/ai/requests";
+import type { AiAssessment, AiRunFeature } from "@/lib/domain/learner";
 
-const JSON_HEADERS = { "Content-Type": "application/json" };
+export type { ReviewOutput } from "./ai-runners";
 
 /**
- * POSTs to an NDJSON AI route. `onEvent` sees every event as it arrives.
+ * Runs an AI feature with the learner's key. `onEvent` sees progress as it happens and the result at the end.
  * Resolves with the result data, or rejects with an AiFailure carrying the error code.
+ * `/api/ai/<feature>` is accepted for callers written when these were server routes.
  */
 export async function runAi<T = unknown>(
-  path: string,
+  feature: AiRunFeature | `/api/ai/${AiRunFeature}`,
   body: unknown,
-  onEvent: (event: AiEvent) => void = () => {},
+  onEvent?: (event: AiEvent) => void,
+  signal?: AbortSignal,
 ): Promise<T> {
-  const res = await fetch(path, { method: "POST", headers: JSON_HEADERS, body: JSON.stringify(body) }).catch(() => {
-    throw new AiFailure("ai_unavailable");
-  });
-
-  const events: AiEvent[] = [];
-  try {
-    await readNdjson(res, (event) => {
-      events.push(event);
-      onEvent(event);
-    });
-  } catch {
-    throw new AiFailure("ai_unavailable");
-  }
-
-  const end = events.filter((event) => event.type !== "progress").at(-1);
-  if (end?.type === "result") return end.data as T;
-  if (end?.type === "error") throw new AiFailure(end.code, { refunded: end.refunded });
-  throw new AiFailure("ai_unavailable");
+  const { runAiNow } = await import("./ai-runners");
+  return runAiNow<T>(feature, body, onEvent, signal);
 }
 
-/** Grading returns plain JSON, not a stream, and costs no credits. */
-export async function gradeAnswer<T = unknown>(body: unknown): Promise<T> {
-  const res = await fetch("/api/ai/grade", { method: "POST", headers: JSON_HEADERS, body: JSON.stringify(body) }).catch(
-    () => {
-      throw new AiFailure("ai_unavailable");
-    },
-  );
-  const json: unknown = await res.json().catch(() => null);
-  if (!res.ok) throw new AiFailure(errorCode(json));
-  return json as T;
-}
-
-function errorCode(json: unknown): AiErrorCode {
-  const code = typeof json === "object" && json !== null && "code" in json ? json.code : undefined;
-  return typeof code === "string" && Object.hasOwn(AI_ERROR_MESSAGES, code) ? (code as AiErrorCode) : "ai_unavailable";
+/** Marks a written answer against its rubric with the learner's key. */
+export async function gradeAnswer(
+  subject: GradeSubject,
+  responseKind: GradeResponseKind,
+  text: string,
+  signal?: AbortSignal,
+): Promise<AiAssessment> {
+  const { gradeAnswerNow } = await import("./ai-runners");
+  return gradeAnswerNow(subject, responseKind, text, signal);
 }

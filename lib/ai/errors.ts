@@ -1,10 +1,13 @@
-/** Client-safe: no zod, no server imports. */
+/** Client-safe: no zod, no provider imports. */
 export const AI_ERROR_MESSAGES = {
-  auth_required: "Sign in to use this feature.",
+  key_missing: "Add your API key to use this.",
+  key_invalid: "Your provider rejected the API key.",
+  key_forbidden: "Your API key isn't allowed to use this model.",
+  model_not_found: "Your provider doesn't offer that model to this key.",
+  provider_limited: "Your provider refused the request: rate limit or quota reached.",
+  provider_unavailable: "Your provider is overloaded or down right now.",
+  network: "Couldn't reach your provider from this browser.",
   ai_unavailable: "AI features are unavailable right now.",
-  insufficient_credits: "You don't have enough credits for this run.",
-  rate_limited: "You've reached today's limit for this feature. Try again tomorrow.",
-  budget_exhausted: "Free AI runs are paused for today. Try again tomorrow.",
   input_invalid: "That input isn't valid.",
   input_too_large: "That input is too large.",
   repo_not_found: "We couldn't find that public GitHub repository.",
@@ -14,33 +17,25 @@ export const AI_ERROR_MESSAGES = {
   model_failed: "The AI model failed to respond. Try again.",
   invalid_output: "The AI returned an answer we couldn't use. Try again.",
   timeout: "The request took too long. Try again.",
-  too_many_running: "You already have two AI runs in progress. Wait for one to finish.",
+  aborted: "Stopped.",
 } as const;
-
-/** Sent to the user when a run's credits could not be returned right away. */
-export const REFUND_PENDING_MESSAGE = "Your credits will be returned automatically within 10 minutes.";
 
 export type AiErrorCode = keyof typeof AI_ERROR_MESSAGES;
 
-/** Model usage spent before a failure, so the run can still be charged. Carries no content. */
-export interface AiUsage {
-  model: string;
-  inputTokens: number;
-  outputTokens: number;
-  /** USD. The metered runner estimates it from the tokens when absent. */
-  costUsd?: number;
-}
-
 export class AiFailure extends Error {
   readonly code: AiErrorCode;
-  readonly refunded: boolean;
-  readonly usage?: AiUsage;
+  /** What the provider said, when it said something useful, e.g. "invalid x-api-key". */
+  readonly detail?: string;
+  /**
+   * @deprecated Always false: runs are paid by the learner's own provider account, so nothing is refunded.
+   * Kept so callers written for credits still type-check.
+   */
+  readonly refunded = false;
 
-  constructor(code: AiErrorCode, options: { refunded?: boolean; usage?: AiUsage } = {}) {
+  constructor(code: AiErrorCode, options: { detail?: string } = {}) {
     super(AI_ERROR_MESSAGES[code]);
     this.name = "AiFailure";
     this.code = code;
-    this.refunded = options.refunded ?? false;
-    this.usage = options.usage;
+    this.detail = options.detail;
   }
 }

@@ -54,7 +54,7 @@ export function DesktopNav() {
   );
 }
 
-/** Your own work, on the right of the bar on wide screens, before the account menu. */
+/** Your own work, on the right of the bar on wide screens. */
 export function DesktopLinks() {
   return (
     <nav aria-label="Yours" className="hidden lg:block">

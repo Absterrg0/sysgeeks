@@ -8,8 +8,11 @@ export type ExerciseSpec = {
   ref: ExerciseRef;
   interaction: Interaction;
   tags: ExerciseTags;
-  /** Project questions only: the project the question belongs to, sent to AI assessment. */
+  /** Project questions only: the project the question belongs to. */
   project?: Project;
+  /** The exercise's title and scenario as the learner saw them, for AI assessment. */
+  title?: string;
+  context?: string | null;
 };
 
 /**

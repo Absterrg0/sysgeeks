@@ -1,46 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
-import type { Features } from "@/lib/config";
+/**
+ * @deprecated Accounts and credits are gone; AI runs on the learner's own key (see lib/store/ai-key-store.ts).
+ * `data` is always null, so callers written for credits see no balance and no shortfall. Kept only so
+ * components/playground/playground-ai.tsx compiles unchanged; delete with that import.
+ */
+export type Account = { signedIn: false } | { signedIn: true; balance: number };
 
-export type AccountPack = { id: string; credits: number; priceUsd: number };
+const NO_ACCOUNT: { data: Account | null; loading: boolean; refresh: () => void } = {
+  data: null,
+  loading: false,
+  refresh: () => {},
+};
 
-export type Account =
-  | { signedIn: false; features: Features }
-  | {
-      signedIn: true;
-      features: Features;
-      balance: number;
-      hasPurchased: boolean;
-      quotas: { grade: { used: number; limit: number } };
-      costs: { intakeText: number; intakeRepo: number; review: number; questions: number; grade: number };
-      packs: readonly AccountPack[];
-    };
-
-/** The signed-in account, read from `/api/account`. A failed refresh keeps the last good data. */
 export function useAccount() {
-  const [data, setData] = useState<Account | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [round, setRound] = useState(0);
-
-  useEffect(() => {
-    let stale = false;
-    fetch("/api/account", { cache: "no-store" })
-      .then((res) => (res.ok ? (res.json() as Promise<Account>) : null))
-      .catch(() => null)
-      .then((next) => {
-        if (next && !stale) setData(next);
-      })
-      .finally(() => {
-        if (!stale) setLoading(false);
-      });
-    return () => {
-      stale = true;
-    };
-  }, [round]);
-
-  const refresh = useCallback(() => {
-    setLoading(true);
-    setRound((n) => n + 1);
-  }, []);
-
-  return { data, loading, refresh };
+  return NO_ACCOUNT;
 }

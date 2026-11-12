@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { AiBlock, AiLabel, StreamCaret } from "@/components/ai";
-import { CostTag, CreditsChip, PriceCard } from "@/components/billing-ui";
+import { AddKeyPrompt } from "@/components/ai-key/ai-key-gate";
 import { Callout, EmptyState, Skeleton } from "@/components/feedback";
 import { PageHeader } from "@/components/page-header";
 import { SectionHeading, SignalBadge } from "@/components/ui";
-import { PACKS } from "@/lib/domain/pricing";
-import { PaywallDemo, StreamDemo, ToastDemo } from "./interactive";
+import { StreamDemo, ToastDemo } from "./interactive";
 
 export const metadata: Metadata = {
   title: "Design system",
@@ -27,7 +26,6 @@ export default function DesignSystemPage() {
       <PageHeader
         eyebrow="Internal · noindex"
         title="Design system"
-        aside={<CreditsChip balance={4} allotment={40} />}
       >
         Every primitive and state of the design system. Not linked from the site.
       </PageHeader>
@@ -55,10 +53,10 @@ export default function DesignSystemPage() {
             Saving
           </button>
           <button type="button" className="btn btn-accent">
-            Draft from README <CostTag credits={1} />
+            Draft from README
           </button>
           <button type="button" className="btn btn-accent">
-            Architecture review <CostTag credits={2} />
+            Architecture review
           </button>
           <button type="button" className="btn btn-secondary">Assess an answer</button>
           <button type="button" className="knob" aria-label="Copy">
@@ -164,32 +162,10 @@ export default function DesignSystemPage() {
         <ToastDemo />
       </section>
 
-      <section aria-labelledby="billing" className="space-y-5">
-        <SectionHeading id="billing">Paywalls, credits and pricing</SectionHeading>
-        <PaywallDemo />
-        <div className="grid gap-5 md:grid-cols-3">
-          {PACKS.map((pack) => (
-            <PriceCard
-              key={pack.id}
-              plan={pack.id}
-              price={`$${pack.priceUsd}`}
-              period="one-time, USD"
-              allotment={`${pack.credits} credits`}
-              description={`$${(pack.priceUsd / pack.credits).toFixed(2)} per credit.`}
-              features={[`${pack.credits} credits, never expire`, "Spend them on any AI step at the cost shown"]}
-              featured={pack.id === "standard"}
-              band="Recommended for active prep"
-              cta={
-                <button
-                  type="button"
-                  className={`btn w-full ${pack.id === "standard" ? "btn-accent" : "btn-secondary"}`}
-                >
-                  Buy {pack.credits} credits
-                </button>
-              }
-            />
-          ))}
-        </div>
+      <section aria-labelledby="ai-key" className="space-y-5">
+        <SectionHeading id="ai-key">AI key prompt</SectionHeading>
+        <p className="text-small text-ink-3">In place of any AI action while no API key is saved.</p>
+        <AddKeyPrompt />
       </section>
     </div>
   );

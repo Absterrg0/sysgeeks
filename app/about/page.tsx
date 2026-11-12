@@ -107,13 +107,13 @@ export default function AboutPage() {
             honest as your own marks, and it says so.
           </p>
           <p>
-            Signed-in users can also have a written answer assessed by an AI model against the same points. Those
-            assessments are labelled as AI-assessed, quote the sentence they relied on, and you can mark the points
-            yourself instead. The{" "}
+            With your own API key from an AI provider, you can also have a written answer assessed by a model against
+            the same points. Those assessments are labelled as AI-assessed, quote the sentence they relied on, and you
+            can mark the points yourself instead. The{" "}
             <Link href="/ai" className="link">
               AI page
             </Link>{" "}
-            says what is sent, which models run and how long data is kept.
+            says what is sent, where it goes and which models you can use.
           </p>
           <p>
             Practice works without an account. Your answers and projects are stored in your browser, and you can export

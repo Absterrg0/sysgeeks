@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Funnel_Display, Funnel_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { Toaster } from "@/components/feedback";
@@ -11,7 +10,6 @@ import { DIFFICULTY } from "@/components/investigation/difficulty";
 import type { StageBarInvestigation } from "@/components/investigation/stage-bar";
 import { PLAYGROUNDS } from "@/lib/content/playground";
 import { listInvestigations } from "@/lib/content";
-import { publicFeatures } from "@/lib/config";
 import { themeInitScript } from "@/lib/domain/theme";
 import { jsonLd, TITLE_SUFFIX } from "@/lib/metadata";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_REPO_URL, SITE_TITLE, SITE_URL, SITE_X_HANDLE, SITE_X_URL } from "@/lib/site";
@@ -82,24 +80,6 @@ export const viewport: Viewport = {
   ],
 };
 
-// Light-mode values from design.md §8. Dark mode isn't themed yet, since Clerk's appearance is static.
-const clerkAppearance = {
-  variables: {
-    colorPrimary: "#0B0B0C",
-    colorText: "#0B0B0C",
-    colorTextSecondary: "#4A4B51",
-    colorBackground: "#FFFFFF",
-    colorInputBackground: "#FFFFFF",
-    colorInputText: "#0B0B0C",
-    colorDanger: "#B4233A",
-    colorSuccess: "#0B6A4E",
-    colorWarning: "#8F4E00",
-    borderRadius: "6px",
-    fontFamily: "var(--font-funnel-sans), ui-sans-serif, system-ui",
-  },
-  elements: { card: "shadow-none ring-1 ring-rule rounded-[14px]", formButtonPrimary: "btn btn-primary" },
-};
-
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const investigations: StageBarInvestigation[] = listInvestigations().map((inv) => ({
     id: inv.id,
@@ -114,7 +94,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     })),
   }));
 
-  const { auth } = publicFeatures();
   const page = (
     <>
       <a
@@ -125,7 +104,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </a>
       {/* The container for .bleed and the lit matrix, so full-width layers measure the window without its scrollbar. */}
       <div className="flex min-h-dvh flex-col overflow-x-clip [container-type:inline-size]">
-        <SiteHeader investigations={investigations} auth={auth} />
+        <SiteHeader investigations={investigations} />
         <StorageNotice />
         <main id="main" className="shell flex-1">
           {children}
@@ -161,7 +140,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           }),
         }}
       />
-      <SiteAnalytics auth={auth} />
+      <SiteAnalytics />
     </>
   );
 
@@ -175,7 +154,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-dvh">
-        {auth ? <ClerkProvider appearance={clerkAppearance}>{page}</ClerkProvider> : page}
+        {page}
       </body>
     </html>
   );

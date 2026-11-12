@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Review } from "../ai/schemas";
-import { normalizeReview } from "./ai-review";
+import { normalizeReview, readStoredReview } from "./ai-review";
 import type { ProjectModel } from "./project-model";
 
 const model: ProjectModel = {
@@ -109,5 +109,15 @@ describe("normalizeReview", () => {
     const id = "a".repeat(60);
     const result = normalizeReview(review({ findings: [finding({ id }), finding({ id })] }), model, known);
     expect(result.findings.map((f) => f.id)).toEqual(["a".repeat(40), `${"a".repeat(38)}-2`]);
+  });
+});
+
+describe("readStoredReview", () => {
+  it("reads back a saved review, and refuses one the report view can't render", () => {
+    const saved = review();
+    expect(readStoredReview(JSON.parse(JSON.stringify(saved)))).toEqual(saved);
+    expect(readStoredReview(null)).toBeNull();
+    expect(readStoredReview({ ...saved, findings: "none" })).toBeNull();
+    expect(readStoredReview({ ...saved, findings: [{ ...saved.findings[0], severity: "fatal" }] })).toBeNull();
   });
 });

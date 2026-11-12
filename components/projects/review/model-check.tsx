@@ -3,7 +3,7 @@ import type { ConceptResolver } from "@/components/prose-core";
 import { lintModel } from "@/lib/domain/model-lint";
 import type { ProjectModel } from "@/lib/domain/project-model";
 
-/** The free, deterministic model check. Always visible in the review tab; no AI, no credits. */
+/** The free, deterministic model check. Always visible in the review tab; no AI and no key needed. */
 export function ModelCheck({
   model,
   resolve,

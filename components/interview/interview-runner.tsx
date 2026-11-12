@@ -40,7 +40,7 @@ function resolveItem(
     title: question.title,
     source: project.name,
     href: `/projects/${project.id}#${question.id}`,
-    spec: { ref, interaction: question.interaction, tags: question.tags },
+    spec: { ref, interaction: question.interaction, tags: question.tags, title: question.title },
     slots: {
       ...EMPTY_SLOTS,
       reference: <ProseView text={question.interaction.reference} resolve={resolve} />,
