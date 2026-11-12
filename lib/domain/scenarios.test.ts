@@ -7,6 +7,7 @@ import {
   applyEdits,
   checkScenario,
   describeEdit,
+  describeGoal,
   injectFault,
   parseScenarioProgress,
   provisioned,
@@ -165,5 +166,24 @@ describe("describeEdit", () => {
       "Put a cache in front of Postgres (5 instances, 90% hit rate)",
     );
     expect(describeEdit({ remove: "db" }, labelOf)).toBe("Remove Postgres");
+  });
+});
+
+describe("describeGoal", () => {
+  const labelOf = (id: string) => ({ shards: "Shard hosts", cdn: "CDN edge" })[id] ?? id;
+  const opLabel = (id: string) => ({ reads: "App reads", writes: "App writes" })[id] ?? id;
+  const isDatabase = (id: string) => id === "shards";
+  it("names the operations and the failure the way the page shows them", () => {
+    expect(
+      describeGoal(
+        { kind: "served", ops: ["reads", "writes"], maxFailing: 0, when: { kind: "kill", componentId: "shards", count: "one" } },
+        opLabel,
+        labelOf,
+        isDatabase,
+      ),
+    ).toBe("If Shard hosts loses a primary: App reads and App writes failing");
+    expect(
+      describeGoal({ kind: "served", ops: ["reads"], maxFailing: 0, when: { kind: "cold", componentId: "cdn" } }, opLabel, labelOf, isDatabase),
+    ).toBe("If CDN edge restarts empty: App reads failing");
   });
 });

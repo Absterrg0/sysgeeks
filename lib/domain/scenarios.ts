@@ -296,7 +296,7 @@ export function describeFault(fault: Fault, labelOf: (id: string) => string, isD
   switch (fault.kind) {
     case "kill":
       if (fault.count === "all") return `${name} goes down entirely`;
-      return isDatabase(fault.componentId) ? `a ${name} primary dies` : `one ${name} instance dies`;
+      return isDatabase(fault.componentId) ? `${name} loses a primary` : `${name} loses an instance`;
     case "cold":
       return `${name} restarts empty`;
     case "slow":
@@ -319,8 +319,7 @@ export function describeGoal(
     case "served": {
       const what = `${ops(goal.ops)} failing`;
       if (!goal.when) return what;
-      const when = describeFault(goal.when, labelOf, isDatabase);
-      return `If ${when}: ${what.charAt(0).toLowerCase()}${what.slice(1)}`;
+      return `If ${describeFault(goal.when, labelOf, isDatabase)}: ${what}`;
     }
     case "wait":
       return `${opLabel(goal.op)}: time a caller waits`;
