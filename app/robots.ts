@@ -48,6 +48,31 @@ const TRAINING_AND_CORPUS_CRAWLERS = [
   "Amazonbot",
 ];
 
+// SEO-tool and data-broker crawlers fetch every URL repeatedly and send no visitors. Compliant ones
+// stop here; the rest are blocked at Cloudflare (Bot Fight Mode / AI Crawl Control), not by this file.
+const SCRAPERS = [
+  "AhrefsBot",
+  "SemrushBot",
+  "MJ12bot",
+  "DotBot",
+  "BLEXBot",
+  "DataForSeoBot",
+  "PetalBot",
+  "Bytespider",
+  "SeekportBot",
+  "serpstatbot",
+  "barkrowler",
+  "Barkrowler",
+  "ImagesiftBot",
+  "Timpibot",
+  "omgili",
+  "omgilibot",
+  "Diffbot",
+  "magpie-crawler",
+  "AwarioBot",
+  "Scrapy",
+];
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
@@ -55,6 +80,7 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: AI_CRAWLERS, allow: ["/", ...PUBLIC_EXCEPTIONS], disallow: PRIVATE },
       { userAgent: USER_REQUESTED_FETCHERS, disallow: "/" },
       { userAgent: TRAINING_AND_CORPUS_CRAWLERS, disallow: "/" },
+      { userAgent: SCRAPERS, disallow: "/" },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
