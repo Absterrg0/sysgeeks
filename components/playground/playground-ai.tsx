@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CreditCost } from "@/components/account/credit-cost";
-import { InsufficientCredits } from "@/components/account/insufficient-credits";
-import { SignInGate } from "@/components/account/sign-in-gate";
+import { AiKeyGate, AiModelTag } from "@/components/ai-key/ai-key-gate";
 import { AiError } from "@/components/ai-run/ai-error";
 import { ProgressSteps, type ProgressStep } from "@/components/ai-run/progress-steps";
 import { Callout } from "@/components/feedback";
@@ -11,16 +9,11 @@ import type { ConceptResolver } from "@/components/prose-core";
 import { loadLatestReport, type Report } from "@/components/projects/review/review-tab";
 import { ReportView } from "@/components/projects/review/report-view";
 import { AiFailure, type AiErrorCode } from "@/lib/ai/errors";
-import type { Review } from "@/lib/ai/schemas";
-import { useAccount } from "@/lib/client/account";
-import { runAi } from "@/lib/client/ai";
+import { runAi, type ReviewOutput } from "@/lib/client/ai";
 import { MAX_PROJECT_CONTEXT } from "@/lib/domain/learner";
 import { modelHash } from "@/lib/domain/model-hash";
 import { PART_INFO, type Part, type PlayModel, type Simulation, type Workload } from "@/lib/domain/playground";
 import { formatAvailability, formatLatency, formatRate, percent } from "@/lib/domain/playground-insights";
-import { creditCost } from "@/lib/domain/pricing";
-
-type ReviewOutput = { review: Review; modelHash: string; model: string };
 
 export type GroundingWriteup = { title: string; company: string; url: string; note: string };
 
@@ -144,9 +137,9 @@ export function PlaygroundAi(props: {
         explains where it holds and where it fails, citing how the engineers who built it did it. It can be wrong.
       </p>
       <div className="mt-4">
-        <SignInGate>
+        <AiKeyGate>
           <Run {...props} />
-        </SignInGate>
+        </AiKeyGate>
       </div>
     </section>
   );
@@ -163,16 +156,11 @@ function Run({
   resolve,
   onHighlight,
 }: Parameters<typeof PlaygroundAi>[0]) {
-  const account = useAccount();
-  const balance = account.data?.signedIn ? account.data.balance : null;
   const [report, setReport] = useState<Report | null>(null);
   const [steps, setSteps] = useState<ProgressStep[]>([]);
   const [running, setRunning] = useState(false);
-  const [failure, setFailure] = useState<{ code: AiErrorCode; refunded: boolean } | null>(null);
-  const [paywallHidden, setPaywallHidden] = useState(false);
+  const [failure, setFailure] = useState<{ code: AiErrorCode; detail?: string } | null>(null);
   const projectId = `playground-${investigation.id}`;
-  const cost = creditCost("review");
-  const short = balance !== null && balance < cost;
   const design = reviewModel(model);
   const stale = report !== null && report.modelHash !== modelHash(design);
   const labels = Object.fromEntries(model.components.map((c) => [c.id, c.label]));
@@ -195,7 +183,7 @@ function Run({
     const changes = describeChanges(model, reference);
     try {
       const data = await runAi<ReviewOutput>(
-        "/api/ai/review",
+        "review",
         {
           projectId,
           name: `${investigation.title} (playground)`,
@@ -222,39 +210,26 @@ function Run({
           createdAt: new Date().toISOString(),
           modelHash: data.modelHash,
           review: data.review,
-          flagged: false,
+          model: data.model,
         });
       }
     } catch (error) {
-      setFailure(
-        error instanceof AiFailure
-          ? { code: error.code, refunded: error.refunded }
-          : { code: "ai_unavailable", refunded: false },
-      );
+      setFailure(error instanceof AiFailure ? { code: error.code, detail: error.detail } : { code: "ai_unavailable" });
     } finally {
       setRunning(false);
-      account.refresh();
     }
   }
 
   return (
     <div className="grid gap-5">
       <div className="flex flex-wrap items-center gap-3">
-        <button type="button" className="btn btn-primary" disabled={running || short} onClick={run}>
+        <button type="button" className="btn btn-primary" disabled={running} onClick={run}>
           {running ? "Reading your design…" : report ? "Ask again about this design" : "Ask AI about this design"}
         </button>
-        <CreditCost credits={cost} balance={balance ?? undefined} />
+        <AiModelTag />
       </div>
-      {short && !paywallHidden && balance !== null && (
-        <InsufficientCredits
-          feature="AI read of your design"
-          cost={cost}
-          balance={balance}
-          onDismiss={() => setPaywallHidden(true)}
-        />
-      )}
       {running && <ProgressSteps steps={steps} />}
-      {failure && <AiError code={failure.code} refunded={failure.refunded} onRetry={run} />}
+      {failure && <AiError code={failure.code} detail={failure.detail} onRetry={run} />}
       {report && (
         <div className="grid gap-5">
           {stale && (
