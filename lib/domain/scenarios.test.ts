@@ -6,6 +6,7 @@ import { playModelOf, tune } from "./playground";
 import {
   applyEdits,
   checkScenario,
+  describeEdit,
   injectFault,
   parseScenarioProgress,
   provisioned,
@@ -149,5 +150,20 @@ describe("scenario progress", () => {
         "a/b": { solvedAt: 5 },
       }),
     ).toEqual({ [key]: { solvedAt: "2026-11-01T10:00:00.000Z", resolvedAt: ["2026-11-05T10:00:00.000Z"] } });
+  });
+});
+
+describe("describeEdit", () => {
+  const labels: Record<string, string> = { db: "Postgres", redirect: "Redirect service" };
+  const labelOf = (id: string) => labels[id] ?? id;
+  it("says an answer the way the playground's controls say it", () => {
+    expect(describeEdit({ tune: "redirect", set: { instances: 8 } }, labelOf)).toBe("Redirect service: 8 instances");
+    expect(describeEdit({ tune: "db", set: { instances: 12, replicas: 1 } }, labelOf, (id) => id === "db")).toBe(
+      "Postgres: 12 shards, 1 read replica per primary",
+    );
+    expect(describeEdit({ insert: "cache", before: "db", set: { hitRate: 0.9, instances: 5 } }, labelOf)).toBe(
+      "Put a cache in front of Postgres (5 instances, 90% hit rate)",
+    );
+    expect(describeEdit({ remove: "db" }, labelOf)).toBe("Remove Postgres");
   });
 });

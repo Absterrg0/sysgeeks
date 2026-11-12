@@ -3,7 +3,7 @@ import { InterviewSetup } from "@/components/interview/interview-setup";
 import type { ReactNode } from "react";
 import { Section } from "@/components/page-header";
 import { ReviewTabs } from "@/components/review/review-tabs";
-import type { ReviewSystem } from "@/components/review/review-overview";
+import type { ReviewScenario, ReviewSystem } from "@/components/review/review-overview";
 import { ClaimDrill, type DrillConcept } from "@/components/practice/claim-drill";
 import { DimensionPractice, type PracticeExercise } from "@/components/practice/dimension-practice";
 import { Prose } from "@/components/prose";
@@ -11,6 +11,7 @@ import { DataControls } from "@/components/understanding/data-controls";
 import { UnderstandingView, type InvestigationOutline } from "@/components/understanding/understanding-view";
 import { listConcepts, listInvestigations } from "@/lib/content";
 import { listExercises } from "@/lib/content/exercises";
+import { SCENARIOS } from "@/lib/content/scenarios";
 import type { InterviewCandidate } from "@/lib/domain/interview";
 import type { CuratedLabels } from "@/lib/exercise-labels";
 import { pageMetadata } from "@/lib/metadata";
@@ -70,9 +71,19 @@ export default function ReviewPage() {
     stages: inv.stages.map((st) => ({ id: st.id, title: st.title })),
   }));
 
+  const titles = new Map(listInvestigations().map((inv) => [inv.id, inv.title]));
+  const scenarios: ReviewScenario[] = SCENARIOS.map((s) => ({
+    id: s.id,
+    investigationId: s.investigationId,
+    title: s.title,
+    summary: s.summary,
+    system: titles.get(s.investigationId) ?? s.investigationId,
+  }));
+
   return (
     <ReviewTabs
       systems={systems}
+      scenarios={scenarios}
       conceptCount={concepts.length}
       exerciseCount={exercises.length}
       curated={curated}

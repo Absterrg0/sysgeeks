@@ -392,3 +392,33 @@ export function parseScenarioProgress(raw: unknown): ScenarioProgress | undefine
   }
   return out;
 }
+
+/** An edit in words, for showing an answer: "Redirect service: 8 instances". */
+export function describeEdit(
+  edit: Edit,
+  labelOf: (id: string) => string,
+  isDatabase: (id: string) => boolean = () => false,
+): string {
+  const settings = (set: Partial<Tuning> | undefined, database = false) => {
+    if (!set) return [];
+    const out: string[] = [];
+    const unit = database ? "shard" : "instance";
+    if (set.instances !== undefined)
+      out.push(`${set.instances.toLocaleString("en-US")} ${unit}${set.instances === 1 ? "" : "s"}`);
+    if (set.replicas !== undefined) out.push(`${set.replicas} read replica${set.replicas === 1 ? "" : "s"} per primary`);
+    if (set.hitRate !== undefined) out.push(`${Math.round(set.hitRate * 100)}% hit rate`);
+    if (set.limit !== undefined) out.push(`limit ${set.limit.toLocaleString("en-US")}/s`);
+    return out;
+  };
+  if ("insert" in edit) {
+    const what = { lb: "a load balancer", cdn: "a CDN", cache: "a cache", queue: "a queue", limiter: "a rate limiter" }[
+      edit.insert
+    ];
+    const set = settings(edit.set);
+    return `Put ${what} in front of ${labelOf(edit.before)}${set.length > 0 ? ` (${set.join(", ")})` : ""}`;
+  }
+  if ("tune" in edit) {
+    return `${labelOf(edit.tune)}: ${settings(edit.set, isDatabase(edit.tune)).join(", ")}`;
+  }
+  return `Remove ${labelOf(edit.remove)}`;
+}
