@@ -196,7 +196,7 @@ export const fileStorageSync = {
         { id: "replay", text: "Allows overlap and makes repeated change application idempotent." },
       ] } },
       reveal: { takeaways: ["Notifications wake devices; durable cursors let them recover missed changes.", "Paginated journals make reconnect work proportional to the change backlog.", "An expired cursor needs a snapshot-and-resume protocol, not silent truncation."], reasoning: md`A cursor is a compact promise about history: the client has durably applied every change through sequence N. Advance it only with the corresponding local state. If the journal is partitioned by namespace, clients can catch up on independent namespaces in parallel while preserving order within each one.` },
-      reveals: { components: ["devices"], flows: ["wake"] },
+      reveals: { flows: ["wake"] },
     },
     {
       id: "concurrent-edits",
@@ -221,7 +221,6 @@ export const fileStorageSync = {
         { id: "format-merge", statement: "A format-aware merge can be offered for specific file types while preserving conflict copies as a fallback.", verdict: "holds", explanation: "The application can apply known merge semantics to compatible text or structured documents, but must retain both inputs if the merge is ambiguous or invalid." },
       ] },
       reveal: { takeaways: ["Compare the base revision at commit; do not trust device arrival order.", "Preserve both edits when their semantics are unknown.", "Block boundaries do not imply safe merge boundaries."], reasoning: md`This exercise excludes live collaborative editing. That changes the right design: a file-sync service sees whole versions after offline work, while a collaborative editor needs an operation log and a merge model for concurrent edits. Do not silently borrow one system's consistency contract for the other.` },
-      reveals: { components: ["metadata", "database"], flows: ["metadata-ops", "commit"] },
     },
     {
       id: "sharing-and-revocation",
@@ -246,7 +245,6 @@ export const fileStorageSync = {
         { id: "cache-bound", text: "Bounds cached or signed grants to the stated revocation window, or validates each request." },
       ], reference: md`The download path authenticates the user, resolves current access to the file's namespace/version, then reads the requested block. If direct object-store URLs are required, expire them within the one-minute promise and prevent old grants from being refreshed without a new authorization check. A metadata cache can be used only if its invalidation or TTL obeys the same bound.` },
       reveal: { takeaways: ["A content hash is not an access-control check.", "Direct signed links remain usable until expiry; set expiry from the revocation promise.", "Metadata caches and block caches must share the security contract."], reasoning: md`Fast revocation and cheap direct downloads pull in opposite directions. State the allowed delay first. Then choose a bounded signed URL, an authorization-aware edge, or a proxy, and test behavior for cached metadata and already-issued capabilities.` },
-      reveals: { components: ["api", "metadata", "blocks"], flows: ["file-ops", "transfer"] },
     },
     {
       id: "deletes-and-reclamation",
@@ -260,6 +258,11 @@ export const fileStorageSync = {
       lesson: [
         { kind: "read", body: md`Make delete a metadata operation first: append a tombstone, remove the version from the active namespace, and preserve it for the product's retention window. A collector finds blocks unreachable from all retained manifests, but a stale mark is not permission to delete immediately. Recheck reachability and wait beyond the maximum metadata replication and in-flight upload delay.` },
         { kind: "read", body: md`At large scale, immutable blocks simplify reads and retries but move complexity into reclamation. Garbage collection identifies unreferenced content; compaction is the physical work that makes space reusable. Dropbox's public Magic Pocket posts describe this trade-off in its own storage system; the exercise uses it as an operational lesson, not as a claim that this design matches their implementation.` },
+        { kind: "choice", id: "shared-block", prompt: "Two files share block H through deduplication. The user deletes one of them. When may the collector physically delete H?", options: [
+          { id: "on-delete", label: "As soon as the delete commits, because the user asked for the data to go.", why: "The other file, and any retained version of either file, still reference H. Deleting it would corrupt a file the user did not delete." },
+          { id: "unreachable", label: "Only when no retained manifest of any file references H, confirmed by a recheck after the grace period.", correct: true, why: "Reachability is a property of all retained manifests, not of one path. The recheck covers restores and commits that landed after the first scan." },
+          { id: "ttl", label: "After a fixed 30 days, whether or not anything still references it.", why: "A timer is not a reference count. A file that is still live, or a version inside its restore window, would lose its bytes." },
+        ] },
       ],
       interaction: { kind: "claims", prompt: "The collector marked block H unreferenced yesterday. What can it safely do today?", claims: [
         { id: "delete-now", statement: "Delete H immediately because yesterday's reference scan found zero owners.", verdict: "fails", explanation: "A restore, delayed metadata replica or in-flight commit may have made H reachable after the scan. Recheck against current authoritative metadata and honor the safety delay." },
@@ -267,7 +270,7 @@ export const fileStorageSync = {
         { id: "recheck", statement: "Recheck reachability at deletion time and make the delete operation safe to retry.", verdict: "holds", explanation: "The final decision must use current metadata, and an idempotent delete handles worker retry after an uncertain response." },
       ] },
       reveal: { takeaways: ["A user-visible delete is a metadata tombstone; physical reclamation comes later.", "Count all retained manifests and shared references before deleting a block.", "Recheck reachability after the grace period; make cleanup idempotent."], reasoning: md`A clean separation of content and metadata helps this service grow, but it does not make storage free. Version retention, deduplication and garbage collection form one policy: retaining history saves user work and costs capacity; aggressive reclamation saves disks and increases the chance of deleting something users expect to restore. Measure live bytes, unreachable bytes, compaction throughput and restore success together.` },
-      reveals: { components: ["gc", "blocks"], flows: ["reclaim"] },
+      reveals: { components: ["gc"], flows: ["reclaim"] },
     },
   ],
   synthesis: {
