@@ -1,17 +1,18 @@
 import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import { SITE_URL } from "./lib/site";
 
-const LEGACY_HOSTS = ["sysgeeks.vercel.app", "interviewgeek.vercel.app"];
+// The apex and the old Vercel hosts serve the same pages as www; send them, and their ranking, to www.
+const LEGACY_HOSTS = ["sysgeeks.com", "sysgeeks.vercel.app", "interviewgeek.vercel.app"];
 
 const nextConfig: NextConfig = {
   devIndicators: false,
   poweredByHeader: false,
-  experimental: {
-    inlineCss: true,
-  },
+  // No experimental.inlineCss: it copied the whole stylesheet into every HTML page and every RSC
+  // payload (three times per page, ~330 kB), which is what exhausted Vercel's ISR read units.
+  // The stylesheet is a hashed, immutable file that browsers and the CDN cache once.
   async redirects() {
     return [
-      // The Vercel hosts serve the same pages as the domain; send them, and their ranking, to the domain.
       ...LEGACY_HOSTS.map((host) => ({
         source: "/:path*",
         has: [{ type: "host" as const, value: host }],
@@ -48,3 +49,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// Exposes Cloudflare bindings to `next dev`.
+initOpenNextCloudflareForDev();
