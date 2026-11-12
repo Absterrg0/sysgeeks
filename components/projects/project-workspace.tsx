@@ -6,6 +6,7 @@ import { type RefObject, useEffect, useRef, useState } from "react";
 import { AiGlyph } from "@/components/ai";
 import { PROJECT_VIEWS, projectViewOf } from "@/components/investigation/system-bar";
 import { ExerciseWorkspace } from "@/components/exercise/workspace";
+import type { PlaygroundWriteup } from "@/components/playground/playground";
 import { EMPTY_SLOTS } from "@/components/exercise/types";
 import { InlineText, ProseView, type ConceptResolver } from "@/components/prose-core";
 import { SystemMap } from "@/components/system-map";
@@ -25,10 +26,11 @@ import { exerciseStatus, latestEvidence, type ExerciseStatus } from "@/lib/domai
 import { deleteProject, saveProject, useLearnerState } from "@/lib/store/learner-store";
 import { ContextField } from "./context-field";
 import { ModelEditor } from "./model-editor";
+import { ProjectPlay } from "./project-play";
 import { ReviewTab } from "./review/review-tab";
 import { TailoredQuestionsPanel } from "./tailored-questions-panel";
 
-type Tab = "questions" | "model" | "review";
+type Tab = "questions" | "model" | "play" | "review";
 
 const KICKER: Record<Project["source"]["type"], string> = {
   manual: "Project · by hand",
@@ -58,9 +60,12 @@ function sourceLabel(source: Project["source"]): string {
 export function ProjectWorkspace({
   projectId,
   concepts,
+  writeups = [],
 }: {
   projectId: string;
   concepts: Record<string, { title: string; summary: string }>;
+  /** Engineering writeups the playground can point at from its insights. */
+  writeups?: PlaygroundWriteup[];
 }) {
   const state = useLearnerState();
   if (!state)
@@ -84,15 +89,17 @@ export function ProjectWorkspace({
       </div>
     );
   }
-  return <ProjectView key={project.id} project={project} concepts={concepts} />;
+  return <ProjectView key={project.id} project={project} concepts={concepts} writeups={writeups} />;
 }
 
 function ProjectView({
   project,
   concepts,
+  writeups,
 }: {
   project: Project;
   concepts: Record<string, { title: string; summary: string }>;
+  writeups: PlaygroundWriteup[];
 }) {
   const state = useLearnerState();
   const storeState = useRef(state);
@@ -102,8 +109,9 @@ function ProjectView({
   const router = useRouter();
   // The tabs live in the system bar; the #fragment says which view is open.
   const view = projectViewOf(useHash(), project.components.length > 0);
-  const tab: Tab = view === "design" ? "model" : view === "ask-ai" ? "review" : "questions";
-  const setTab = (next: Tab) => setHash(next === "model" ? "design" : next === "review" ? "ask-ai" : "interview");
+  const tab: Tab = view === "design" ? "model" : view === "play" ? "play" : view === "ask-ai" ? "review" : "questions";
+  const setTab = (next: Tab) =>
+    setHash(next === "model" ? "design" : next === "play" ? "play" : next === "review" ? "ask-ai" : "interview");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [highlight, setHighlight] = useState<string[]>([]);
   const attempts = state?.attempts ?? [];
@@ -136,7 +144,8 @@ function ProjectView({
         </div>
       </header>
 
-      {project.components.length > 0 && (
+      {/* Play draws its own, live map. */}
+      {project.components.length > 0 && tab !== "play" && (
         <section aria-label="Architecture map" className="relative section">
           <div className="matrix-lit [--matrix-bottom:-6%] [--matrix-top:-6%]" aria-hidden="true" />
           <SystemMap
@@ -171,6 +180,8 @@ function ProjectView({
                 storeState={storeState}
               />
             </div>
+          ) : tab === "play" ? (
+            <ProjectPlay project={project} concepts={concepts} writeups={writeups} onDesign={() => setTab("model")} />
           ) : tab === "model" ? (
             <div>
               <div className="mb-10 max-w-2xl">
