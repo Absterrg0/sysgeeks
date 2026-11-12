@@ -1,0 +1,10 @@
+# Cloudflare Workers static assets serve files in public/ before Next.js runs, so headers that
+# next.config.ts sets for these paths must be repeated here.
+/downloads/system-design-interview-practice-sheet.pdf
+  Link: <https://www.sysgeeks.com/system-design-interview/worksheet>; rel="canonical"
+/downloads/system-design-interview-questions-and-answers.pdf
+  Link: <https://www.sysgeeks.com/investigations>; rel="canonical"
+/downloads/system-design-interview-scorecard.pdf
+  Link: <https://www.sysgeeks.com/system-design-interview/scorecard>; rel="canonical"
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable

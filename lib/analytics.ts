@@ -1,6 +1,5 @@
 "use client";
 
-import { track as trackVercel } from "@vercel/analytics";
 import type { PostHog } from "posthog-js";
 
 const PRIVATE_PATHS = ["/account", "/reports", "/interview", "/sign-in", "/sign-up"];
@@ -143,7 +142,6 @@ function sendToPostHog(event: string, properties?: EventProperties) {
 export function track(event: string, properties?: EventProperties) {
   if (typeof window === "undefined" || !shouldTrack(window.location.href)) return;
 
-  trackVercel(event, properties);
   sendToPostHog(event, properties);
 }
 
@@ -193,7 +191,6 @@ export function trackAuthCompleted() {
 
   const event = `${intent.kind}_completed`;
   const properties = { source_path: intent.sourcePath, placement: intent.placement };
-  trackVercel(event, properties);
   sendToPostHog(event, properties);
 }
 
