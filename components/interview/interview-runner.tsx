@@ -131,12 +131,15 @@ function Live({ session, items }: { session: InterviewSession; items: (Resolved 
 
   return (
     <div>
-      <div className="sticky top-12 z-20 border-b lg:top-0 border-rule-soft bg-paper px-5 py-2.5 sm:px-10">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <ol
-            className="flex flex-wrap gap-0.5 rounded-[10px] bg-well p-[3px] shadow-[var(--shadow-well)]"
-            aria-label="Questions"
-          >
+      <div className="sticky top-[4.5rem] z-20 mt-6 sm:top-[5rem]">
+        <div className="nav-float relative flex flex-wrap items-center justify-between gap-x-4 gap-y-2 overflow-hidden px-3 py-2">
+          <p className="hidden min-w-0 pl-1 text-[0.8125rem] sm:block">
+            <span className="font-semibold tracking-[-0.01em]">Mock interview</span>
+            <span className="ml-2 text-ink-3">
+              {answered} of {session.items.length} answered
+            </span>
+          </p>
+          <ol className="flex flex-wrap gap-1" aria-label="Questions">
             {session.items.map((it, i) => (
               <li key={i}>
                 <button
@@ -144,50 +147,49 @@ function Live({ session, items }: { session: InterviewSession; items: (Resolved 
                   onClick={() => setIndex(i)}
                   aria-current={i === index ? "step" : undefined}
                   aria-label={`Question ${i + 1}${it.attemptId ? ", answered" : ""}`}
-                  className={`relative grid size-7 place-items-center rounded-[7px] font-mono text-[0.6875rem] tabular-nums transition-colors ${
+                  className={`relative grid size-8 place-items-center rounded-[8px] font-mono text-[0.75rem] tabular-nums transition-[background-color,color,box-shadow] ${
                     i === index
-                      ? "bg-raised text-ink shadow-[var(--shadow-btn)]"
+                      ? "bg-ink text-paper"
                       : it.attemptId
-                        ? "text-ink"
-                        : "text-ink-3 hover:text-ink"
+                        ? "bg-[color-mix(in_srgb,var(--ink)_7%,transparent)] text-ink"
+                        : "text-ink-3 shadow-[inset_0_0_0_1px_var(--edge)] hover:text-ink"
                   }`}
                 >
                   {i + 1}
-                  {it.attemptId && (
-                    <span className="led led-strong absolute right-0.5 top-0.5 size-1" aria-hidden="true" />
+                  {it.attemptId && i !== index && (
+                    <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-mark-strong ring-2 ring-[var(--raised)]" aria-hidden="true" />
                   )}
                 </button>
               </li>
             ))}
           </ol>
-          <p
-            className="chip-flat h-7 gap-2 px-2.5 font-mono text-[0.8125rem] tabular-nums"
-            aria-label="Elapsed time"
-          >
-            <span className={`led ${elapsed > budget ? "led-partial" : "led-strong"} size-1.5`} aria-hidden="true" />
+          <p className="flex items-center gap-2 pr-1 font-mono text-[0.875rem] tabular-nums" aria-label="Elapsed time">
+            <span className={`led ${elapsed > budget ? "led-partial" : "led-strong"} led-pulse size-1.5`} aria-hidden="true" />
             <span className="text-ink">{clock(elapsed)}</span>
             <span className="text-ink-3">/ {clock(budget)}</span>
-            {elapsed > budget && <span className="font-sans text-xs font-medium text-signal-partial">over time</span>}
+            {elapsed > budget && <span className="font-sans text-[0.75rem] font-medium text-signal-partial">over time</span>}
           </p>
+          <span
+            aria-hidden="true"
+            className={`absolute bottom-0 left-0 h-0.5 transition-[width] duration-1000 ${elapsed > budget ? "bg-mark-partial" : "bg-ink"}`}
+            style={{ width: `${Math.min(100, (elapsed / budget) * 100)}%` }}
+          />
         </div>
       </div>
 
       {item && (
         <article key={index} className="section">
-          <div className="flex flex-wrap gap-1.5">
-            <span className="chip">
-              Question {index + 1} of {session.items.length}
-            </span>
-            <span className="chip">{item.section}</span>
-          </div>
+          <p className="kicker">
+            Question {index + 1} of {session.items.length} · {item.section}
+          </p>
           {resolved ? (
             <>
-              <h1 className="mt-4 font-display text-[1.75rem] leading-[1.1] text-balance sm:text-[2rem]">
+              <h1 className="mt-2.5 text-[clamp(1.625rem,1.3rem+1vw,2.125rem)] leading-[1.1] font-semibold tracking-[-0.03em] text-balance">
                 <InlineText text={resolved.title} />
               </h1>
-              <p className="mt-2 text-[0.8125rem] text-ink-3">{resolved.source}</p>
+              <p className="mt-2 text-[0.875rem] text-ink-3">{resolved.source}</p>
               <div className="mt-6 max-w-[66ch] space-y-5">{resolved.context}</div>
-              <div className="mt-8 border-t border-rule-soft pt-8">
+              <div className="mt-8">
                 <ExerciseWorkspace
                   spec={resolved.spec}
                   slots={resolved.slots}
@@ -209,7 +211,7 @@ function Live({ session, items }: { session: InterviewSession; items: (Resolved 
         </article>
       )}
 
-      <div className="section flex flex-wrap items-center justify-between gap-3">
+      <div className="mt-4 mb-10 flex flex-wrap items-center justify-between gap-3 border-t border-rule pt-6">
         <button
           type="button"
           className="btn btn-ghost -ml-3"
@@ -239,7 +241,7 @@ function Live({ session, items }: { session: InterviewSession; items: (Resolved 
           ) : (
             <button
               type="button"
-              className={last || answered === session.items.length ? "btn btn-primary" : "btn btn-ghost"}
+              className={last || answered === session.items.length ? "btn btn-accent" : "btn btn-ghost"}
               onClick={() => (answered === session.items.length ? finishInterview(session.id) : setConfirmFinish(true))}
             >
               Finish and debrief
@@ -261,8 +263,8 @@ function Debrief({ session, items }: { session: InterviewSession; items: (Resolv
   return (
     <div>
       <header className="section rise">
-        <span className="chip">Interview debrief</span>
-        <h1 className="mt-4 font-display text-[1.875rem] leading-[1.1] sm:text-[2.25rem]">How it went</h1>
+        <p className="kicker">Interview debrief</p>
+        <h1 className="mt-2.5 text-[clamp(2rem,1.6rem+1.4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.035em]">How it went</h1>
         <p className="mt-3 max-w-[62ch] text-[0.9375rem] leading-relaxed text-ink-2">
           You answered {answered} of {session.items.length} in {clock(took)} of a {session.durationMinutes}-minute
           budget.{" "}
@@ -273,12 +275,12 @@ function Debrief({ session, items }: { session: InterviewSession; items: (Resolv
       </header>
 
       <div className="section">
-      <ol className="panel divide-y divide-rule-soft px-4">
+      <ol className="sheet divide-y divide-rule-soft overflow-hidden px-5">
         {session.items.map((item, i) => {
           const attempt = item.attemptId ? attempts.get(item.attemptId) : undefined;
           return (
             <li key={i} className="flex items-center justify-between gap-4 py-3 text-[0.8125rem]">
-              <a href={`#item-${i}`} className="min-w-0 hover:text-accent">
+              <a href={`#item-${i}`} className="min-w-0 hover:underline hover:decoration-rule-strong hover:underline-offset-4">
                 <span className="mr-2.5 font-mono text-[0.625rem] tabular-nums text-ink-3">
                   {String(i + 1).padStart(2, "0")}
                 </span>
@@ -314,10 +316,10 @@ function Debrief({ session, items }: { session: InterviewSession; items: (Resolv
               aria-labelledby={`item-${i}-title`}
               className="section scroll-mt-14"
             >
-              <p className="eyebrow">
-                Question {i + 1}: {item.section}
+              <p className="kicker">
+                Question {i + 1} · {item.section}
               </p>
-              <h2 id={`item-${i}-title`} className="mt-2 font-heading text-[1.125rem] leading-snug">
+              <h2 id={`item-${i}-title`} className="mt-2 text-[1.375rem] leading-[1.2] font-semibold tracking-[-0.025em]">
                 {resolved ? <InlineText text={resolved.title} /> : "Unavailable question"}
               </h2>
               {resolved && <p className="mt-1 text-[0.8125rem] text-ink-3">{resolved.source}</p>}
@@ -350,7 +352,7 @@ function Debrief({ session, items }: { session: InterviewSession; items: (Resolv
       </div>
 
       <div className="section flex flex-wrap gap-2">
-        <Link href="/review#session" className="btn btn-primary">
+        <Link href="/system-design-mock-interview#start" className="btn btn-accent">
           Start another session
         </Link>
         <Link href="/review" className="btn btn-secondary">

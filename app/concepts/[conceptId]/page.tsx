@@ -8,7 +8,8 @@ import { Lesson } from "@/components/lesson/lesson";
 import { Prose } from "@/components/prose";
 import { ShareButton } from "@/components/share";
 import { SourceList } from "@/components/writeup";
-import { DashList, PageHeader, Section } from "@/components/page-header";
+import { DashList, Section } from "@/components/page-header";
+import { DotArrow } from "@/components/icons";
 import { resolveExercise } from "@/lib/content/exercises";
 import { conceptsReferencing, getConcept, getInvestigation, listConcepts, stagesUsingConcept, writeupsForConcept } from "@/lib/content";
 import { DOMAIN_LABELS } from "@/lib/domain/content";
@@ -102,7 +103,7 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
   }
 
   return (
-    <div className="measure lg:max-w-[64rem]">
+    <div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -136,59 +137,51 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
           }),
         }}
       />
-      <PageHeader
-        title={
-          concept.id === "rate-limiting"
+      <header className="pt-10 sm:pt-14">
+        <nav aria-label="Breadcrumb" className="text-[0.8125rem] text-ink-3">
+          <Link href="/concepts" className="transition-colors hover:text-ink">
+            Concepts
+          </Link>
+          <span className="mx-2 text-rule-strong">/</span>
+          {DOMAIN_LABELS[concept.domain]}
+        </nav>
+        <h1 className="mt-4 max-w-[22ch] text-[clamp(2rem,1.6rem+1.4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance">
+          {concept.id === "rate-limiting"
             ? "How to design a rate limiter"
             : concept.id === "webhooks"
               ? "Webhooks: delivery, retries, and recovery"
-              : concept.title
-        }
-        meta="By SysGeeks"
-        eyebrow={
-          <>
-            <Link href="/concepts" className="hover:text-ink">
-              Concepts
-            </Link>
-            <span className="mx-1.5 text-rule-strong">/</span>
-            {DOMAIN_LABELS[concept.domain]}
-          </>
-        }
-        actions={
-          <>
-            {concept.lesson ? (
-              <a href="#learn" className="btn btn-secondary">
-                Start the lesson
+              : concept.title}
+        </h1>
+        <p className="mt-4 max-w-[58ch] text-[1rem] leading-relaxed text-ink-2 text-pretty">{concept.summary}</p>
+        <div className="mt-7 flex flex-wrap items-center gap-2.5">
+          {concept.lesson ? (
+            <a href="#learn" className="btn btn-accent group">
+              Start the lesson
+              <DotArrow />
+            </a>
+          ) : (
+            claims && (
+              <a href="#check" className="btn btn-accent group">
+                Check yourself
+                <DotArrow />
               </a>
-            ) : (
-              claims && (
-                <a href="#check" className="btn btn-secondary">
-                  Check yourself
-                </a>
-              )
-            )}
-            {explain && (
-              <a href="#explain" className="btn btn-ghost">
-                Explain it in your own words
-              </a>
-            )}
-            <ShareButton
-              url={`${SITE_URL}/concepts/${concept.id}`}
-              title={`${concept.title} in System Design · ${SITE_NAME}`}
-              text={`${concept.title}, explained for system design interviews.`}
-            />
-          </>
-        }
-      >
-        {concept.summary}
-      </PageHeader>
+            )
+          )}
+          {explain && (
+            <a href="#explain" className="btn btn-secondary">
+              Explain it in your own words
+            </a>
+          )}
+        </div>
+        <p className="mt-6 text-[0.75rem] text-ink-3">By SysGeeks</p>
+      </header>
 
       {rateLimiterExercise && (
         <section
           aria-labelledby="distributed-rate-limiter-design"
-          className="mt-6 max-w-[72ch] rounded-xl border border-rule bg-[color-mix(in_srgb,var(--raised)_45%,var(--paper))] p-5 sm:p-6"
+          className="sheet mt-10 max-w-[46rem] p-6 sm:p-7"
         >
-          <h2 id="distributed-rate-limiter-design" className="font-display text-[1.25rem] leading-tight tracking-[-0.015em]">
+          <h2 id="distributed-rate-limiter-design" className="text-[1.375rem] leading-[1.2] font-semibold tracking-[-0.025em]">
             How to design a rate limiter for a distributed API
           </h2>
           <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">
@@ -212,7 +205,7 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
         </section>
       )}
 
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-x-12">
+      <div className="mt-4 lg:grid lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-x-14">
         <div className="min-w-0">
           {concept.lesson ? (
             <>
@@ -306,10 +299,18 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
               </ul>
             </Section>
           )}
+          <div className="mt-14 flex items-center justify-between gap-4 border-t border-rule pt-5">
+            <p className="text-[0.8125rem] text-ink-3">Useful? Send it to someone preparing.</p>
+            <ShareButton
+              url={`${SITE_URL}/concepts/${concept.id}`}
+              title={`${concept.title} in System Design · ${SITE_NAME}`}
+              text={`${concept.title}, explained for system design interviews.`}
+            />
+          </div>
         </div>
 
-        <aside className="well-sm mt-4 self-start p-5 lg:mt-12">
-          <section aria-labelledby="standing">
+        <aside className="mt-10 space-y-4 self-start lg:sticky lg:top-24 lg:mt-12">
+          <section aria-labelledby="standing" className="sheet p-5">
             <h2 id="standing" className="kicker mb-3">
               Your standing
             </h2>
@@ -317,26 +318,32 @@ export default async function ConceptPage(props: PageProps<"/concepts/[conceptId
           </section>
 
           {byInvestigation.size > 0 && (
-            <section aria-labelledby="used-in" className="mt-6 border-t border-rule-soft pt-5">
-              <h2 id="used-in" className="kicker mb-3">
+            <section aria-labelledby="used-in" className="sheet overflow-hidden">
+              <h2 id="used-in" className="flex items-baseline justify-between px-5 pt-4 pb-2 text-[0.9375rem] font-semibold tracking-[-0.015em]">
                 Where you practise it
+                <span className="font-mono text-[0.75rem] font-normal text-ink-3">{byInvestigation.size}</span>
               </h2>
-              <ul className="space-y-4">
+              <ul className="max-h-[min(32rem,60dvh)] overflow-y-auto pb-2">
                 {[...byInvestigation].map(([id, entry]) => (
-                  <li key={id}>
-                    <Link href={`/investigations/${id}`} className="link text-[0.9375rem]">
+                  <li key={id} className="border-t border-rule-soft px-5 py-3">
+                    <Link
+                      href={`/investigations/${id}`}
+                      className="text-[0.875rem] font-medium tracking-[-0.01em] hover:underline hover:decoration-rule-strong hover:underline-offset-4"
+                    >
                       {entry.title}
                     </Link>
-                    <p className="mt-1 text-[0.8125rem] leading-relaxed text-ink-2">
-                      {entry.stages.map(({ stage }, i) => (
-                        <span key={stage.id}>
-                          {i > 0 && " · "}
-                          <Link href={`/investigations/${id}/${stage.id}`} className="link">
+                    <ul className="mt-1 space-y-0.5">
+                      {entry.stages.map(({ stage }) => (
+                        <li key={stage.id}>
+                          <Link
+                            href={`/investigations/${id}/${stage.id}`}
+                            className="block truncate text-[0.8125rem] text-ink-3 transition-colors hover:text-ink"
+                          >
                             {stage.title}
                           </Link>
-                        </span>
+                        </li>
                       ))}
-                    </p>
+                    </ul>
                   </li>
                 ))}
               </ul>

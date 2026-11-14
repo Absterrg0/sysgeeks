@@ -9,6 +9,7 @@ import type { Attempt } from "@/lib/domain/learner";
 import { exerciseStatus, type ExerciseStatus } from "@/lib/domain/understanding";
 import { useLearnerState } from "@/lib/store/learner-store";
 import { track } from "@/lib/analytics";
+import { DotArrow } from "@/components/icons";
 
 export type StageLink = { id: string; title: string; phase: Phase };
 
@@ -156,10 +157,11 @@ export function ContinueLink({ investigationId, stages }: { investigationId: str
     return (
       <Link
         href={`/investigations/${investigationId}/${first.id}`}
-        className="btn btn-accent"
+        className="btn btn-accent btn-lg group"
         onClick={() => trackStart("start")}
       >
-        Start the investigation
+        Start stage 1
+        <DotArrow />
       </Link>
     );
   }
@@ -168,8 +170,9 @@ export function ContinueLink({ investigationId, stages }: { investigationId: str
   const started = marks.some((m) => m !== "unattempted");
   if (nextIndex < 0) {
     return (
-      <Link href={`/investigations/${investigationId}/review`} className="btn btn-accent">
+      <Link href={`/investigations/${investigationId}/review`} className="btn btn-accent btn-lg group">
         Review the design
+        <DotArrow />
       </Link>
     );
   }
@@ -177,10 +180,11 @@ export function ContinueLink({ investigationId, stages }: { investigationId: str
   return (
     <Link
       href={`/investigations/${investigationId}/${next.id}`}
-      className="btn btn-accent"
+      className="btn btn-accent btn-lg group"
       onClick={() => trackStart(started ? "continue" : "start")}
     >
-      {started ? `Continue at stage ${nextIndex + 1}: ${next.title}` : "Start the investigation"}
+      {started ? `Continue at stage ${nextIndex + 1}` : "Start stage 1"}
+      <DotArrow />
     </Link>
   );
 }

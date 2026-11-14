@@ -35,8 +35,16 @@ export const COMPANIES: NavItem = {
   description: "One idea each, in their own words",
 };
 
+export const PLAYGROUND: NavItem = {
+  href: "/system-design-playground",
+  label: "Playground",
+  icon: <CapacityIcon />,
+  description: "Change a live system, turn up traffic, break parts",
+};
+
 /** The product: systems to work on, the mechanisms underneath, and coming back to what you learned. */
 export const LEARN: NavItem[] = [
+  PLAYGROUND,
   {
     href: "/investigations",
     label: "Systems",
@@ -68,3 +76,8 @@ export const YOURS: NavItem[] = [
     description: "Bring a system you built and get asked about it",
   },
 ];
+
+/** The top bar on wide screens: only the places people go most. Everything else is in the menu and footer. */
+export const PRIMARY: NavItem[] = LEARN.filter((item) =>
+  ["/system-design-playground", "/investigations", "/system-design-mock-interview", "/concepts"].includes(item.href),
+);

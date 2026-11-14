@@ -6,7 +6,6 @@ import {
   describeEdit,
   describeGoal,
   parseScenarioProgress,
-  scenarioKey,
   type GoalResult,
   type Scenario,
   type ScenarioCheck,
@@ -18,52 +17,6 @@ export type ScenarioSource = { id: string; title: string; url: string; company: 
 /** Solved scenarios, kept in this browser alongside the playground's designs. */
 export function useScenarioProgress() {
   return useDraft<ScenarioProgress>("playground-scenarios", parseScenarioProgress, () => ({}));
-}
-
-/** The scenarios of one system as a switch, with free play first. Sits on the screen's top edge. */
-export function ScenarioSwitch({
-  investigationId,
-  scenarios,
-  active,
-  progress,
-  onPick,
-}: {
-  investigationId: string;
-  scenarios: Scenario[];
-  active: Scenario | undefined;
-  progress: ScenarioProgress;
-  onPick: (id: string | null) => void;
-}) {
-  return (
-    <ul className="seg min-w-0 overflow-x-auto" aria-label="Scenarios">
-      <li>
-        <button type="button" className="seg-item" aria-pressed={!active} onClick={() => onPick(null)}>
-          Free play
-        </button>
-      </li>
-      {scenarios.map((s) => {
-        const record = progress[scenarioKey(investigationId, s.id)];
-        return (
-          <li key={s.id}>
-            <button
-              type="button"
-              className="seg-item"
-              aria-pressed={active?.id === s.id}
-              onClick={() => onPick(s.id)}
-              title={s.summary}
-            >
-              {s.title}
-              {record?.solvedAt && (
-                <span className="text-signal-strong" aria-label="solved">
-                  ✓
-                </span>
-              )}
-            </button>
-          </li>
-        );
-      })}
-    </ul>
-  );
 }
 
 /**
@@ -89,8 +42,8 @@ export function GoalPlate({
   return (
     <section aria-labelledby="goals" className="mt-4">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 id="goals" className="kicker text-[0.625rem]">
-          Has to hold
+        <h2 id="goals" className="kicker">
+          has to hold
         </h2>
         <p className="font-mono text-[0.75rem] text-ink-3" aria-live="polite" aria-atomic="true">
           {check.passed ? (
@@ -169,7 +122,7 @@ export function Stuck({
   const hints = scenario.hints.slice(0, help.hints);
   return (
     <div className="panel p-4 sm:p-5">
-      <p className="kicker text-[0.625rem]">Stuck?</p>
+      <p className="kicker">stuck?</p>
       <p className="mt-2 text-[0.8125rem] leading-relaxed text-ink-3">
         Click a part to size it, put something in front of it, or break it. Everything re-checks as you go.
       </p>
@@ -220,7 +173,7 @@ export function Stuck({
       </div>
       {help.answer && (
         <div className="mt-4 border-t border-rule-soft pt-4">
-          <p className="kicker text-[0.625rem]">One answer</p>
+          <p className="kicker">one answer</p>
           <ul className="mt-2 space-y-1.5 text-[0.8125rem] leading-relaxed text-ink-2">
             {scenario.solution.map((edit, i) => (
               <li key={i} className="flex gap-2">
@@ -262,9 +215,9 @@ export function Debrief({
     { label: "What this model leaves out", body: d.limits },
   ];
   return (
-    <section aria-labelledby="debrief" className="mt-8">
+    <section aria-labelledby="debrief" className="mt-10">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h2 id="debrief" className="flex items-center gap-2 font-display text-[1.25rem] tracking-[-0.015em]">
+        <h2 id="debrief" className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.01em]">
           <span className="led led-strong" aria-hidden="true" />
           It holds. Here is what that took
         </h2>

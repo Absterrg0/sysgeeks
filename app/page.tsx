@@ -1,82 +1,22 @@
 import Link from "next/link";
-import { ShareButton } from "@/components/share";
-import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { DeferredContinueStrip } from "@/components/home/deferred-continue-strip";
-import { DeferredSystemExplorer } from "@/components/home/deferred-system-explorer";
 import { DIFFICULTY } from "@/components/investigation/difficulty";
-import { InlineText } from "@/components/prose-core";
-import { SystemMap } from "@/components/system-map";
+import { DotArrow } from "@/components/icons";
+import { Playground } from "@/components/playground/playground";
+import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { SystemThumb } from "@/components/system-thumb";
-import { getConcept, getInvestigation, listCompanies, listInvestigations, writeupsByCompany } from "@/lib/content";
 import { visibleAfter } from "@/lib/domain/visibility";
+import { getInvestigation, listCompanies, listInvestigations, writeupsByCompany } from "@/lib/content";
+import { PLAYGROUNDS } from "@/lib/content/playground";
+import { playgroundProps } from "@/lib/content/playground-props";
+import { missionsFor } from "@/lib/content/scenarios";
 import { itemList, jsonLd } from "@/lib/metadata";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
-import { PLAYGROUNDS } from "@/lib/content/playground";
-import SYSTEM_DESIGN_ANSWERS from "@/lib/content/system-design-answers.json";
-import { SYSTEM_DESIGN_FUNDAMENTALS } from "@/lib/content/system-design-fundamentals";
 
-const QUESTION_COUNT = SYSTEM_DESIGN_ANSWERS.length + SYSTEM_DESIGN_FUNDAMENTALS.length;
+const H2 = "text-[clamp(1.5rem,1.2rem+1vw,2.125rem)] leading-[1.08] font-semibold tracking-[-0.035em] text-balance";
 
-type LogLine = { at: string; who: string; what: string; failed?: boolean };
-
-/**
- * The moment the product is about: a real system, mid-failure, waiting for your reasoning.
- * The preferred scene comes with the log of what just happened; any other falls back to the event's own words.
- */
-function heroScene() {
-  const preferred = getInvestigation("video-processing-pipeline");
-  const index = preferred?.stages.findIndex((s) => s.id === "worker-dies-mid-job") ?? -1;
-  if (preferred && index >= 0) {
-    const log: LogLine[] = [
-      { at: "12:04:31", who: "deploy", what: "replacing worker containers" },
-      { at: "12:04:31", who: "worker-3", what: "SIGTERM, 30 s grace" },
-      { at: "12:05:01", who: "worker-3", what: "killed", failed: true },
-      { at: "12:05:01", who: "job 812", what: "running · owner=worker-3" },
-    ];
-    return { investigation: preferred, index, failed: "workers", log };
-  }
-  for (const investigation of listInvestigations()) {
-    const i = investigation.stages.findIndex((s) => s.event?.kind === "failure");
-    if (i >= 0) return { investigation, index: i, failed: undefined, log: [] as LogLine[] };
-  }
-  return null;
-}
-
-/** Each step's light: red where the system breaks, amber where the load or the brief changes. */
-const LOOP = [
-  {
-    step: "Learn",
-    text: "Short explanations, each with a check that answers straight away.",
-    led: "led-accent",
-    tone: "bg-accent-solid",
-  },
-  {
-    step: "Decide",
-    text: "Choose between designs that all sound plausible.",
-    led: "led-accent",
-    tone: "bg-accent-solid",
-  },
-  {
-    step: "Break it",
-    text: "A worker dies, a message arrives twice, a request times out.",
-    led: "led-gap",
-    tone: "bg-mark-gap",
-  },
-  {
-    step: "Change it",
-    text: "Ten times the traffic, or a requirement from sales.",
-    led: "led-partial",
-    tone: "bg-mark-partial",
-  },
-  {
-    step: "Defend it",
-    text: "Say what the design guarantees, and where it stops.",
-    led: "led-strong",
-    tone: "bg-mark-strong",
-  },
-];
-
-const pad = (n: number) => String(n).padStart(2, "0");
+/** The home page's system: the one most people know, so the first minute is about breaking it, not reading it. */
+const HOME_SYSTEM = "url-shortener";
 
 export default function Home() {
   const investigations = listInvestigations();
@@ -95,14 +35,40 @@ export default function Home() {
     const system = writeup.investigationIds.map((i) => getInvestigation(i)).find(Boolean);
     return [{ company, writeup, system }];
   });
+  const play = playgroundProps(HOME_SYSTEM);
+  const missionCount = investigations.reduce((n, inv) => n + missionsFor(inv.id).length, 0);
   const first = investigations[0];
-  const firstStage = first?.stages[0];
-  const scene = heroScene();
-  const stage = scene?.investigation.stages[scene.index];
-  const visible = scene ? visibleAfter(scene.investigation, scene.index) : null;
-  const decision = stage?.interaction.kind === "decision" ? stage.interaction : null;
-  const stageHref = scene && stage ? `/investigations/${scene.investigation.id}/${stage.id}` : "/investigations";
-  const failed = scene?.failed && visible?.components.has(scene.failed) ? scene.failed : undefined;
+
+  const STEPS = [
+    {
+      n: "01",
+      title: "Break it",
+      body: "A real system, running. Drag the traffic up, kill a database, empty a cache. Every number reacts.",
+      href: `/investigations/${HOME_SYSTEM}/playground`,
+      cta: "Open the playground",
+    },
+    {
+      n: "02",
+      title: "Beat a mission",
+      body: `${missionCount} situations with a goal: survive 10× traffic, lose a machine, stay on budget. Checked live as you change the design.`,
+      href: `/investigations/${HOME_SYSTEM}/playground`,
+      cta: "Take a mission",
+    },
+    {
+      n: "03",
+      title: "Learn the design",
+      body: "Make each decision before you see the reasoning, then read the full worked answer, sourced from the engineers who built it.",
+      href: first ? `/investigations/${first.id}` : "/investigations",
+      cta: "Start a system",
+    },
+    {
+      n: "04",
+      title: "Do the interview",
+      body: "A timed 30, 45 or 60-minute round from a blank page, marked against the points an interviewer listens for.",
+      href: "/system-design-mock-interview",
+      cta: "Start a mock interview",
+    },
+  ];
 
   return (
     <div>
@@ -130,294 +96,147 @@ export default function Home() {
           }),
         }}
       />
-      <section aria-labelledby="hero" className="relative isolate pt-10 sm:pt-14">
-        <div className="light-cool" aria-hidden="true" />
-        <div className="grid gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1fr)_27rem] lg:items-end">
-          <div>
-            {scene && (
-              <p className="kicker flex items-center gap-2.5">
-                <span className="led led-gap led-pulse" aria-hidden="true" />
-                Live<span className="hidden sm:inline"> · {scene.investigation.id}</span> · stage {pad(scene.index + 1)}{" "}
-                of {pad(scene.investigation.stages.length)}
-              </p>
-            )}
-            <h1
-              id="hero"
-              className="mt-5 max-w-[17ch] font-display text-[clamp(2.5rem,1.3rem+3vw,3.75rem)] leading-[1.02] tracking-[-0.03em] text-balance"
-            >
-              System design interview practice on real systems.
-            </h1>
-            <p className="mt-5 max-w-[52ch] text-[1.0625rem] leading-relaxed text-ink-2 text-pretty">
-              Work through a URL shortener, news feed, payment system and more. Make each design decision before you
-              see the reasoning. Test the design against failures and changed requirements, then compare your work
-              with the full written walkthrough. Free, no account needed.
-            </p>
-            <div className="mt-7 flex flex-wrap items-center gap-2.5">
-              {first && firstStage && (
-                <PracticeEntryLink
-                  href={`/investigations/${first.id}/${firstStage.id}`}
-                  investigationId={first.id}
-                  source="home_hero"
-                  className="btn btn-accent btn-lg"
-                >
-                  {first.id === "url-shortener" ? "Try a URL shortener exercise" : "Try a system design exercise"}
-                </PracticeEntryLink>
-              )}
-              <PracticeEntryLink
-                href="/review#session"
-                source="home_mock_interview_hero"
-                className="btn btn-secondary btn-lg"
-              >
-                Start a timed mock interview
-              </PracticeEntryLink>
-              <ShareButton
-                url={SITE_URL}
-                title={`${SITE_NAME} · System design interview practice`}
-                text="Free system design interview practice on real systems, with interactive exercises and worked answers."
-              />
-            </div>
-            <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[0.875rem] font-medium text-ink-3">
-              <Link href="/investigations" className="transition-colors hover:text-accent">
-                Browse {QUESTION_COUNT} system design interview questions and answers →
-              </Link>
-              <PracticeEntryLink
-                href="/system-design-playground"
-                source="home_playground_hero"
-                className="transition-colors hover:text-accent"
-              >
-                Try {Object.keys(PLAYGROUNDS).length} interactive simulations →
-              </PracticeEntryLink>
-              <Link href="/system-design-interview" className="transition-colors hover:text-accent">
-                How to prepare for a system design interview →
-              </Link>
-              <PracticeEntryLink
-                href="/system-design-interview/drills"
-                source="home_quick_drills"
-                className="transition-colors hover:text-accent"
-              >
-                Try one-minute system design drills →
-              </PracticeEntryLink>
-            </div>
-          </div>
 
-          {scene && stage?.event && (
-            <aside aria-label="A failure, waiting for your reasoning" className="ticket">
-              <p className="flex items-center justify-between gap-3 font-mono text-[0.6875rem] tracking-[0.08em] uppercase">
-                <span className="text-signal-gap">Failure · stage {pad(scene.index + 1)}</span>
-                {scene.log.length > 0 && <span className="text-ink-3">{scene.log[scene.log.length - 1]?.at}</span>}
-              </p>
-              <p className="mt-2.5 font-display text-[1.1875rem] leading-snug tracking-[-0.01em]">
-                <InlineText text={stage.event.title} />
-              </p>
-              {scene.log.length > 0 ? (
-                <div className="ticket-log mt-3" role="log" aria-label="What just happened">
-                  {scene.log.map((line, i) => (
-                    <div key={i} className={line.failed ? "text-signal-gap" : undefined}>
-                      <span className={line.failed ? undefined : "text-ink-2"}>{line.at}</span> {line.who} {line.what}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-2 text-[0.875rem] leading-relaxed text-ink-2">
-                  <InlineText text={stage.event.detail} />
-                </p>
-              )}
-              {decision && (
-                <>
-                  <p className="mt-4 text-[0.875rem] font-medium">{decision.prompt}</p>
-                  <ul className="mt-2 border-b border-rule-soft">
-                    {decision.options.slice(0, 3).map((option) => (
-                      <li key={option.id}>
-                        <Link href={stageHref} className="ticket-option">
-                          <i aria-hidden="true" />
-                          <InlineText text={option.label} />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-              <div className="mt-3.5 text-[0.8125rem] font-medium">
-                <Link href={stageHref} className="group inline-flex items-center gap-1 text-signal-gap">
-                  Reason through it
-                  <span className="transition-transform group-hover:translate-x-0.5" aria-hidden="true">
-                    →
-                  </span>
-                </Link>
-              </div>
-            </aside>
-          )}
-        </div>
-
-        {scene && visible && (
-          <figure
-            className="relative mt-6 [--lead-above:1.5rem] lg:mt-6"
-            aria-label={`${scene.investigation.title}, while it is failing`}
-          >
-            <div className="matrix-lit" aria-hidden="true" />
-            {/* On a phone the diagram keeps a readable size and scrolls sideways. */}
-            <div className="max-sm:-mx-5 max-sm:overflow-x-auto max-sm:px-5 max-sm:pb-2">
-            <div className="max-sm:w-[42rem]">
-            <SystemMap
-              bare
-              compact
-              live
-              label={`${scene.investigation.title}: the system when this failure happens`}
-              components={scene.investigation.system.components}
-              flows={scene.investigation.system.flows}
-              visibleComponents={[...visible.components]}
-              visibleFlows={[...visible.flows]}
-              failedComponents={failed ? [failed] : []}
-              leadUpFrom={failed}
-            />
-            </div>
-            </div>
-          </figure>
-        )}
-      </section>
+      {play && (
+        <Playground
+          {...play}
+          heading={{
+            title: "System design interview practice on real systems.",
+            lede: "Drag the traffic up until something breaks, then fix it. Every system is a real interview question, with missions, a worked answer and a timed mock round. Free, no account.",
+          }}
+        />
+      )}
 
       <DeferredContinueStrip investigations={outlines} />
 
-      <section aria-labelledby="systems" className="mt-24 sm:mt-32">
-        <div className="max-w-2xl">
-          <h2
-            id="systems"
-            className="font-display text-[clamp(1.875rem,1.4rem+1.4vw,2.625rem)] leading-[1.05] tracking-[-0.025em] text-balance"
-          >
-            {investigations.length} systems. All of them breakable.
+      <section aria-labelledby="how" className="mt-20 sm:mt-28">
+        <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-3">
+          <h2 id="how" className={H2}>
+            From breaking it to explaining it.
           </h2>
-          <p className="mt-4 text-[0.9375rem] leading-relaxed text-ink-2 text-pretty">
-            Each starts from requirements and the numbers. The parts the scenario gives you are already drawn; you
-            design the rest, then it fails.
+          <p className="max-w-[28rem] text-[0.9375rem] leading-relaxed text-ink-2 text-pretty">
+            Diagrams and rules of thumb do not tell you why p99 falls off a cliff. Watching it happen does. Then you
+            practise saying it.
           </p>
         </div>
-        <DeferredSystemExplorer
-          systems={investigations.map((inv) => ({
-            id: inv.id,
-            title: inv.title,
-            premise: inv.premise,
-            meta: `${DIFFICULTY[inv.difficulty].toLowerCase()} · ${inv.estimatedMinutes} min · ${inv.stages.length} stages`,
-            minutes: inv.estimatedMinutes,
-            firstStageId: inv.stages[0]?.id ?? "",
-            hasPlayground: Boolean(PLAYGROUNDS[inv.id]),
-            components: inv.system.components,
-            flows: inv.system.flows,
-          }))}
-        />
-      </section>
-
-      <section aria-labelledby="loop" className="mt-24 sm:mt-32">
-        <div className="max-w-2xl">
-          <h2
-            id="loop"
-            className="font-display text-[clamp(1.875rem,1.4rem+1.4vw,2.625rem)] leading-[1.05] tracking-[-0.025em] text-balance"
-          >
-            Every system runs the same loop.
-          </h2>
-          <p className="mt-4 text-[0.9375rem] leading-relaxed text-ink-2 text-pretty">
-            Choices are checked against a key. Written answers you mark yourself, against specific points. Nothing is a
-            quiz for its own sake: each step changes the system you are building.
-          </p>
-        </div>
-        <ol className="mt-12 grid gap-y-8 sm:grid-cols-2 lg:grid-cols-5">
-          {LOOP.map((item) => (
-            <li key={item.step} className="relative min-w-0 pt-6 pr-6">
-              <span className="absolute inset-x-0 top-0 h-px bg-rule" aria-hidden="true" />
-              <span className={`absolute top-0 left-0 h-px w-10 ${item.tone}`} aria-hidden="true" />
-              <p className="flex items-center gap-2.5 font-display text-[1.125rem] tracking-[-0.01em]">
-                <span className={`led ${item.led}`} aria-hidden="true" />
-                {item.step}
-              </p>
-              <p className="mt-2 max-w-[28ch] text-[0.875rem] leading-relaxed text-ink-2">{item.text}</p>
+        <ol className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {STEPS.map((step) => (
+            <li key={step.n} className="sheet flex flex-col p-5">
+              <p className="font-mono text-[0.75rem] text-ink-3">{step.n}</p>
+              <h3 className="mt-3 text-[1.0625rem] font-semibold tracking-[-0.02em]">{step.title}</h3>
+              <p className="mt-1.5 text-[0.875rem] leading-relaxed text-ink-2">{step.body}</p>
+              <Link
+                href={step.href}
+                className="group mt-auto inline-flex items-center gap-2 pt-5 text-[0.875rem] font-medium text-ink"
+              >
+                {step.cta}
+                <DotArrow />
+              </Link>
             </li>
           ))}
         </ol>
       </section>
 
-      <section aria-labelledby="sources" className="mt-24 mb-12 sm:mt-32">
-        <div className="flex flex-wrap items-end justify-between gap-x-16 gap-y-4">
-          <div className="max-w-2xl">
-            <h2
-              id="sources"
-              className="font-display text-[clamp(1.875rem,1.4rem+1.4vw,2.625rem)] leading-[1.05] tracking-[-0.025em] text-balance"
-            >
-              Built from what their engineers published.
-            </h2>
-            <p className="mt-4 text-[0.9375rem] leading-relaxed text-ink-2 text-pretty">
-              Every system starts from a real writeup. Read theirs, then build yours and watch it break.
-            </p>
-          </div>
-          <Link href="/companies" className="link text-[0.875rem]">
-            All {companies.length} companies
+      <section aria-labelledby="systems" className="mt-20 sm:mt-28">
+        <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-3">
+          <h2 id="systems" className={H2}>
+            {investigations.length} systems. Each one a real interview question.
+          </h2>
+          <Link href="/investigations" className="group inline-flex items-center gap-2 text-[0.875rem] font-medium text-ink-2 hover:text-ink">
+            All questions and answers
+            <DotArrow />
           </Link>
         </div>
-        <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {sources.map(({ company, writeup, system }, i) => (
-            <li key={company.id} className={i === 0 ? "sm:col-span-2 lg:row-span-2" : ""}>
-              <article className="sheet group relative flex h-full flex-col overflow-hidden">
-                {system && (
-                  <div
-                    className={`dotgrid flex items-center justify-center border-b border-rule-soft px-6 py-4 ${i === 0 ? "h-56" : "h-28"}`}
-                    aria-hidden="true"
-                  >
-                    <SystemThumb
-                      className={`max-h-full ${i === 0 ? "w-full max-w-[34rem]" : ""}`}
-                      components={system.system.components}
-                      flows={system.system.flows}
-                      given={visibleAfter(system, 0).components}
-                    />
-                  </div>
-                )}
-                <div className={`flex flex-1 flex-col ${i === 0 ? "p-6" : "px-4 pt-3.5 pb-4"}`}>
-                  <p className="flex items-center justify-between gap-3 text-[0.75rem] text-ink-3">
-                    <span className="font-medium text-ink-2">{company.name}</span>
-                    <span className="font-mono">{writeup.published.slice(0, 4)}</span>
-                  </p>
-                  <h3
-                    className={`mt-2 font-display leading-snug tracking-[-0.01em] text-balance ${i === 0 ? "text-[1.625rem]" : "text-[1.0625rem]"}`}
-                  >
-                    <a href={writeup.url} target="_blank" rel="noopener noreferrer" className="hover:text-accent">
-                      &ldquo;{writeup.title}&rdquo;
-                    </a>
-                  </h3>
-                  <p className={`mt-2 leading-relaxed text-ink-2 ${i === 0 ? "text-[0.9375rem]" : "line-clamp-2 text-[0.8125rem]"}`}>
-                    {i === 0 ? writeup.note : company.summary}
-                  </p>
-                  {i === 0 && (
-                    <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="What it teaches">
-                      {writeup.conceptIds.flatMap((id) => {
-                        const concept = getConcept(id);
-                        return concept
-                          ? [
-                              <li key={id}>
-                                <Link href={`/concepts/${id}`} className="chip-flat hover:text-ink">
-                                  {concept.title}
-                                </Link>
-                              </li>,
-                            ]
-                          : [];
-                      })}
-                    </ul>
-                  )}
-                  {system && (
-                    <div className="mt-auto pt-4">
-                      <Link
-                        href={`/investigations/${system.id}`}
-                        className="flex items-center gap-2 border-t border-rule-soft pt-3 text-[0.8125rem] text-ink-3 hover:text-ink"
-                      >
-                        Build it:
-                        <span className="min-w-0 flex-1 truncate text-ink">{system.title}</span>
-                        <span aria-hidden="true">→</span>
-                      </Link>
-                    </div>
-                  )}
+        <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {investigations.map((inv) => {
+            const missions = missionsFor(inv.id).length;
+            const href = PLAYGROUNDS[inv.id] ? `/investigations/${inv.id}/playground` : `/investigations/${inv.id}`;
+            return (
+              <li key={inv.id} className="sheet group/sys relative flex min-w-0 flex-col overflow-hidden transition-shadow hover:shadow-[0_0_0_1px_var(--edge-strong),0_14px_32px_-16px_var(--drop-2)]">
+                <div className="pg-canvas flex h-28 items-center justify-center border-b border-rule-soft px-6 py-4" aria-hidden="true">
+                  <SystemThumb
+                    className="max-h-full w-full max-w-[15rem] transition-transform duration-300 group-hover/sys:scale-[1.03]"
+                    components={inv.system.components}
+                    flows={inv.system.flows}
+                    given={visibleAfter(inv, 0).components}
+                  />
                 </div>
-              </article>
+                <div className="flex flex-1 flex-col px-4 pt-3.5 pb-4">
+                  <PracticeEntryLink
+                    href={href}
+                    investigationId={inv.id}
+                    source="home_explorer_playground"
+                    className="text-[0.9375rem] leading-snug font-semibold tracking-[-0.015em] after:absolute after:inset-0"
+                  >
+                    {inv.title}
+                  </PracticeEntryLink>
+                  <p className="mt-1 text-[0.8125rem] text-ink-3">
+                    {DIFFICULTY[inv.difficulty]} · {inv.estimatedMinutes} min
+                    {missions > 0 && ` · ${missions} missions`}
+                  </p>
+                  <div className="relative z-10 mt-auto flex items-center gap-4 pt-3 text-[0.8125rem] font-medium">
+                    <span className="inline-flex items-center gap-1.5 text-ink">
+                      Play
+                      <DotArrow />
+                    </span>
+                    <PracticeEntryLink
+                      href={`/investigations/${inv.id}`}
+                      investigationId={inv.id}
+                      source="home_explorer_learn"
+                      className="text-ink-3 transition-colors hover:text-ink"
+                    >
+                      Learn it
+                    </PracticeEntryLink>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section aria-labelledby="sources" className="mt-24 mb-12 sm:mt-32">
+        <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-3">
+          <h2 id="sources" className={H2}>
+            Built from what they published.
+          </h2>
+          <Link href="/companies" className="group inline-flex items-center gap-2 text-[0.875rem] font-medium text-ink-2 hover:text-ink">
+            All {companies.length} companies
+            <DotArrow />
+          </Link>
+        </div>
+        <ul className="sheet mt-8 overflow-hidden">
+          {sources.map(({ company, writeup, system }) => (
+            <li
+              key={company.id}
+              className="sheet-row grid grid-cols-1 gap-x-6 gap-y-1 px-4 py-3.5 sm:grid-cols-[8rem_minmax(0,1fr)_auto] sm:items-center sm:px-5"
+            >
+              <p className="flex items-center gap-2 text-[0.8125rem]">
+                <span className="font-medium">{company.name}</span>
+                <span className="font-mono text-[0.75rem] text-ink-3">{writeup.published.slice(0, 4)}</span>
+              </p>
+              <a
+                href={writeup.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="min-w-0 truncate text-[0.9375rem] text-ink-2 transition-colors hover:text-ink"
+              >
+                &ldquo;{writeup.title}&rdquo; <span aria-hidden="true">↗</span>
+              </a>
+              {system && (
+                <Link
+                  href={`/investigations/${system.id}`}
+                  className="group inline-flex min-w-0 items-center gap-2 text-[0.8125rem] font-medium text-ink-2 hover:text-ink sm:whitespace-nowrap"
+                >
+                  <span className="shrink-0">Build it:</span>
+                  <span className="min-w-0 truncate text-ink">{system.title}</span>
+                  <DotArrow />
+                </Link>
+              )}
             </li>
           ))}
         </ul>
       </section>
-
     </div>
   );
 }

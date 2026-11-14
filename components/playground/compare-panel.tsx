@@ -50,12 +50,12 @@ export function ComparePanel({
 
   if (!a) {
     return (
-      <section aria-labelledby="compare" className="mt-8">
-        <h2 id="compare" className="font-display text-[1.25rem] tracking-[-0.015em]">
+      <section aria-labelledby="compare" className="mt-10">
+        <h2 id="compare" className="text-[15px] font-semibold tracking-[-0.01em]">
           Compare two designs
         </h2>
-        <div className="plate mt-3 flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 sm:px-5">
-          <p className="max-w-[60ch] text-[0.875rem] leading-relaxed text-ink-2">
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-3 border-y border-rule-soft py-3">
+          <p className="max-w-[60ch] text-[0.8125rem] leading-relaxed text-ink-2">
             Keep this design as A, then change it. Both run side by side under the same traffic and the same failure, so
             you can say what each one buys and what it costs.
           </p>
@@ -84,9 +84,9 @@ export function ComparePanel({
   );
 
   return (
-    <section aria-labelledby="compare" className="mt-8">
+    <section aria-labelledby="compare" className="mt-10">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h2 id="compare" className="font-display text-[1.25rem] tracking-[-0.015em]">
+        <h2 id="compare" className="text-[15px] font-semibold tracking-[-0.01em]">
           Compare two designs
         </h2>
         <div className="flex flex-wrap gap-1.5">

@@ -83,26 +83,32 @@ export default async function DesignPage(props: PageProps<"/investigations/[inve
         section, then compare it with a reference design and see what you left out.
       </PageHeader>
 
-      <section aria-labelledby="prompt" className="section max-w-3xl pt-0 sm:pt-0">
-        <div className="well px-5 py-4">
-          <h2 id="prompt" className="eyebrow mb-2">
-            The prompt
-          </h2>
-          <div className="max-w-[66ch]">
-            <Prose text={interviewPrompt(inv.scenario)} />
+      <section aria-labelledby="prompt" className="max-w-[48rem]">
+        <div className="sheet overflow-hidden">
+          <div className="px-5 pt-4 pb-5 sm:px-7 sm:pt-5 sm:pb-6">
+            <h2 id="prompt" className="flex items-center gap-2 text-[0.75rem] font-medium text-ink-3">
+              <span className="led led-accent" aria-hidden="true" />
+              The prompt
+            </h2>
+            <div className="mt-3 text-[1.0625rem] leading-relaxed">
+              <Prose text={interviewPrompt(inv.scenario)} />
+            </div>
           </div>
-          <details className="mt-4">
-            <summary className="cursor-pointer text-[0.8125rem] font-medium text-ink-2 hover:text-ink">
+          <details className="group border-t border-rule-soft">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 text-[0.8125rem] font-medium text-ink-2 transition-colors select-none hover:bg-hover hover:text-ink sm:px-7 [&::-webkit-details-marker]:hidden">
               What the interviewer would tell you if you asked
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" className="text-ink-3 transition-transform group-open:rotate-180">
+                <path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
             </summary>
-            <div className="mt-3 max-w-[66ch]">
+            <div className="px-5 pb-5 sm:px-7">
               <DashList items={[...inv.constraints, ...inv.assumptions]} muted />
             </div>
           </details>
         </div>
       </section>
 
-      <section aria-label="Your round" className="pb-16">
+      <section aria-label="Your round" className="mt-10 max-w-[48rem] pb-16">
         <DesignRoundRunner
           investigationId={inv.id}
           reference={view}

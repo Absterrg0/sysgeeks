@@ -1,3 +1,7 @@
+import { getCompany, getInvestigation, listInvestigations, listWriteups } from "@/lib/content";
+import { PLAYGROUNDS } from "@/lib/content/playground";
+import { standardMissions } from "@/lib/domain/missions";
+import { playModelOf } from "@/lib/domain/playground";
 import type { Scenario } from "@/lib/domain/scenarios";
 
 /**
@@ -339,4 +343,42 @@ export const SCENARIOS: Scenario[] = [
 
 export function scenariosFor(investigationId: string): Scenario[] {
   return SCENARIOS.filter((s) => s.investigationId === investigationId);
+}
+
+const missionCache = new Map<string, Scenario[]>();
+
+/**
+ * Everything a system's playground offers: its hand-written scenarios first, then the generated missions
+ * (`lib/domain/missions.ts`) for whatever those do not already cover. Every system with a playground gets some.
+ */
+export function missionsFor(investigationId: string): Scenario[] {
+  const cached = missionCache.get(investigationId);
+  if (cached) return cached;
+  const written = scenariosFor(investigationId);
+  const inv = getInvestigation(investigationId);
+  const workload = PLAYGROUNDS[investigationId];
+  if (!inv || !workload) return written;
+  const writeups = listWriteups()
+    .filter((w) => w.investigationIds.includes(investigationId))
+    .sort((a, b) => b.published.localeCompare(a.published))
+    .map((w) => ({ id: w.id, title: w.title, company: getCompany(w.companyId)?.name ?? w.companyId }));
+  const missions = [
+    ...written,
+    ...standardMissions({
+      investigationId,
+      reference: playModelOf(inv.system, workload),
+      workload,
+      writeups,
+      existing: written,
+    }),
+  ];
+  missionCache.set(investigationId, missions);
+  return missions;
+}
+
+/** Every mission on the site, in the order of the systems. */
+export function listMissions(): Scenario[] {
+  return listInvestigations()
+    .filter((inv) => PLAYGROUNDS[inv.id])
+    .flatMap((inv) => missionsFor(inv.id));
 }
