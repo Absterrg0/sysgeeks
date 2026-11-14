@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Playground } from "@/components/playground/playground";
-import { getCompany, getInvestigation, listConcepts, listInvestigations, listWriteups } from "@/lib/content";
+import { getInvestigation, listInvestigations } from "@/lib/content";
+import { playgroundProps } from "@/lib/content/playground-props";
 import { PLAYGROUNDS } from "@/lib/content/playground";
-import { scenariosFor } from "@/lib/content/scenarios";
 import { breadcrumbs, clipDescription, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 
 export function generateStaticParams() {
@@ -35,21 +35,9 @@ export async function generateMetadata(
 
 export default async function PlaygroundPage(props: PageProps<"/investigations/[investigationId]/playground">) {
   const { investigationId } = await props.params;
-  const inv = getInvestigation(investigationId);
-  const workload = PLAYGROUNDS[investigationId];
-  if (!inv || !workload) notFound();
-
-  // Only what the page shows: concept titles for links, and writeups to point at.
-  const concepts = Object.fromEntries(listConcepts().map((c) => [c.id, { title: c.title, summary: c.summary }]));
-  const writeups = listWriteups().map((w) => ({
-    id: w.id,
-    title: w.title,
-    url: w.url,
-    company: getCompany(w.companyId)?.name ?? w.companyId,
-    note: w.note,
-    conceptIds: w.conceptIds,
-    forThis: w.investigationIds.includes(inv.id),
-  }));
+  const play = playgroundProps(investigationId);
+  if (!play) notFound();
+  const inv = play.investigation;
 
   return (
     <>
@@ -65,23 +53,7 @@ export default async function PlaygroundPage(props: PageProps<"/investigations/[
           ),
         }}
       />
-      <Playground
-        investigation={{ id: inv.id, title: inv.title, searchTitle: inv.searchTitle }}
-        system={{
-          components: inv.system.components.map((c) => ({
-            id: c.id,
-            label: c.label,
-            kind: c.kind,
-            responsibility: c.responsibility,
-            position: c.position,
-          })),
-          flows: inv.system.flows.map((f) => ({ id: f.id, from: f.from, to: f.to, label: f.label, kind: f.kind })),
-        }}
-        workload={workload}
-        concepts={concepts}
-        writeups={writeups}
-        scenarios={scenariosFor(inv.id)}
-      />
+      <Playground {...play} />
     </>
   );
 }

@@ -724,8 +724,8 @@ export function SystemMap({
                       d={path}
                       pathLength={100}
                       fill="none"
-                      stroke="var(--accent-solid)"
-                      strokeOpacity={0.45}
+                      stroke="var(--traffic)"
+                      strokeOpacity={0.16}
                       strokeWidth={width + 3}
                       strokeLinecap="round"
                       strokeDasharray={`${tail} ${period - tail}`}
@@ -737,8 +737,8 @@ export function SystemMap({
                       d={path}
                       pathLength={100}
                       fill="none"
-                      stroke="var(--accent-solid)"
-                      strokeOpacity={0.35}
+                      stroke="var(--traffic)"
+                      strokeOpacity={0.3}
                       strokeWidth={width}
                       strokeLinecap="round"
                       strokeDasharray={`${tail} ${period - tail}`}
@@ -749,7 +749,7 @@ export function SystemMap({
                       d={path}
                       pathLength={100}
                       fill="none"
-                      stroke="color-mix(in srgb, var(--accent-solid) 55%, white)"
+                      stroke="var(--traffic)"
                       strokeWidth={width + 0.5}
                       strokeLinecap="round"
                       strokeDasharray={`${head} ${period - head}`}
@@ -898,7 +898,7 @@ export function SystemMap({
                           ? "var(--mark-gap)"
                           : note.tone === "hot"
                             ? "var(--mark-partial)"
-                            : "var(--accent-solid)"
+                            : "var(--ink-2)"
                       }
                       strokeWidth={2}
                       strokeLinecap="round"

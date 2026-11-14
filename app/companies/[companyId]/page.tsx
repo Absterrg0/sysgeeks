@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { InvestigationIndex } from "@/components/investigation/investigation-index";
-import { PageHeader, Section } from "@/components/page-header";
+import { Section } from "@/components/page-header";
+import { DotArrow } from "@/components/icons";
 import { Prose } from "@/components/prose";
 import { ShareButton } from "@/components/share";
 import { SourceList } from "@/components/writeup";
@@ -41,7 +42,7 @@ export default async function CompanyPage(props: PageProps<"/companies/[companyI
   const url = `${SITE_URL}/companies/${company.id}`;
 
   return (
-    <div className="measure">
+    <div className="max-w-[48rem]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -84,33 +85,30 @@ export default async function CompanyPage(props: PageProps<"/companies/[companyI
           }),
         }}
       />
-      <PageHeader
-        title={`${company.name} system design: ${company.topic}`}
-        eyebrow={
-          <Link href="/companies" className="hover:text-ink">
+      <header className="pt-10 sm:pt-14">
+        <nav aria-label="Breadcrumb" className="text-[0.8125rem] text-ink-3">
+          <Link href="/companies" className="transition-colors hover:text-ink">
             Companies
           </Link>
-        }
-        actions={
-          <>
-            {investigations[0] && (
-              <Link href={`/investigations/${investigations[0].id}`} className="btn btn-accent">
-                Practise it
-              </Link>
-            )}
-            <a href={company.blogUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
-              Their engineering blog
-            </a>
-            <ShareButton
-              url={url}
-              title={`${company.name}: ${company.topic} · ${SITE_NAME}`}
-              text={`${company.topic}: how ${company.name} does it, with the original writeups and a design exercise.`}
-            />
-          </>
-        }
-      >
-        {company.summary}
-      </PageHeader>
+          <span className="mx-2 text-rule-strong">/</span>
+          {company.name}
+        </nav>
+        <h1 className="mt-4 max-w-[24ch] text-[clamp(2rem,1.6rem+1.4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance">
+          {company.name} system design: {company.topic}
+        </h1>
+        <p className="mt-4 max-w-[58ch] text-[1rem] leading-relaxed text-ink-2 text-pretty">{company.summary}</p>
+        <div className="mt-7 flex flex-wrap items-center gap-2.5">
+          {investigations[0] && (
+            <Link href={`/investigations/${investigations[0].id}`} className="btn btn-accent group">
+              Practise it
+              <DotArrow />
+            </Link>
+          )}
+          <a href={company.blogUrl} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+            Their engineering blog <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </header>
 
       <Section id="idea" title="The idea">
         <div className="max-w-[66ch]">
@@ -122,6 +120,13 @@ export default async function CompanyPage(props: PageProps<"/companies/[companyI
         <SourceList writeups={writeups} />
       </Section>
 
+
+      {investigations.length > 0 && (
+        <Section id="practise" title="Practise it" description="Make the decisions yourself, then compare.">
+          <InvestigationIndex investigations={investigations} />
+        </Section>
+      )}
+
       <Section id="interview-practice" title={`Is this an actual ${company.name} interview question?`}>
         <p className="max-w-[66ch] text-[0.9375rem] leading-relaxed text-ink-2">
           No. This case study explains published engineering work; it does not claim that {company.name} asks this exact
@@ -130,11 +135,14 @@ export default async function CompanyPage(props: PageProps<"/companies/[companyI
         </p>
       </Section>
 
-      {investigations.length > 0 && (
-        <Section id="practise" title="Practise it" description="Make the decisions yourself, then compare.">
-          <InvestigationIndex investigations={investigations} />
-        </Section>
-      )}
+      <div className="mt-14 mb-4 flex max-w-[42rem] items-center justify-between gap-4 border-t border-rule pt-5">
+        <p className="text-[0.8125rem] text-ink-3">Know someone preparing?</p>
+        <ShareButton
+          url={url}
+          title={`${company.name}: ${company.topic} · ${SITE_NAME}`}
+          text={`${company.topic}: how ${company.name} does it, with the original writeups and a design exercise.`}
+        />
+      </div>
     </div>
   );
 }

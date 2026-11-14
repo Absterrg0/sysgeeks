@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { DotArrow } from "@/components/icons";
 import { SignalBadge, SignalMeter } from "@/components/ui";
 import { exerciseKey, type ExerciseRef } from "@/lib/domain/learner";
 import { daysAgo, daysUntil, reviewQueue } from "@/lib/domain/review";
@@ -62,15 +63,15 @@ function Ring({ value, total }: { value: number; total: number }) {
   const share = total > 0 ? Math.min(1, value / total) : 0;
   return (
     <svg width="54" height="54" viewBox="0 0 54 54" aria-hidden="true" className="shrink-0">
-      <circle cx="27" cy="27" r={r} fill="none" stroke="var(--rule-strong)" strokeWidth="5" />
+      <circle cx="27" cy="27" r={r} fill="none" stroke="var(--rule)" strokeWidth="4" />
       {share > 0 && (
         <circle
           cx="27"
           cy="27"
           r={r}
           fill="none"
-          stroke="var(--accent-solid)"
-          strokeWidth="5"
+          stroke="var(--ink)"
+          strokeWidth="4"
           strokeLinecap="round"
           strokeDasharray={`${Math.max(2, share * length)} ${length}`}
           transform="rotate(-90 27 27)"
@@ -82,8 +83,8 @@ function Ring({ value, total }: { value: number; total: number }) {
 
 function Bar({ value, total }: { value: number; total: number }) {
   return (
-    <span className="block h-1 overflow-hidden rounded-full bg-rule-strong/60">
-      <span className="block h-full rounded-full bg-accent-solid" style={{ width: `${total > 0 ? (value / total) * 100 : 0}%` }} />
+    <span className="block h-1 overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--ink)_9%,transparent)]">
+      <span className="block h-full rounded-full bg-ink" style={{ width: `${total > 0 ? (value / total) * 100 : 0}%` }} />
     </span>
   );
 }
@@ -148,180 +149,230 @@ export function ReviewOverview({
   const conceptsWithEvidence = byConcept(latest).size;
   const firstDue = due[0] ? label(due[0].exercise) : null;
 
+  const upNext = firstDue
+    ? {
+        href: firstDue.href,
+        kicker: `${due.length} answer${due.length === 1 ? "" : "s"} due for review`,
+        title: firstDue.title,
+        detail: firstDue.source,
+        cta: "Review",
+      }
+    : current && nextStage
+      ? {
+          href: `/investigations/${current.id}/${nextStage.id}`,
+          kicker: current.answered > 0 ? "Continue where you left off" : "Up next",
+          title: current.title,
+          detail: `Stage ${nextIndex + 1} · ${nextStage.title}`,
+          cta: current.answered > 0 ? "Continue" : "Start",
+        }
+      : null;
+  const stats = [
+    { label: "Exercises answered", value: latest.size, total: exerciseCount },
+    { label: "Systems started", value: started.length, total: systems.length },
+    { label: "Concepts touched", value: conceptsWithEvidence, total: conceptCount },
+  ];
+
   return (
-    <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      <div className="min-w-0 space-y-8">
-        {firstDue ? (
-          <UpNext
-            href={firstDue.href}
-            kicker={`${due.length} answer${due.length === 1 ? "" : "s"} due for review`}
-            title={firstDue.title}
-            detail={firstDue.source}
-            cta="Review"
-          />
-        ) : current && nextStage ? (
-          <UpNext
-            href={`/investigations/${current.id}/${nextStage.id}`}
-            kicker={current.answered > 0 ? "Continue where you left off" : "Up next"}
-            title={current.title}
-            detail={`Stage ${nextIndex + 1}, ${nextStage.title}`}
-            cta={current.answered > 0 ? "Continue" : "Start"}
-          />
-        ) : null}
-
-        <section aria-labelledby="practise">
-          <h2 id="practise" className="mb-2.5 text-[0.8125rem] font-semibold">
-            Practise
-          </h2>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {TOOLS.map((tool) => (
-              <button
-                key={tool.hash}
-                type="button"
-                onClick={() => onOpen(tool.hash)}
-                className="sheet group flex min-h-36 flex-col p-4 text-left"
-              >
-                <span className="grid size-8 place-items-center rounded-lg text-ink-2 shadow-[inset_0_0_0_1px_var(--rule-strong)] group-hover:text-accent">
-                  {tool.icon}
-                </span>
-                <span className="mt-3 text-[0.875rem] font-semibold">{tool.title}</span>
-                <span className="mt-1 text-[0.8125rem] leading-snug text-ink-3">{tool.body}</span>
-                <span className="mt-auto flex items-center justify-between pt-3 text-[0.75rem] text-ink-3">
-                  {tool.meta}
-                  <span className="transition-transform group-hover:translate-x-0.5" aria-hidden="true">
-                    →
-                  </span>
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section aria-labelledby="due">
-          <h2 id="due" className="mb-2.5 flex items-baseline gap-2 text-[0.8125rem] font-semibold">
-            Due for review <span className="font-mono text-[0.6875rem] font-normal text-ink-3">{due.length + awaiting.length}</span>
-          </h2>
-          {due.length + awaiting.length === 0 ? (
-            <div className="sheet px-5 py-8 text-center">
-              <p className="text-[0.875rem] text-ink-2">Nothing is due.</p>
-              <p className="mt-1 text-[0.8125rem] text-ink-3">
-                {upcoming[0]
-                  ? `The next review is ${daysUntil(upcoming[0].dueAt, now)}${upcoming.length > 1 ? `, with ${upcoming.length - 1} more after it` : ""}.`
-                  : "An answer comes back a day to a week after you give it, sooner when it was weak."}
-              </p>
-            </div>
-          ) : (
-            <ul className="sheet">
-              {awaiting.map((ref) => {
-                const l = label(ref);
-                if (!l) return null;
-                return (
-                  <li key={exerciseKey(ref)} className="sheet-row">
-                    <Link href={l.href} className="flex items-center justify-between gap-4 px-4 py-3">
-                      <span className="min-w-0">
-                        <span className="block truncate text-[0.875rem] font-medium">{l.title}</span>
-                        <span className="block truncate text-[0.75rem] text-ink-3">{l.source}</span>
-                      </span>
-                      <span className="chip-flat shrink-0">Needs your assessment</span>
-                    </Link>
-                  </li>
-                );
-              })}
-              {due.map((item) => {
-                const l = label(item.exercise);
-                if (!l) return null;
-                return (
-                  <li key={item.key} className="sheet-row">
-                    <Link href={l.href} className="flex items-center justify-between gap-4 px-4 py-3">
-                      <span className="min-w-0">
-                        <span className="block truncate text-[0.875rem] font-medium">{l.title}</span>
-                        <span className="block truncate text-[0.75rem] text-ink-3">
-                          {l.source} · answered {daysAgo(item.answeredAt, now)}
-                        </span>
-                      </span>
-                      <SignalBadge signal={item.signal} />
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
-
-        <ScenarioReview scenarios={scenarios} progress={scenarioProgress} now={now} />
-      </div>
-
-      <aside className="space-y-3" aria-label="Where you stand">
-        <div className="sheet p-4">
-          <div className="flex items-center gap-3.5">
+    <div className="space-y-10">
+      {/* Where you are and the one thing to do next, in one surface. */}
+      <section aria-label="Where you are" className="sheet overflow-hidden">
+        {upNext && (
+          <Link href={upNext.href} className="group flex items-center gap-4 px-5 py-4 transition-colors hover:bg-hover sm:px-6 sm:py-5">
+            <span className="min-w-0 flex-1">
+              <span className="kicker block">{upNext.kicker}</span>
+              <span className="mt-1 block truncate text-[1.0625rem] font-semibold tracking-[-0.02em]">{upNext.title}</span>
+              <span className="mt-0.5 block truncate text-[0.875rem] text-ink-2">{upNext.detail}</span>
+            </span>
+            <span className="btn btn-accent shrink-0">
+              {upNext.cta}
+              <DotArrow />
+            </span>
+          </Link>
+        )}
+        <dl className={`grid grid-cols-3 sm:grid-cols-[auto_repeat(3,minmax(0,1fr))] ${upNext ? "border-t border-rule-soft" : ""}`}>
+          <div className="hidden items-center px-6 py-4 sm:flex">
             <Ring value={latest.size} total={exerciseCount} />
-            <div>
-              <p className="font-mono text-[1.25rem] tabular-nums">
-                {latest.size}
-                <span className="text-[0.8125rem] text-ink-3"> / {exerciseCount}</span>
-              </p>
-              <p className="text-[0.75rem] text-ink-3">exercises answered</p>
-            </div>
           </div>
-          <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-rule-soft pt-3 text-[0.75rem]">
-            <div>
-              <dt className="text-ink-3">Systems started</dt>
-              <dd className="mt-0.5 font-mono text-[0.875rem] tabular-nums">
-                {started.length} <span className="text-ink-3">/ {systems.length}</span>
+          {stats.map((st, i) => (
+            <div key={st.label} className={`min-w-0 border-rule-soft px-4 py-4 sm:border-l sm:px-6 ${i > 0 ? "border-l" : ""}`}>
+              <dt className="kicker truncate">{st.label}</dt>
+              <dd className="mt-1.5 font-mono text-[1.125rem] leading-none tracking-[-0.02em] tabular-nums sm:text-[1.375rem]">
+                {st.value}
+                <span className="ml-1 text-[0.8125rem] tracking-normal text-ink-3">/ {st.total}</span>
               </dd>
             </div>
-            <div>
-              <dt className="text-ink-3">Concepts touched</dt>
-              <dd className="mt-0.5 font-mono text-[0.875rem] tabular-nums">
-                {conceptsWithEvidence} <span className="text-ink-3">/ {conceptCount}</span>
-              </dd>
+          ))}
+        </dl>
+      </section>
+
+      <div className="grid items-start gap-x-10 gap-y-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="min-w-0 space-y-10">
+          <section aria-labelledby="practise">
+            <SectionHead id="practise" title="Practise" />
+            <div className="grid gap-3 sm:grid-cols-3">
+              {TOOLS.map((tool) => (
+                <button
+                  key={tool.hash}
+                  type="button"
+                  onClick={() => onOpen(tool.hash)}
+                  className="sheet group flex flex-col p-5 text-left sm:min-h-40"
+                >
+                  <span className="grid size-8 place-items-center rounded-[9px] bg-raised text-ink-2 shadow-[var(--shadow-key)] transition-colors group-hover:text-ink">
+                    {tool.icon}
+                  </span>
+                  <span className="mt-4 text-[0.9375rem] font-semibold tracking-[-0.015em]">{tool.title}</span>
+                  <span className="mt-1 text-[0.8125rem] leading-snug text-ink-2">{tool.body}</span>
+                  <span className="mt-auto flex items-center justify-between pt-4 text-[0.75rem] text-ink-3">
+                    {tool.meta}
+                    <DotArrow className="text-ink-3 group-hover:text-ink" />
+                  </span>
+                </button>
+              ))}
             </div>
-          </dl>
+          </section>
+
+          <section aria-labelledby="due">
+            <SectionHead id="due" title="Due for review" count={due.length + awaiting.length} />
+            {due.length + awaiting.length === 0 ? (
+              <Empty
+                title="Nothing is due."
+                body={
+                  upcoming[0]
+                    ? `The next review is ${daysUntil(upcoming[0].dueAt, now)}${upcoming.length > 1 ? `, with ${upcoming.length - 1} more after it` : ""}.`
+                    : "An answer comes back a day to a week after you give it, sooner when it was weak."
+                }
+              />
+            ) : (
+              <ul className="sheet overflow-hidden">
+                {awaiting.map((ref) => {
+                  const l = label(ref);
+                  if (!l) return null;
+                  return (
+                    <li key={exerciseKey(ref)} className="sheet-row">
+                      <Row href={l.href} title={l.title} meta={l.source} right={<span className="chip-flat">Needs your assessment</span>} />
+                    </li>
+                  );
+                })}
+                {due.map((item) => {
+                  const l = label(item.exercise);
+                  if (!l) return null;
+                  return (
+                    <li key={item.key} className="sheet-row">
+                      <Row
+                        href={l.href}
+                        title={l.title}
+                        meta={`${l.source} · answered ${daysAgo(item.answeredAt, now)}`}
+                        right={<SignalBadge signal={item.signal} />}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+
+          <ScenarioReview scenarios={scenarios} progress={scenarioProgress} now={now} />
         </div>
 
-        <section aria-labelledby="by-system" className="sheet p-4">
-          <h2 id="by-system" className="mb-2 flex justify-between text-[0.8125rem] font-semibold">
-            By system <span className="font-normal text-ink-3 text-[0.75rem]">stages</span>
-          </h2>
-          <ul className="space-y-0.5">
-            {progress.map((s) => (
-              <li key={s.id}>
-                <Link
-                  href={`/investigations/${s.id}`}
-                  className="grid grid-cols-[minmax(0,1fr)_3.5rem_2.25rem] items-center gap-2.5 py-1 text-[0.75rem] text-ink-2 hover:text-ink"
-                >
-                  <span className="truncate">{s.title}</span>
-                  <Bar value={s.answered} total={s.stages.length} />
-                  <span className="text-right font-mono text-[0.6875rem] text-ink-3 tabular-nums">
-                    {s.answered}/{s.stages.length}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <aside className="space-y-10" aria-label="Where you stand">
+          <section aria-labelledby="by-system">
+            <SectionHead id="by-system" title="By system" aside="stages answered" />
+            <ul className="sheet overflow-hidden py-1.5">
+              {progress.map((s) => (
+                <li key={s.id}>
+                  <Link
+                    href={`/investigations/${s.id}`}
+                    className="grid grid-cols-[minmax(0,1fr)_3rem_2.25rem] items-center gap-3 px-4 py-[0.4375rem] text-[0.8125rem] text-ink-2 transition-colors hover:bg-hover hover:text-ink"
+                  >
+                    <span className="truncate">{s.title}</span>
+                    <Bar value={s.answered} total={s.stages.length} />
+                    <span className="text-right font-mono text-[0.6875rem] text-ink-3 tabular-nums">
+                      {s.answered}/{s.stages.length}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-        <section aria-labelledby="by-skill" className="sheet p-4">
-          <h2 id="by-skill" className="mb-2 flex justify-between text-[0.8125rem] font-semibold">
-            By skill
-            <button type="button" className="text-[0.75rem] font-normal text-ink-3 hover:text-ink" onClick={() => onOpen("dimension")}>
-              Drill one
-            </button>
-          </h2>
-          <ul className="space-y-1.5">
-            {DIMENSIONS.map((d) => (
-              <li key={d} className="grid grid-cols-[4.75rem_minmax(0,1fr)] items-center gap-2.5 text-[0.75rem] text-ink-2">
-                <span title={DIMENSION_LABELS[d].description}>{DIMENSION_LABELS[d].label}</span>
-                {dimensions[d].total > 0 ? (
-                  <SignalMeter counts={dimensions[d].counts} label={DIMENSION_LABELS[d].label} />
-                ) : (
-                  <span className="text-[0.6875rem] text-ink-3">no evidence yet</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </section>
-      </aside>
+          <section aria-labelledby="by-skill">
+            <SectionHead
+              id="by-skill"
+              title="By skill"
+              action={
+                <button type="button" className="text-[0.8125rem] text-ink-3 transition-colors hover:text-ink" onClick={() => onOpen("dimension")}>
+                  Drill one
+                </button>
+              }
+            />
+            <ul className="sheet space-y-0 overflow-hidden py-1.5">
+              {DIMENSIONS.map((d) => (
+                <li key={d} className="grid grid-cols-[5rem_minmax(0,1fr)] items-center gap-3 px-4 py-[0.4375rem] text-[0.8125rem] text-ink-2">
+                  <span title={DIMENSION_LABELS[d].description}>{DIMENSION_LABELS[d].label}</span>
+                  {dimensions[d].total > 0 ? (
+                    <SignalMeter counts={dimensions[d].counts} label={DIMENSION_LABELS[d].label} />
+                  ) : (
+                    <span className="text-[0.75rem] text-ink-3">No evidence yet</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        </aside>
+      </div>
+    </div>
+  );
+}
+
+function SectionHead({
+  id,
+  title,
+  count,
+  aside,
+  action,
+}: {
+  id: string;
+  title: string;
+  count?: number;
+  aside?: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="mb-3 flex items-baseline justify-between gap-3">
+      <h2 id={id} className="flex items-baseline gap-2 text-[1rem] font-semibold tracking-[-0.015em]">
+        {title}
+        {count !== undefined && <span className="font-mono text-[0.75rem] font-normal text-ink-3 tabular-nums">{count}</span>}
+      </h2>
+      {aside && <span className="text-[0.75rem] text-ink-3">{aside}</span>}
+      {action}
+    </div>
+  );
+}
+
+function Row({ href, title, meta, right }: { href: string; title: string; meta: string; right: ReactNode }) {
+  return (
+    <Link href={href} className="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors hover:bg-hover">
+      <span className="min-w-0">
+        <span className="block truncate text-[0.9375rem] font-medium tracking-[-0.01em]">{title}</span>
+        <span className="mt-0.5 block truncate text-[0.8125rem] text-ink-3">{meta}</span>
+      </span>
+      <span className="shrink-0">{right}</span>
+    </Link>
+  );
+}
+
+function Empty({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="sheet flex items-center gap-4 px-5 py-5">
+      <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full text-signal-strong shadow-[inset_0_0_0_1px_var(--rule-strong)]">
+        <svg width="12" height="12" viewBox="0 0 12 12">
+          <path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+      <span>
+        <span className="block text-[0.9375rem] font-medium">{title}</span>
+        <span className="mt-0.5 block text-[0.8125rem] text-ink-3">{body}</span>
+      </span>
     </div>
   );
 }
@@ -352,63 +403,32 @@ function ScenarioReview({
   const list = [...due, ...fresh];
   return (
     <section aria-labelledby="scenarios">
-      <h2 id="scenarios" className="mb-2.5 flex items-baseline gap-2 text-[0.8125rem] font-semibold">
-        Playground scenarios
-        <span className="font-mono text-[0.6875rem] font-normal text-ink-3">
-          {solved} / {rows.length} solved
-        </span>
-      </h2>
+      <SectionHead id="scenarios" title="Missions" aside={`${solved} of ${rows.length} beaten`} />
       {list.length === 0 ? (
-        <div className="sheet px-5 py-8 text-center">
-          <p className="text-[0.875rem] text-ink-2">Every scenario is solved and none is due.</p>
-          {later[0]?.dueAt && (
-            <p className="mt-1 text-[0.8125rem] text-ink-3">
-              {later[0].title} comes back {daysUntil(later[0].dueAt.toISOString(), now)}.
-            </p>
-          )}
-        </div>
+        <Empty
+          title="Every mission is beaten and none is due."
+          body={later[0]?.dueAt ? `${later[0].title} comes back ${daysUntil(later[0].dueAt.toISOString(), now)}.` : ""}
+        />
       ) : (
-        <ul className="sheet">
+        <ul className="sheet overflow-hidden">
           {list.map((r) => (
             <li key={`${r.investigationId}/${r.id}`} className="sheet-row">
-              <Link
+              <Row
                 href={`/investigations/${r.investigationId}/playground#scenario=${r.id}${r.due ? "&fresh=1" : ""}`}
-                className="flex items-center justify-between gap-4 px-4 py-3"
-              >
-                <span className="min-w-0">
-                  <span className="block truncate text-[0.875rem] font-medium">{r.title}</span>
-                  <span className="block truncate text-[0.75rem] text-ink-3">
-                    {r.system} · {r.summary}
-                  </span>
-                </span>
-                <span className="chip-flat shrink-0">{r.due ? "Solve again from scratch" : "Not tried"}</span>
-              </Link>
+                title={r.title}
+                meta={`${r.system} · ${r.summary}`}
+                right={
+                  r.due ? (
+                    <span className="chip-flat text-ember">Due: solve again</span>
+                  ) : (
+                    <span className="text-[0.8125rem] font-medium text-ink-3">Play</span>
+                  )
+                }
+              />
             </li>
           ))}
         </ul>
       )}
     </section>
-  );
-}
-
-function UpNext({ href, kicker, title, detail, cta }: { href: string; kicker: string; title: string; detail: string; cta: string }) {
-  return (
-    <Link
-      href={href}
-      className="group flex items-center gap-4 rounded-xl bg-accent-soft px-4 py-3.5 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--accent-solid)_28%,transparent)] sm:px-5"
-    >
-      <span className="grid size-9 shrink-0 place-items-center rounded-lg text-accent shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--accent-solid)_40%,transparent)]">
-        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-          <path d="M4.5 3v8l6.5-4z" fill="currentColor" />
-        </svg>
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[0.75rem] text-ink-3">{kicker}</span>
-        <span className="block truncate text-[0.9375rem] font-medium">
-          {title} <span className="font-normal text-ink-3">· {detail}</span>
-        </span>
-      </span>
-      <span className="btn btn-accent btn-sm shrink-0">{cta}</span>
-    </Link>
   );
 }

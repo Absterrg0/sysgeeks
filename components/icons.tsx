@@ -172,40 +172,28 @@ export const PIXEL_MARK_GRID = [
   "00000111",
 ] as const;
 
-/**
- * The mark: a pixel grid in which two nodes and the flow between them are lit,
- * set like a small display.
- */
-export function PixelMark({ size = 44 }: { size?: number }) {
-  const grid = PIXEL_MARK_GRID;
+/** The mark: an ink key with two parts and the flow between them; the part that matters is lit in ember. */
+export function DotMark({ size = 20, className }: { size?: number; className?: string }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 8 8"
-      aria-hidden="true"
-      className="shrink-0 overflow-hidden"
-      style={{
-        borderRadius: Math.round(size * 0.2),
-        outline: "1px solid light-dark(transparent, #4D4840)",
-        outlineOffset: "-1px",
-      }}
-    >
-      <rect width="8" height="8" fill="#0a0a0a" />
-      {grid.flatMap((row, y) =>
-        [...row].map((cell, x) => (
-          <rect
-            key={`${x}-${y}`}
-            x={x + 0.08}
-            y={y + 0.08}
-            width={0.84}
-            height={0.84}
-            rx={0.12}
-            fill={cell === "0" ? "#ffffff" : "#00bbff"}
-            fillOpacity={cell === "0" ? 0.07 : cell === "2" ? 0.55 : 1}
-          />
-        )),
-      )}
+    <svg width={size} height={size} viewBox="0 0 20 20" aria-hidden="true" className={`shrink-0 ${className ?? ""}`}>
+      <rect width="20" height="20" rx="5.5" fill="var(--ink)" />
+      <path d="M6 6.5h5.5a2 2 0 0 1 2 2V13" fill="none" stroke="var(--paper)" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="6" cy="6.5" r="2.1" fill="var(--paper)" />
+      <circle cx="13.5" cy="13.5" r="2.3" fill="var(--accent-solid)" />
+    </svg>
+  );
+}
+
+/** Kura's arrow, drawn in dots; it steps forward when its button is hovered (.dot-arrow). */
+export function DotArrow({ className }: { className?: string }) {
+  const dots: Array<[number, number]> = [
+    [18, 2], [22, 6], [2, 10], [6, 10], [10, 10], [14, 10], [18, 10], [22, 10], [26, 10], [22, 14], [18, 18],
+  ];
+  return (
+    <svg viewBox="0 0 28 20" width="18" height="13" aria-hidden="true" className={`dot-arrow shrink-0 overflow-visible ${className ?? ""}`}>
+      {dots.map(([cx, cy]) => (
+        <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="1.45" fill="currentColor" />
+      ))}
     </svg>
   );
 }

@@ -59,7 +59,7 @@ export function DecisionInput({ interaction, draftKey, seed, onSubmit }: InputPr
               />
               <span
                 aria-hidden="true"
-                className="grid size-6 shrink-0 place-items-center rounded-md bg-raised font-mono text-[0.6875rem] text-ink-3 shadow-[var(--shadow-btn)] peer-checked:bg-accent-solid peer-checked:text-accent-ink peer-checked:shadow-none"
+                className="grid size-6 shrink-0 place-items-center rounded-md bg-raised font-mono text-[0.6875rem] text-ink-3 shadow-[var(--shadow-btn)] peer-checked:bg-ink peer-checked:text-paper peer-checked:shadow-none"
               >
                 {LETTERS[i]}
               </span>
@@ -109,19 +109,19 @@ export function DecisionFeedback({
   return (
     <div>
       <p className="font-heading text-[1.125rem] leading-snug mb-4">{interaction.prompt}</p>
-      <ol className="space-y-2">
+      <ol className="sheet overflow-hidden">
         {options.map((option, i) => {
           const mine = option.id === response.optionId;
           return (
             <li
               key={option.id}
-              className={`rounded-xl p-4 ${mine ? "bg-accent-soft shadow-[0_0_0_1.5px_var(--ink)]" : "panel"}`}
+              className={`sheet-row px-4 py-4 sm:px-5 ${mine ? "bg-[color-mix(in_srgb,var(--ink)_3.5%,var(--raised))] shadow-[inset_3px_0_0_var(--ink)]" : ""}`}
             >
               <div className="flex gap-3">
                 <span
                   aria-hidden="true"
                   className={`grid size-6 shrink-0 place-items-center rounded-md font-mono text-[0.6875rem] ${
-                    mine ? "bg-accent-solid text-accent-ink" : "bg-raised text-ink-3 shadow-[var(--shadow-btn)]"
+                    mine ? "bg-ink text-paper" : "bg-raised text-ink-3 shadow-[var(--shadow-btn)]"
                   }`}
                 >
                   {LETTERS[i]}
@@ -132,7 +132,7 @@ export function DecisionFeedback({
                       <InlineText text={option.label} />
                     </span>
                     <AssessmentBadge assessment={option.assessment} />
-                    {mine && <span className="chip-flat text-accent">Your choice</span>}
+                    {mine && <span className="text-[0.75rem] font-medium text-ink-3">Your choice</span>}
                   </div>
                   {mine ? (
                     <div className="mt-2.5">{slots.optionFeedback[option.id]}</div>

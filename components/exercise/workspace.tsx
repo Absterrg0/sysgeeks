@@ -21,6 +21,8 @@ import type { Written } from "./rubric";
 import type { ExerciseSpec, InteractionSlots } from "./types";
 
 type Props = {
+  /** Set the answer form in its own sheet, for pages where it stands alone. */
+  framed?: boolean;
   spec: ExerciseSpec;
   slots: InteractionSlots;
   /** Server-rendered reasoning shown after answering. */
@@ -39,7 +41,7 @@ type Props = {
   };
 };
 
-export function ExerciseWorkspace({ spec, slots, reveal, context, deferFeedback = false, pinned }: Props) {
+export function ExerciseWorkspace({ spec, slots, reveal, context, deferFeedback = false, pinned, framed = false }: Props) {
   const state = useLearnerState();
   const hydrated = useHydrated();
   const now = useNow();
@@ -72,6 +74,7 @@ export function ExerciseWorkspace({ spec, slots, reveal, context, deferFeedback 
     return (
       <>
         {due && now !== null && <ReviewNotice item={due} now={now} onShowPrevious={() => setShowPrevious(true)} />}
+        <div className={framed ? "sheet px-5 py-5 sm:px-7 sm:py-6" : undefined}>
         <AnswerForm
         interaction={spec.interaction}
         draftKey={pinned?.draftKey ?? exerciseKey(spec.ref)}
@@ -89,6 +92,7 @@ export function ExerciseWorkspace({ spec, slots, reveal, context, deferFeedback 
           pinned?.onRecorded(recorded.id);
         }}
         />
+        </div>
       </>
     );
   }
@@ -223,7 +227,7 @@ function writtenPart(response: Response): Written | null {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="space-y-4">
-      <h2 className="font-display text-[1.25rem] leading-tight">{title}</h2>
+      <h2 className="text-[1.125rem] leading-tight font-semibold tracking-[-0.02em]">{title}</h2>
       {children}
     </section>
   );

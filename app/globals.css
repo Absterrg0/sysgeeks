@@ -11,54 +11,54 @@
 :root {
   color-scheme: light dark;
 
-  --paper: light-dark(#f6f7f9, #07080a);
-  --raised: light-dark(#ffffff, #121318);
-  --well: light-dark(#eff0f3, #0c0d10);
-  --sunken: light-dark(#e8eaee, #060709);
-  --hover: light-dark(#eceef1, #18191e);
+  /* Kura: a cool grey canvas, white surfaces held by hairline rings, ink for what you press. */
+  --paper: light-dark(#e9ebee, #0c0d0f);
+  --raised: light-dark(#ffffff, #141518);
+  --well: light-dark(#f2f3f5, #0a0b0d);
+  --sunken: light-dark(#eceef1, #08090b);
+  --hover: light-dark(#f6f7f8, #1e2024);
 
-  --ink: light-dark(#0b0c0f, #eceef2);
-  --ink-2: light-dark(#4a4f5b, #b0b5bf);
-  --ink-3: light-dark(#5f6571, #8a909b);
+  --ink: light-dark(#111214, #f2f3f4);
+  --ink-2: light-dark(#53565c, #a4a7ad);
+  --ink-3: light-dark(#5d6168, #8f939a);
 
-  --rule: light-dark(#e1e3e8, #1c1e24);
-  --rule-soft: light-dark(#eaecef, #15161b);
-  --rule-strong: light-dark(#cdd1d8, #2b2e36);
+  --rule: light-dark(rgb(17 18 20 / 0.09), rgb(255 255 255 / 0.085));
+  --rule-soft: light-dark(rgb(17 18 20 / 0.065), rgb(255 255 255 / 0.06));
+  --rule-strong: light-dark(rgb(17 18 20 / 0.16), rgb(255 255 255 / 0.14));
 
-  /* The display's unlit pixels: a dot every 24px, a brighter one every 120px. */
-  --grid-minor: light-dark(#d5d8de, #1d1f25);
-  --grid-major: light-dark(#b4b9c2, #353943);
-  /* The lit matrix behind a running system. */
-  --matrix-minor: light-dark(rgb(15 20 30 / 0.13), rgb(255 255 255 / 0.11));
-  --matrix-major: light-dark(rgb(15 20 30 / 0.22), rgb(255 255 255 / 0.2));
-  --grain-opacity: light-dark(0.05, 0.07);
-  /* Squared paper: a fine line every 24px and a heavier one every 120px. */
-  --line-minor: light-dark(rgb(10 10 10 / 0.035), rgb(255 255 255 / 0.022));
-  --line-major: light-dark(rgb(10 10 10 / 0.06), rgb(255 255 255 / 0.04));
+  /* The dot language: a dot every 24px, a darker one every 120px. */
+  --grid-minor: light-dark(#d3d6db, #232529);
+  --grid-major: light-dark(#a9adb4, #3a3d43);
+  --matrix-minor: light-dark(rgb(17 18 20 / 0.12), rgb(255 255 255 / 0.09));
+  --matrix-major: light-dark(rgb(17 18 20 / 0.22), rgb(255 255 255 / 0.18));
+  --grain-opacity: 0;
+  --line-minor: light-dark(rgb(17 18 20 / 0.03), rgb(255 255 255 / 0.02));
+  --line-major: light-dark(rgb(17 18 20 / 0.05), rgb(255 255 255 / 0.035));
 
-  /* The lit colour: the logo's blue. A fill for what you act on; text only in its darker step. */
-  --accent-solid: #00bbff;
-  --accent-top: #3fcdff;
-  --accent-bottom: #00acf0;
-  --accent: light-dark(#006a9e, #33c4ff);
-  --accent-ink: #00131d;
-  --accent-soft: light-dark(#eff8fd, #08161e);
-  --highlight: light-dark(#cdeffd, #0b3044);
-  --focus: light-dark(#0085c7, #00bbff);
-  /* Pixel type: large display words only (3:1 is enough at that size in light mode). */
-  --lit: light-dark(#0085c7, #00bbff);
-  --glow: light-dark(rgb(0 170 240 / 0.28), rgb(0 187 255 / 0.45));
+  /* Ember: the one chromatic colour, kept for where you are and what is live. Text that links is ink. */
+  --accent-solid: light-dark(#f2591a, #ff6b2c);
+  --accent-top: #383a40;
+  --accent-bottom: #1a1b1e;
+  --accent: light-dark(#111214, #f2f3f4);
+  --accent-ink: light-dark(#ffffff, #111214);
+  --accent-soft: light-dark(rgb(242 89 26 / 0.08), rgb(255 107 44 / 0.1));
+  /* Requests moving along a flow: ink, like Kura's dots. */
+  --traffic: light-dark(#2d2f34, #e1e2e6);
+  --ember-text: light-dark(#b83f0c, #ff9864);
+  --highlight: light-dark(#dddfe4, #2c2e34);
+  --focus: light-dark(rgb(17 18 20 / 0.5), rgb(164 167 173 / 0.7));
+  --lit: light-dark(#b83f0c, #ff6b2c);
+  --glow: light-dark(rgb(242 89 26 / 0.22), rgb(255 107 44 / 0.35));
 
-  --signal-strong: light-dark(#0b6a4e, #4cc9a0);
-  --signal-strong-soft: light-dark(#e1f1e9, #0c211b);
+  --signal-strong: light-dark(#1f7a44, #5fc27a);
+  --signal-strong-soft: light-dark(#e3f2e8, rgb(95 194 122 / 0.12));
   --signal-partial: light-dark(#8a4b00, #f2b252);
-  --signal-partial-soft: light-dark(#f9edd6, #241b0c);
-  --signal-gap: light-dark(#b0223a, #ff8086);
-  --signal-gap-soft: light-dark(#f9e6e8, #2a1416);
-  /* Fills for meters and dots; CVD-separated. Always paired with words. */
-  --mark-strong: light-dark(#0e8f6a, #22a47e);
+  --signal-partial-soft: light-dark(#f9edd6, rgb(242 178 82 / 0.12));
+  --signal-gap: light-dark(#b3281d, #f26b60);
+  --signal-gap-soft: light-dark(#fbe9e7, rgb(242 107 96 / 0.12));
+  --mark-strong: light-dark(#2c9a58, #5fc27a);
   --mark-partial: light-dark(#d88a00, #efa12a);
-  --mark-gap: light-dark(#e04a5a, #f4606a);
+  --mark-gap: light-dark(#c93a2f, #f26b60);
   --on-signal: light-dark(#ffffff, #0a0a0a);
 
   /* AI-generated content: pencil on vellum. */
@@ -67,35 +67,39 @@
   --ai-rule: light-dark(#cbbdee, #43386b);
   --mark-ai: light-dark(#8b5cf6, #a385fa);
 
-  /* Depth. A raised surface has a lit top edge, a hairline edge and a soft shadow; a carved one has
-     shade along its top edge and a catch of light on its lower lip. */
-  --hl: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.06));
+  /* Depth, from Kura's elevation scale: hairline rings rather than borders. */
+  --hl: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.07));
   --hl-lip: light-dark(rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.03));
-  --edge: light-dark(rgb(12 16 24 / 0.09), rgb(255 255 255 / 0.075));
-  --edge-strong: light-dark(rgb(12 16 24 / 0.15), rgb(255 255 255 / 0.12));
-  --drop-1: light-dark(rgb(12 16 24 / 0.05), rgb(0 0 0 / 0.45));
-  --drop-2: light-dark(rgb(12 16 24 / 0.08), rgb(0 0 0 / 0.65));
-  --carve: light-dark(rgb(12 16 24 / 0.06), rgb(0 0 0 / 0.55));
-  --key-top: light-dark(#ffffff, #1d1f25);
-  --key-bottom: light-dark(#f7f8fa, #16171c);
-  --ink-top: light-dark(#2b2b2f, #ffffff);
-  --ink-bottom: light-dark(#0a0a0a, #e2e2e5);
+  --edge: light-dark(rgb(17 18 20 / 0.09), rgb(255 255 255 / 0.09));
+  --edge-strong: light-dark(rgb(17 18 20 / 0.16), rgb(255 255 255 / 0.14));
+  --drop-1: light-dark(rgb(17 18 20 / 0.06), rgb(0 0 0 / 0.4));
+  --drop-2: light-dark(rgb(17 18 20 / 0.12), rgb(0 0 0 / 0.7));
+  --carve: light-dark(rgb(17 18 20 / 0.04), rgb(0 0 0 / 0.45));
+  --key-top: light-dark(#ffffff, #1e2024);
+  --key-bottom: light-dark(#ffffff, #1e2024);
+  --ink-top: light-dark(#2d2f34, #fafafa);
+  --ink-bottom: light-dark(#121316, #e1e2e6);
+  --ink-fill: linear-gradient(var(--ink-top), var(--ink-bottom));
+  --ink-fill-hover: linear-gradient(light-dark(#383a40, #ffffff), light-dark(#1a1b1e, #ebecef));
 
   --shadow-color: var(--drop-2);
-  --shadow-btn: inset 0 1px 0 var(--hl), 0 0 0 1px var(--edge), 0 1px 1px var(--drop-1), 0 2px 5px -2px var(--drop-2);
-  --shadow-card: inset 0 1px 0 var(--hl), 0 0 0 1px var(--edge), 0 1px 2px var(--drop-1), 0 8px 20px -12px var(--drop-2);
-  --shadow-raised: inset 0 1px 0 var(--hl), 0 0 0 1px var(--edge-strong), 0 2px 6px var(--drop-1),
-    0 24px 48px -20px var(--drop-2);
-  --shadow-plate: inset 0 1px 2px var(--carve), inset 0 0 0 1px var(--edge);
-  --shadow-well: inset 0 1px 3px var(--carve), inset 0 0 0 1px var(--edge), 0 1px 0 var(--hl-lip);
-  --shadow-accent: inset 0 1px 0 rgb(255 255 255 / 0.5), inset 0 -1px 0 rgb(0 50 80 / 0.16),
-    0 0 0 1px rgb(0 115 165 / 0.42), 0 1px 2px rgb(0 80 120 / 0.2), 0 6px 16px -6px rgb(0 170 235 / 0.6);
+  --shadow-btn: inset 0 1px 0 var(--hl), 0 0 0 1px var(--edge), 0 1px 2px var(--drop-1);
+  --shadow-card: 0 0 0 1px var(--edge), 0 1px 2px var(--drop-1), 0 10px 28px -16px var(--drop-2);
+  --shadow-raised: inset 0 1px 0 var(--hl), 0 0 0 1px var(--edge-strong), 0 4px 10px -4px var(--drop-1),
+    0 16px 36px -12px var(--drop-2);
+  --shadow-plate: inset 0 0 0 1px var(--edge);
+  --shadow-well: inset 0 0 0 1px var(--edge);
+  --shadow-ink: inset 0 1px 0 light-dark(rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.8)),
+    0 0 0 1px light-dark(#0b0c0e, rgb(0 0 0 / 0.5)), 0 1px 2px light-dark(rgb(0 0 0 / 0.25), rgb(0 0 0 / 0.4));
+  --shadow-key: inset 0 -1px 0 light-dark(rgb(17 18 20 / 0.08), rgb(0 0 0 / 0.35)),
+    0 0 0 1px light-dark(rgb(17 18 20 / 0.1), rgb(255 255 255 / 0.12));
+  --shadow-accent: var(--shadow-ink);
   --plate-top: var(--sunken);
   --plate-bottom: var(--sunken);
 
-  --font-display: var(--font-funnel-display), var(--font-funnel-sans), ui-sans-serif, system-ui, sans-serif;
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 :root[data-theme="light"] { color-scheme: light; }
 :root[data-theme="dark"] { color-scheme: dark; }
@@ -134,10 +138,9 @@
   --color-ai-soft: var(--ai-soft);
   --color-ai-rule: var(--ai-rule);
   --color-mark-ai: var(--mark-ai);
-  --font-sans: var(--font-funnel-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-display);
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-pixel: var(--font-geist-pixel), ui-monospace, monospace;
 
   --text-hero: clamp(2.25rem, 1.4rem + 2.6vw, 3.5rem);
   --text-hero--line-height: 1.02;
@@ -185,26 +188,14 @@
 /* Display headings: h1, h2 (≥ 1.25rem). Geist, set tight. */
 @utility font-display {
   font-family: var(--font-display);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-}
-/* Geist Pixel, lit: a word on the display. Large sizes only, and rarely; it is the logo's voice. */
-@utility lit {
-  font-family: var(--font-pixel);
-  font-weight: 400;
-  font-style: normal;
-  letter-spacing: 0;
-  color: var(--lit);
-  text-shadow: 0 0 0.35em var(--glow), 0 0 1.2em var(--glow);
-}
-/* Geist Pixel, unlit: numerals and counts on the display. */
-@utility pixel {
-  font-family: var(--font-pixel);
-  font-weight: 400;
-  letter-spacing: 0;
-  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.035em;
 }
 /* Sans headings: h3 and below, and every heading inside tools. */
+/* Ember text: the one chromatic word, for what needs you. */
+@utility text-ember {
+  color: var(--ember-text);
+}
 @utility font-heading {
   font-family: var(--font-sans);
   font-weight: 600;
@@ -223,6 +214,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv11";
+    background: var(--paper);
   }
   * {
     scrollbar-width: thin;
@@ -282,32 +275,21 @@
     -webkit-mask-image: var(--drafting-mask, radial-gradient(120% 100% at 50% 0%, #000 25%, transparent 72%));
     mask-image: var(--drafting-mask, radial-gradient(120% 100% at 50% 0%, #000 25%, transparent 72%));
   }
-  /* A sheet under a diagram: the paper shows around it and fades into the page on every side. */
-  .drafting-sheet { --drafting-mask: radial-gradient(60% 62% at 50% 50%, #000 35%, transparent 100%); }
 
   /* Plain links. The current page gets one lit pixel beneath it, like the logo's. */
   /* The bar floats over the page: frosted, lit along its top edge, resting on a soft shadow. */
   .nav-float {
-    border-radius: 16px;
-    background: color-mix(in srgb, var(--raised) 72%, transparent);
-    backdrop-filter: blur(18px) saturate(1.6); -webkit-backdrop-filter: blur(18px) saturate(1.6);
-    box-shadow: inset 0 1px 0 var(--hl), 0 0 0 1px var(--edge), 0 2px 6px -2px var(--drop-1),
-      0 18px 40px -22px var(--drop-2);
-  }
-  /* The drawer under the bar inside a system: tucked beneath the bar, a little narrower, carved in. */
-  .nav-drawer {
-    position: relative; z-index: 0; margin: -0.75rem 0.375rem 0; padding-top: 0.75rem;
-    border-radius: 0 0 14px 14px;
-    background: color-mix(in srgb, var(--sunken) 92%, transparent);
-    backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4);
-    box-shadow: inset 0 0 0 1px var(--edge), inset 0 12px 14px -10px var(--carve), 0 16px 32px -22px var(--drop-2);
+    border-radius: 14px;
+    background: color-mix(in oklab, var(--raised) 68%, transparent);
+    backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5);
+    box-shadow: 0 0 0 1px var(--edge), 0 1px 2px var(--drop-1), 0 10px 28px -16px var(--drop-2);
   }
   @media (min-width: 640px) { .nav-drawer { margin-inline: 1.25rem; } }
   /* A switch of modes: a carved track, the current mode a raised key lit by one pixel. */
   .seg {
     display: flex; gap: 2px; padding: 3px; border-radius: 10px; max-width: 100%;
-    background: color-mix(in srgb, var(--paper) 70%, var(--sunken));
-    box-shadow: inset 0 1px 2px var(--carve), inset 0 0 0 1px var(--edge);
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+    box-shadow: inset 0 0 0 1px var(--edge);
     scrollbar-width: none;
   }
   .seg-item {
@@ -321,29 +303,17 @@
     color: var(--ink); background: linear-gradient(var(--key-top), var(--key-bottom)); box-shadow: var(--shadow-btn);
   }
   .seg-item[aria-current="page"]::before, .seg-item[aria-selected="true"]::before, .seg-item[aria-pressed="true"]::before {
-    content: ""; width: 4px; height: 4px; border-radius: 1px; background: var(--accent-solid); box-shadow: 0 0 6px var(--glow);
+    content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-solid);
   }
 
-  /* A carved tray of links, for jumping between the parts of a page. */
-  .nav-tray {
-    display: flex; align-items: center; gap: 2px; padding: 3px; border-radius: 11px;
-    background: var(--well); box-shadow: var(--shadow-well);
-  }
   /* Section links. The current one is a key held down, lit by one pixel. */
   .nav-link {
     position: relative; display: inline-flex; align-items: center; gap: 0.45rem; height: 2rem;
-    padding-inline: 0.75rem; border-radius: 9px; font-size: 0.8125rem; color: var(--ink-2); white-space: nowrap;
+    padding-inline: 0.75rem; border-radius: 8px; font-size: 0.875rem; color: var(--ink-2); white-space: nowrap;
     transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
   }
-  .nav-link:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 5%, transparent); }
-  .nav-link[aria-current="page"] {
-    color: var(--ink); background: color-mix(in srgb, var(--ink) 5%, transparent);
-    box-shadow: inset 0 1px 0 var(--hl), 0 0 0 1px var(--edge);
-  }
-  .nav-link[aria-current="page"]::before {
-    content: ""; width: 4px; height: 4px; border-radius: 1px; background: var(--accent-solid);
-    box-shadow: 0 0 6px var(--glow);
-  }
+  .nav-link:hover { color: var(--ink); }
+  .nav-link[aria-current="page"] { color: var(--ink); background: color-mix(in srgb, var(--ink) 5%, transparent); }
 
   /* The stage list that drops from the stage bar, pinned under it at the shell's right edge. */
   .stage-popover {
@@ -385,9 +355,9 @@
 
   /* ---------- Surfaces ---------- */
   /* A sheet: the flat surface working pages are built from, held by a hairline. */
-  .sheet { background: color-mix(in srgb, var(--raised) 55%, var(--paper)); border-radius: 12px; box-shadow: 0 0 0 1px var(--rule); }
+  .sheet { background: var(--raised); border-radius: 14px; box-shadow: var(--shadow-card); }
   a.sheet, button.sheet { transition: box-shadow 160ms var(--ease-out), background-color 160ms var(--ease-out); }
-  a.sheet:hover, button.sheet:hover { box-shadow: 0 0 0 1px var(--rule-strong); }
+  a.sheet:hover, button.sheet:hover { box-shadow: 0 0 0 1px var(--edge-strong), 0 1px 2px var(--drop-1), 0 14px 32px -16px var(--drop-2); }
   /* A row in a sheet: the first one carries no rule, the row under the pointer lights up. */
   .sheet-row { border-top: 1px solid var(--rule-soft); transition: background-color 140ms var(--ease-out); }
   .sheet-row:first-child { border-top: 0; }
@@ -428,11 +398,6 @@
   .plate-grid { display: grid; gap: 1px; background: var(--rule-soft); }
   .plate-grid > * { background: var(--raised); }
 
-  /* Film grain over the whole page: it takes the banding out of the dark and gives it a surface. */
-  .grain {
-    position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: var(--grain-opacity); mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
   /* The matrix behind a running system, lit where the system is and fading out into the dark around it. */
   .matrix-lit {
     position: absolute; z-index: -1; pointer-events: none;
@@ -448,13 +413,6 @@
   }
   /* The matrix kept to its own column, for diagrams that do not sit in the middle of the page. */
   .matrix-lit.matrix-local { left: -8%; right: -8%; }
-  /* Faint cool light falling on the headline. */
-  /* It reaches up under the floating bar, so the light has no edge where the page starts. */
-  .light-cool {
-    position: absolute; z-index: -1; pointer-events: none; left: calc(50% - 50cqw); right: calc(50% - 50cqw);
-    top: -9rem; height: 56rem;
-    background: radial-gradient(60rem 36rem at 24% 32%, light-dark(rgb(0 150 255 / 0.05), rgb(0 150 255 / 0.065)), transparent 70%);
-  }
   /* Traffic on a flow: dashes of light (in a 0–100 path length) sliding one period forward, forever.
      Both ends are lengths: a bare number at one end and a calc() at the other cannot be interpolated, so
      the browser would jump a whole period at the halfway mark and the light would look frozen. */
@@ -495,13 +453,8 @@
   /* An incident: dark glass edged in the failure's red, with the log carved into it. */
   .ticket {
     position: relative; border-radius: 16px; padding: 1.125rem 1.125rem 1rem;
-    background: linear-gradient(var(--raised), color-mix(in srgb, var(--raised) 88%, var(--paper)));
-    box-shadow: inset 0 1px 0 var(--hl), 0 0 0 1px color-mix(in srgb, var(--mark-gap) 28%, transparent),
-      0 30px 60px -30px var(--drop-2), 0 0 70px -30px color-mix(in srgb, var(--mark-gap) 45%, transparent);
-  }
-  .ticket-log {
-    border-radius: 10px; padding: 0.625rem 0.75rem; background: var(--sunken); box-shadow: var(--shadow-well);
-    font-family: var(--font-mono); font-size: 0.71875rem; line-height: 1.75; color: var(--ink-3);
+    background: var(--raised);
+    box-shadow: 0 0 0 1px var(--edge), 0 1px 2px var(--drop-1), 0 16px 36px -14px var(--drop-2);
   }
   /* An answer: a plain row with a radio, not a box inside a box. */
   .ticket-option {
@@ -517,20 +470,12 @@
     box-shadow: inset 0 1px 2px var(--carve), inset 0 0 0 1px var(--edge-strong);
   }
 
-  /* A system as a tile: its name, how long it takes, and how far along you are. */
-  .system-tile {
-    display: flex; flex-direction: column; border-radius: 14px; padding: 0.875rem 1rem 0.9375rem;
-    background: linear-gradient(var(--raised), color-mix(in srgb, var(--raised) 85%, var(--paper)));
-    box-shadow: inset 0 1px 0 var(--hl), 0 0 0 1px var(--edge);
-    transition: box-shadow 160ms var(--ease-out), transform 160ms var(--ease-out);
-  }
-  .system-tile:hover { box-shadow: inset 0 1px 0 var(--hl), 0 0 0 1px var(--edge-strong), 0 12px 28px -16px var(--drop-2); }
 
   /* A key cap, for shortcuts and counts. */
   .kbd {
     display: inline-grid; place-items: center; min-width: 1.25rem; height: 1.25rem; padding: 0 0.3rem; border-radius: 5px;
-    font-family: var(--font-mono); font-size: 0.625rem; color: var(--ink-3); background: var(--well);
-    box-shadow: inset 0 0 0 1px var(--edge), inset 0 -1px 0 var(--edge);
+    font-family: var(--font-sans); font-weight: 500; font-size: 0.6875rem; color: var(--ink-3); background: var(--raised);
+    box-shadow: var(--shadow-key);
   }
   /* A row of an index: a name, a dot, what it is. The row under the pointer becomes a raised key. */
   .index-row {
@@ -541,21 +486,7 @@
     background: linear-gradient(var(--key-top), var(--key-bottom)); box-shadow: var(--shadow-btn);
   }
   .index-sep { color: var(--rule-strong); }
-  /* A tinted card: the lit colour, washed out. For pointers to somewhere else. */
-  .card-tint {
-    border-radius: 14px; background: var(--accent-soft); padding: 1.125rem 1.25rem;
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-solid) 14%, transparent);
-  }
-  .card-tint-gap {
-    background: var(--signal-gap-soft); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mark-gap) 22%, transparent);
-  }
 
-  /* A small display: the matrix in a carved bezel, for thumbnails of a system. */
-  .bezel {
-    border-radius: 10px; background-color: var(--well); box-shadow: var(--shadow-well);
-    background-image: radial-gradient(circle at center, var(--grid-minor) 0.75px, transparent 1px);
-    background-size: 8px 8px; background-position: -4px -4px;
-  }
 
   /* ---------- Dots, chips, labels ---------- */
   .led {
@@ -587,15 +518,21 @@
   button.chip[aria-pressed="true"] { background: var(--well); color: var(--ink); box-shadow: var(--shadow-plate); }
 
   .eyebrow { font-size: 0.8125rem; line-height: 1.25rem; font-weight: 500; color: var(--ink-2); }
+  /* A label above a value or a block: quiet sans, sentence case. Mono is kept for numbers and data. */
   .kicker {
-    font-family: var(--font-mono); font-size: 0.6875rem; line-height: 1; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--ink-3);
+    font-family: var(--font-sans); font-size: 0.75rem; line-height: 1.2; font-weight: 500; letter-spacing: 0;
+    color: var(--ink-3);
   }
+  .kicker::first-letter { text-transform: uppercase; }
   .badge-new {
     display: inline-flex; align-items: center; height: 1.125rem; padding: 0 0.3rem; border-radius: 4px;
     background: var(--highlight); color: var(--accent-ink);
     font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.08em; text-transform: uppercase;
   }
+
+  /* Kura's dot arrow: the dots step forward when the button is hovered. */
+  .dot-arrow { transition: transform 260ms var(--ease-out); }
+  :is(.group, a, button):hover > .dot-arrow { transform: translateX(3px); }
 
   /* ---------- Prose ---------- */
   .prose { font-size: 1rem; line-height: 1.65; color: var(--ink); }
@@ -688,26 +625,14 @@
   }
   .btn[aria-busy="true"] { pointer-events: none; }
   .btn-sm { min-height: 1.875rem; padding: 0.375rem 0.6875rem; font-size: 0.8125rem; border-radius: 7px; }
-  .btn-lg { min-height: 2.75rem; padding: 0.75rem 1.25rem; font-size: 0.9375rem; border-radius: 11px; }
-  .btn-primary {
-    color: var(--paper); background: linear-gradient(var(--ink-top), var(--ink-bottom));
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 0 0 1px var(--ink-bottom), 0 1px 2px var(--drop-1),
-      0 6px 14px -6px var(--drop-2);
+  .btn-lg { min-height: 2.75rem; padding: 0.75rem 1.25rem; font-size: 0.90625rem; border-radius: 12px; gap: 0.625rem; }
+  /* Kura's ink key: the one filled button. Primary and accent are the same press. */
+  .btn-primary, .btn-accent {
+    color: var(--accent-ink); background-image: var(--ink-fill); box-shadow: var(--shadow-ink);
+    letter-spacing: -0.005em;
   }
-  .btn-primary:not(:disabled):hover { filter: brightness(1.12); }
-  .btn-primary:not(:disabled):active { box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.35), 0 0 0 1px var(--ink-bottom); }
-  .btn-accent {
-    color: var(--accent-ink); background: linear-gradient(var(--accent-top), var(--accent-bottom));
-    box-shadow: var(--shadow-accent); text-shadow: 0 1px 0 rgb(255 255 255 / 0.25);
-  }
-  .btn-accent:not(:disabled):hover {
-    filter: brightness(1.05) saturate(1.05);
-    box-shadow: var(--shadow-accent), 0 0 24px -4px var(--glow);
-  }
-  .btn-accent:not(:disabled):active {
-    box-shadow: inset 0 2px 4px rgb(0 60 95 / 0.35), 0 0 0 1px rgb(0 115 165 / 0.5);
-  }
-  .btn-secondary { color: var(--ink); background: linear-gradient(var(--key-top), var(--key-bottom)); box-shadow: var(--shadow-btn); }
+  .btn-primary:not(:disabled):hover, .btn-accent:not(:disabled):hover { background-image: var(--ink-fill-hover); }
+  .btn-secondary { color: var(--ink); background: var(--raised); box-shadow: var(--shadow-btn); }
   .btn-secondary:not(:disabled):hover {
     box-shadow: inset 0 1px 0 var(--hl), 0 0 0 1px var(--edge-strong), 0 1px 1px var(--drop-1), 0 4px 10px -4px var(--drop-2);
   }
@@ -854,8 +779,8 @@
   }
   .data-table tr:last-child > th, .data-table tr:last-child > td { border-bottom: 0; }
   .data-table thead th {
-    font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 400; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--ink-3);
+    font-family: var(--font-mono); font-size: 0.75rem; font-weight: 400; letter-spacing: 0;
+    color: var(--ink-3);
   }
   .data-table tbody th { font-weight: 500; }
   .data-table td { color: var(--ink-2); }
@@ -1008,4 +933,61 @@
 
   .rise { animation: rise 420ms var(--ease-out) both; animation-delay: var(--d, 0ms); }
   @keyframes rise { from { transform: translateY(6px); } }
+}
+
+/* ---------- The playground workspace ---------- */
+@layer components {
+  /* The traffic dial: a hairline track filled in ink up to the thumb, and a keycap thumb. */
+  .pg-range {
+    -webkit-appearance: none; appearance: none; height: 22px; background: transparent; cursor: pointer;
+  }
+  .pg-range:disabled { cursor: not-allowed; opacity: 0.55; }
+  .pg-range::-webkit-slider-runnable-track {
+    height: 4px; border-radius: 999px;
+    background: linear-gradient(to right, var(--ink) var(--fill, 50%), color-mix(in srgb, var(--ink) 12%, transparent) var(--fill, 50%));
+  }
+  .pg-range::-moz-range-track { height: 4px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 12%, transparent); }
+  .pg-range::-moz-range-progress { height: 4px; border-radius: 999px; background: var(--ink); }
+  .pg-range::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 18px; height: 18px; margin-top: -7px; border-radius: 999px;
+    background: var(--raised); box-shadow: 0 0 0 1px var(--edge-strong), 0 1px 3px var(--drop-2), inset 0 0 0 5px var(--ink);
+    transition: transform 140ms var(--ease-out);
+  }
+  .pg-range::-moz-range-thumb {
+    width: 18px; height: 18px; border: 0; border-radius: 999px;
+    background: var(--raised); box-shadow: 0 0 0 1px var(--edge-strong), 0 1px 3px var(--drop-2), inset 0 0 0 5px var(--ink);
+  }
+  .pg-range:not(:disabled):active::-webkit-slider-thumb { transform: scale(1.12); }
+  .pg-range:focus-visible { outline: none; }
+  .pg-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 2px var(--raised), 0 0 0 4px var(--focus), inset 0 0 0 5px var(--ink); }
+
+  /* The first thing to touch, breathing in ember. */
+  .pg-pulse { animation: pg-pulse 1.8s var(--ease-in-out) infinite; }
+  @keyframes pg-pulse {
+    0%, 100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-solid) 55%, transparent), 0 0 0 0 color-mix(in srgb, var(--accent-solid) 30%, transparent); }
+    50% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-solid) 55%, transparent), 0 0 0 6px color-mix(in srgb, var(--accent-solid) 0%, transparent); }
+  }
+  .pg-coach { animation: pg-rise 320ms var(--ease-out); box-shadow: inset 0 0 0 1px var(--edge); }
+  @keyframes pg-rise { from { opacity: 0; transform: translateY(6px); } }
+
+  /* Sections shown inside the tabs keep their own markup; only the gap above the first changes. */
+  .pg-tab > :first-child { margin-top: 0.875rem; }
+  .pg-tab > section > h2:first-child { display: none; }
+}
+
+/* Panels floating over the playground's canvas: frosted surface, hairline ring, a soft lift. Utilities, so
+   they take responsive variants (lg:pg-panel). */
+@utility pg-panel {
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--raised) 96%, transparent);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow: 0 0 0 1px var(--edge), 0 1px 2px var(--drop-1), 0 12px 32px -14px var(--drop-2);
+}
+/* The stage: the page itself becomes the canvas, dotted like Kura's. */
+@utility pg-canvas {
+  background-color: var(--paper);
+  background-image: radial-gradient(circle at center, var(--grid-minor) 1px, transparent 1.3px);
+  background-size: 22px 22px;
+  background-position: -11px -11px;
 }

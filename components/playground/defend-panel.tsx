@@ -29,9 +29,9 @@ export function DefendPanel({
   const right = questions.filter((q) => picked[`${q.id}:${q.answer}`] === q.answer).length;
 
   return (
-    <section aria-labelledby="defend" className="mt-8">
+    <section aria-labelledby="defend" className="mt-10">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h2 id="defend" className="font-display text-[1.25rem] tracking-[-0.015em]">
+        <h2 id="defend" className="text-[15px] font-semibold tracking-[-0.01em]">
           Defend it
         </h2>
         <p className="font-mono text-[0.75rem] text-ink-3" aria-live="polite">

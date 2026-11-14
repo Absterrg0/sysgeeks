@@ -262,8 +262,6 @@ export function ProjectPlay({
               sim={sim}
               onPick={setSelected}
               onTraffic={() => setLevel("growth")}
-              scenarios={[]}
-              onScenario={() => {}}
             />
           )}
         </aside>

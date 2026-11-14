@@ -83,15 +83,16 @@ export function WorkspaceBar({
   end?: ReactNode;
 }) {
   return (
-    <div className="nav-drawer">
-      <nav aria-label={label} className="flex h-[3.25rem] items-center gap-3 px-2 md:grid md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:px-2.5">
-        <Link href={href} className="group hidden min-w-0 items-center gap-2.5 rounded-lg py-1 pr-2 md:flex" title={title}>
-          <span className="grid h-7 w-8 shrink-0 place-items-center rounded-md bg-raised text-ink-2 shadow-[inset_0_0_0_1px_var(--edge-strong)]">
+    // Kura glass, like the bar above it: a second floating row rather than a drawer tucked beneath.
+    <div className="relative z-0 mt-1.5 rounded-[14px] bg-[color-mix(in_oklab,var(--raised)_68%,transparent)] shadow-[0_0_0_1px_var(--edge),0_1px_2px_var(--drop-1),0_10px_28px_-16px_var(--drop-2)] backdrop-blur-[18px] backdrop-saturate-150">
+      <nav aria-label={label} className="flex h-12 items-center gap-3 px-1.5 md:grid md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:px-2">
+        <Link href={href} className="group hidden min-w-0 items-center gap-2.5 rounded-lg py-1 pr-2 pl-1 md:flex" title={title}>
+          <span className="grid h-7 w-8 shrink-0 place-items-center rounded-[8px] bg-raised text-ink-2 shadow-[var(--shadow-key)]">
             {glyph}
           </span>
           <span className="min-w-0 leading-tight">
-            <span className="block truncate text-[0.8125rem] font-medium text-ink group-hover:text-accent">{title}</span>
-            {detail && <span className="block truncate text-[0.6875rem] text-ink-3">{detail}</span>}
+            <span className="block truncate text-[0.8125rem] font-medium text-ink">{title}</span>
+            {detail && <span className="block truncate text-[0.71875rem] text-ink-3">{detail}</span>}
           </span>
         </Link>
         <ul className="seg min-w-0 overflow-x-auto md:col-start-2 md:justify-self-center">

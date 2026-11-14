@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Funnel_Display, Funnel_Sans } from "next/font/google";
+import { Geist } from "next/font/google";
 import localFont from "next/font/local";
 import { Toaster } from "@/components/feedback";
 import { SiteFooter } from "@/components/site-footer";
@@ -15,21 +15,14 @@ import { jsonLd, TITLE_SUFFIX } from "@/lib/metadata";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_REPO_URL, SITE_TITLE, SITE_URL, SITE_X_HANDLE, SITE_X_URL } from "@/lib/site";
 import "./globals.css";
 
-// Funnel Sans for reading and the interface; Funnel Display for titles.
-const sans = Funnel_Sans({ subsets: ["latin"], variable: "--font-funnel-sans", display: "swap" });
-const display = Funnel_Display({ subsets: ["latin"], variable: "--font-funnel-display", display: "swap" });
+// Geist for words, Geist Mono for data.
+const sans = Geist({ subsets: ["latin"], variable: "--font-geist-sans", display: "swap" });
 // Labels, numerals and code: pinned to weight 400 and subset to ASCII, 5.5 kB.
 const mono = localFont({
   src: "../assets/fonts/GeistMono-Latin.woff2",
   variable: "--font-geist-mono",
   display: "swap",
   preload: false,
-});
-// Geist Pixel: the wordmark and the few lit words on the display. Latin-1, 24 kB.
-const pixel = localFont({
-  src: "../assets/fonts/GeistPixel-Regular.woff",
-  variable: "--font-geist-pixel",
-  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -75,8 +68,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F6F7F9" },
-    { media: "(prefers-color-scheme: dark)", color: "#07080A" },
+    { media: "(prefers-color-scheme: light)", color: "#E9EBEE" },
+    { media: "(prefers-color-scheme: dark)", color: "#0C0D0F" },
   ],
 };
 
@@ -112,7 +105,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteFooter />
         <Toaster />
       </div>
-      <div className="grain" aria-hidden="true" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -148,7 +140,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${sans.variable} ${display.variable} ${mono.variable} ${pixel.variable}`}
+      className={`${sans.variable} ${mono.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />

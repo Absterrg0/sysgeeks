@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContentUsefulness } from "@/components/content-usefulness";
+import type { ReactNode } from "react";
+import { InterviewSetup } from "@/components/interview/interview-setup";
 import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { ShareButton } from "@/components/share";
-import { PageHeader, Section } from "@/components/page-header";
 import { listInvestigations } from "@/lib/content";
+import { listExercises } from "@/lib/content/exercises";
+import type { InterviewCandidate } from "@/lib/domain/interview";
 import { breadcrumbs, faqPage, jsonLd, pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -101,9 +104,37 @@ const FOLLOW_UP_PROMPTS = [
   ],
 ] as const;
 
-export default function SystemDesignMockInterviewPage() {
+const STEPS = [
+  ["Pick a length", "30, 45 or 60 minutes. Balanced, failure-heavy, or aimed at your weak spots."],
+  ["Answer before the reference", "Explain a mechanism, make a design call, reason through a failure, defend a system."],
+  ["Read the debrief", "Compare with the authored references and mark what you covered. Drill the weakest skill next."],
+] as const;
+
+/** A section of the reading column: a heading, then prose or a list. */
+function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
-    <article className="measure">
+    <section aria-labelledby={id} className="mt-16 sm:mt-20">
+      <h2 id={id} className="text-[1.375rem] leading-[1.2] font-semibold tracking-[-0.025em] text-balance">
+        {title}
+      </h2>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+export default function SystemDesignMockInterviewPage() {
+  const candidates: InterviewCandidate[] = listExercises().map((e) => ({
+    key: e.key,
+    ref: e.ref,
+    interactionKind: e.interactionKind,
+    phase: e.phase,
+    eventKind: e.eventKind,
+    dimensions: e.dimensions,
+    conceptIds: e.conceptIds,
+    minutes: e.minutes,
+  }));
+  return (
+    <article>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -126,75 +157,62 @@ export default function SystemDesignMockInterviewPage() {
         }}
       />
 
-      <PageHeader title="Free system design mock interview practice">
-        Rehearse a timed system design interview on your own. Choose a 30, 45, or 60-minute session, work through
-        questions about real systems, and save the references for the debrief. No account or practice partner needed.
-      </PageHeader>
+      <header className="grid grid-cols-1 items-start gap-x-14 gap-y-10 pt-10 sm:pt-16 lg:grid-cols-[minmax(0,1fr)_30rem]">
+        <div className="lg:pt-4">
+          <p className="font-mono text-[0.75rem] text-ink-3">free · no account · runs in your browser</p>
+          <h1 className="mt-4 max-w-[16ch] text-[clamp(2rem,1.6rem+1.6vw,3rem)] leading-[1.04] font-semibold tracking-[-0.04em] text-balance">
+            Free system design mock interview practice.
+          </h1>
+          <p className="mt-5 max-w-[46ch] text-[1rem] leading-relaxed text-ink-2 text-pretty">
+            Rehearse a timed round on your own. Questions about real systems, answered before you see the reference,
+            then an honest debrief. No partner needed.
+          </p>
+          <ol className="mt-8 max-w-[46ch] space-y-4">
+            {STEPS.map(([title, text], i) => (
+              <li key={title} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-2">
+                <span className="pt-px font-mono text-[0.75rem] text-ink-3 tabular-nums">0{i + 1}</span>
+                <div>
+                  <h2 className="text-[0.9375rem] font-semibold tracking-[-0.01em]">{title}</h2>
+                  <p className="mt-0.5 text-[0.875rem] leading-relaxed text-ink-2">{text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div id="start" className="min-w-0">
+          <InterviewSetup candidates={candidates} layout="hero" />
+          <p className="mt-3 px-1 text-[0.75rem] leading-relaxed text-ink-3">
+            Your answers and progress stay in this browser. Want to study first?{" "}
+            <PracticeEntryLink href="/investigations" source="mock_interview_landing_browse_systems" className="link">
+              Browse the practice systems
+            </PracticeEntryLink>
+            .
+          </p>
+        </div>
+      </header>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <PracticeEntryLink
-          href="/review#session"
-          source="mock_interview_landing_hero"
-          className="btn btn-accent btn-lg"
-        >
-          Choose a mock interview length
-        </PracticeEntryLink>
-        <PracticeEntryLink
-          href="/investigations"
-          source="mock_interview_landing_browse_systems"
-          className="btn btn-secondary btn-lg"
-        >
-          Browse practice systems
-        </PracticeEntryLink>
-        <ShareButton
-          url={`${SITE_URL}${PATH}`}
-          title={TITLE}
-          text="A free, self-guided system design mock interview with timed rounds and a practical scorecard."
-        />
-      </div>
-      <p className="mt-3 max-w-[72ch] text-[0.8125rem] leading-relaxed text-ink-3">
-        Your answers and progress stay in this browser. No account or AI assessment is required for a practice round.
-      </p>
-
-      <Section id="format" title="How the mock interview works">
-        <ol className="max-w-[72ch] divide-y divide-rule border-y border-rule">
-          {[
-            ["Choose a length and focus", "Pick 30, 45, or 60 minutes. Use a balanced session, spend more time on failures, or target weak areas after you have practice evidence."],
-            ["Answer before you see the reference", "Work through a changing set of prompts. Explain a concept, make a design decision, reason about a failure, or defend a system. Your answers come before the reference material."],
-            ["Review the debrief", "After you finish, compare your reasoning with the authored references and assess which parts you covered. Use a missed requirement or weak trade-off as the focus for your next practice round."],
-          ].map(([title, text], i) => (
-            <li key={title} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3 py-4">
-              <span className="pt-0.5 font-heading text-[1.125rem] text-ink-3 tabular-nums">{i + 1}</span>
-              <div>
-                <h2 className="text-[0.9375rem] font-medium">{title}</h2>
-                <p className="mt-1 text-[0.9375rem] leading-relaxed text-ink-2">{text}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </Section>
-
+      <div className="mt-6 max-w-[42rem]">
       <Section id="skills" title="What you practise">
-        <p className="max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
+        <p className="text-[0.9375rem] leading-relaxed text-ink-2">
           System design interviews test how you reason through a problem, not whether you can recite one reference
           architecture. Sessions draw from SysGeeks exercises about systems such as a URL shortener, rate limiter, news
           feed, payment workflow, and video processing pipeline.
         </p>
-        <ul className="mt-4 max-w-[72ch] list-disc space-y-2 pl-5 text-[0.9375rem] leading-relaxed text-ink-2">
+        <ul className="mt-4 list-disc space-y-2 pl-5 text-[0.9375rem] leading-relaxed text-ink-2">
           <li>Explain a distributed-systems concept in the context of a design.</li>
           <li>Choose an approach and state the cost of the trade-off.</li>
           <li>Diagnose what happens when a component fails or a request times out.</li>
           <li>Change the design when traffic or a requirement changes.</li>
           <li>Defend the guarantees and limits of the system you designed.</li>
         </ul>
-        <p className="mt-4 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
+        <p className="mt-4 text-[0.9375rem] leading-relaxed text-ink-2">
           This is a self-guided practice tool, not a live interviewer or voice simulation. If you want to study a system
           first, work through an <Link href="/investigations" className="link">interactive system design question</Link> and its written walkthrough, then return for a timed round.
         </p>
       </Section>
 
       <Section id="scorecard" title="A practical system design interview self-scorecard">
-        <div className="max-w-[72ch] space-y-4 text-[0.9375rem] leading-relaxed text-ink-2">
+        <div className="space-y-4 text-[0.9375rem] leading-relaxed text-ink-2">
           <p>
             After a mock, score each dimension from 0 to 2. Give yourself 0 if you skipped it, 1 if you did it with
             gaps, and 2 if your reasoning was clear and tied to the stated constraints.
@@ -236,50 +254,50 @@ export default function SystemDesignMockInterviewPage() {
       </Section>
 
       <Section id="solo-prompts" title="System design interview follow-up questions to practise">
-        <p className="max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
+        <p className="text-[0.9375rem] leading-relaxed text-ink-2">
           Use these as practice prompts, not as claims about questions asked by a particular employer. In a solo round,
           pause after each major design choice and answer the follow-up before moving on. The 45-minute plan in the{" "}
           <Link href="/system-design-interview#plan" className="link">system design interview guide</Link> gives you a place for that deeper reasoning.
         </p>
-        <p className="mt-3 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
+        <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">
           For worked answers to common failure follow-ups, read the{" "}
           <Link href="/system-design-interview/failure-scenarios" className="link">
             system design interview follow-up questions and failure scenarios guide
           </Link>
           .
         </p>
-        <ol className="mt-5 max-w-[72ch] divide-y divide-rule border-y border-rule">
+        <ol className="mt-5 divide-y divide-rule border-y border-rule">
           {FOLLOW_UP_PROMPTS.map(([question, answer, href, linkText]) => (
             <li key={question} className="py-3.5">
               <h3 className="text-[0.9375rem] font-medium">{question}</h3>
               <p className="mt-1 text-[0.9375rem] leading-relaxed text-ink-2">{answer}</p>
-              <Link href={href} className="mt-2 inline-flex text-[0.8125rem] font-medium text-accent hover:underline">
-                {linkText} →
+              <Link href={href} className="mt-2 inline-flex text-[0.8125rem] font-medium text-ink underline decoration-rule-strong underline-offset-4 hover:decoration-ink">
+                {linkText}
               </Link>
             </li>
           ))}
         </ol>
-        <p className="mt-4 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
+        <p className="mt-4 text-[0.9375rem] leading-relaxed text-ink-2">
           Practise one prompt aloud, write down the assumption that drives your answer, and identify what evidence
           would tell you the design is working. Then compare your reasoning with the linked exercise and its worked
           walkthrough.
         </p>
-        <p className="mt-3 max-w-[72ch] text-[0.9375rem] leading-relaxed text-ink-2">
+        <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">
           A solo round cannot give you the pushback of a live interviewer. It can still help you practise clear
           reasoning and find one weak spot between peer mocks. SysGeeks practice sessions are free and do not need an
           account.
         </p>
         <PracticeEntryLink
-          href="/review#session"
+          href="#start"
           source="mock_interview_landing_final_cta"
-          className="mt-5 inline-flex btn btn-accent"
+          className="mt-6 inline-flex btn btn-accent"
         >
           Start a timed system design mock
         </PracticeEntryLink>
       </Section>
 
       <Section id="faq" title="System design mock interview questions">
-        <dl className="max-w-[72ch] divide-y divide-rule border-y border-rule">
+        <dl className="divide-y divide-rule border-y border-rule">
           {FAQ.map(({ question, answer }) => (
             <div key={question} className="py-4">
               <dt className="font-medium">{question}</dt>
@@ -288,7 +306,16 @@ export default function SystemDesignMockInterviewPage() {
           ))}
         </dl>
       </Section>
+      <div className="mt-10 flex items-center justify-between gap-4 border-t border-rule pt-5">
+        <p className="text-[0.8125rem] text-ink-3">Know someone preparing?</p>
+        <ShareButton
+          url={`${SITE_URL}${PATH}`}
+          title={TITLE}
+          text="A free, self-guided system design mock interview with timed rounds and a practical scorecard."
+        />
+      </div>
       <ContentUsefulness />
+      </div>
     </article>
   );
 }

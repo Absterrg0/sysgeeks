@@ -32,12 +32,16 @@ export function StageWalkthrough({
   });
 
   return (
-    <article id={`stage-${stage.id}`} className="scroll-mt-14">
-      <header className="border-t border-rule-soft pt-8">
-        <p className="eyebrow">
-          Stage {index + 1} of {total} · {PHASE_LABELS[stage.phase]}
+    <article id={`stage-${stage.id}`} className="scroll-mt-36">
+      <header className="border-t border-rule pt-8">
+        <p className="flex items-center gap-2 text-[0.75rem] font-medium text-ink-3">
+          <span className="font-mono tabular-nums text-ink">{String(index + 1).padStart(2, "0")}</span>
+          <span className="text-rule-strong">/</span>
+          <span className="font-mono tabular-nums">{String(total).padStart(2, "0")}</span>
+          <span className="mx-1 text-rule-strong">·</span>
+          {PHASE_LABELS[stage.phase]}
         </p>
-        <h3 className="mt-1 font-display text-[1.25rem] leading-tight">{stage.title}</h3>
+        <h3 className="mt-2 text-[1.25rem] leading-tight font-semibold tracking-[-0.025em]">{stage.title}</h3>
       </header>
 
       <div className="mt-4 space-y-6">
@@ -61,7 +65,7 @@ export function StageWalkthrough({
         )}
 
         <div className="max-w-[70ch]">
-          <h4 className="eyebrow mb-2">What the stage asks</h4>
+          <h4 className="kicker mb-2.5">What the stage asks</h4>
           <p className="font-heading text-[1.0625rem] leading-snug">{stage.interaction.prompt}</p>
         </div>
 
@@ -70,7 +74,7 @@ export function StageWalkthrough({
         </div>
 
         <div className="max-w-[66ch]">
-          <h4 className="eyebrow mb-3">The reasoning</h4>
+          <h4 className="kicker mb-3">The reasoning</h4>
           <Reveal reveal={stage.reveal} headingLevel={4} />
         </div>
 
@@ -103,7 +107,7 @@ export function StageWalkthrough({
 function AnswerPoints({ title, rubric }: { title: string; rubric: readonly RubricPoint[] }) {
   return (
     <div>
-      <h4 className="eyebrow mb-2">{title}</h4>
+      <h4 className="kicker mb-2.5">{title}</h4>
       <DashList
         muted
         items={rubric.map((point) => (
@@ -137,9 +141,12 @@ function Answer({ interaction }: { interaction: Interaction }) {
 function DecisionAnswer({ interaction }: { interaction: InteractionOf<"decision"> }) {
   return (
     <div className="space-y-5">
-      <ol className="space-y-3">
+      <ol className="sheet overflow-hidden">
         {interaction.options.map((option) => (
-          <li key={option.id} className={`px-4 py-3.5 sm:px-5 ${option.assessment === "sound" ? "panel" : "well"}`}>
+          <li
+            key={option.id}
+            className={`sheet-row px-4 py-3.5 sm:px-5 ${option.assessment === "sound" ? "shadow-[inset_3px_0_0_var(--mark-strong)]" : ""}`}
+          >
             <div className="flex flex-wrap items-start gap-x-2.5 gap-y-1.5">
               <AssessmentBadge assessment={option.assessment} />
               <p className="min-w-[12rem] flex-1 text-[0.9375rem] font-medium leading-snug">
@@ -162,9 +169,9 @@ function DecisionAnswer({ interaction }: { interaction: InteractionOf<"decision"
 
 function ClaimsAnswer({ interaction }: { interaction: InteractionOf<"claims"> }) {
   return (
-    <ol className="space-y-3">
+    <ol className="sheet overflow-hidden">
       {interaction.claims.map((claim) => (
-        <li key={claim.id} className="well px-4 py-3.5 sm:px-5">
+        <li key={claim.id} className="sheet-row px-4 py-3.5 sm:px-5">
           <div className="flex flex-wrap items-start gap-x-2.5 gap-y-1.5">
             <VerdictBadge verdict={claim.verdict} />
             <p className="min-w-[12rem] flex-1 text-[0.9375rem] font-medium leading-snug">
@@ -182,7 +189,7 @@ function OrderingAnswer({ interaction }: { interaction: InteractionOf<"ordering"
   return (
     <div className="space-y-4">
       <div>
-        <h4 className="eyebrow mb-2">In this order</h4>
+        <h4 className="kicker mb-2.5">In this order</h4>
         <ol className="space-y-2">
           {interaction.items.map((item, i) => (
             <li key={item.id} className="flex gap-3">
@@ -250,7 +257,7 @@ function OpenAnswer({ interaction }: { interaction: InteractionOf<"open"> }) {
   return (
     <div className="space-y-5">
       <div>
-        <h4 className="eyebrow mb-2">Reference answer</h4>
+        <h4 className="kicker mb-2.5">Reference answer</h4>
         <Prose text={interaction.reference} />
       </div>
       <AnswerPoints title="What a strong answer covers" rubric={interaction.rubric} />
@@ -262,8 +269,8 @@ function ImplementationAnswer({ interaction }: { interaction: InteractionOf<"imp
   return (
     <div className="space-y-5">
       <div>
-        <h4 className="eyebrow mb-2">Reference implementation</h4>
-        <pre className="panel overflow-x-auto px-4 py-3 font-mono text-[0.8125rem] leading-relaxed">
+        <h4 className="kicker mb-2.5">Reference implementation</h4>
+        <pre className="sheet overflow-x-auto px-4 py-3 font-mono text-[0.8125rem] leading-relaxed">
           {interaction.reference.code}
         </pre>
         <div className="mt-3">

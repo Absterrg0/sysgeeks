@@ -24,16 +24,16 @@ export function PageHeader({
   align?: "start" | "center";
 }) {
   return (
-    <header className="mb-2 flex flex-wrap items-end justify-between gap-x-10 gap-y-5 border-b border-rule pt-8 pb-6 sm:pt-10">
+    <header className="mb-2 flex flex-wrap items-end justify-between gap-x-10 gap-y-6 pt-8 pb-8 sm:pt-12">
       <div className="min-w-0 max-w-3xl">
-        {eyebrow && <p className="mb-2 text-[0.8125rem] text-ink-3">{eyebrow}</p>}
-        <h1 className="font-display text-[1.75rem] leading-[1.15] tracking-[-0.02em] text-balance sm:text-[2rem]">
+        {eyebrow && <p className="mb-3 text-[0.8125rem] text-ink-3">{eyebrow}</p>}
+        <h1 className="text-[clamp(2rem,1.6rem+1.4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance">
           {title}
         </h1>
         {children && (
-          <p className="mt-2.5 max-w-[66ch] text-[0.9375rem] leading-relaxed text-ink-2 text-pretty">{children}</p>
+          <p className="mt-4 max-w-[40rem] text-[1.0625rem] leading-relaxed text-ink-2 text-pretty">{children}</p>
         )}
-        {meta && <p className="mt-2.5 text-[0.8125rem] text-ink-3">{meta}</p>}
+        {meta && <p className="mt-3 text-[0.8125rem] text-ink-3">{meta}</p>}
       </div>
       {(actions || aside) && (
         <div className="flex flex-wrap items-center gap-2">
@@ -108,7 +108,7 @@ export function Section({
   const heading = (
     <div className="min-w-0">
       {eyebrow && <p className="kicker mb-3">{eyebrow}</p>}
-      <h2 id={id} className="font-display text-[1.375rem] leading-tight text-balance">
+      <h2 id={id} className="text-[1.375rem] leading-[1.2] font-semibold tracking-[-0.025em] text-balance">
         {title}
       </h2>
       {description && (
@@ -120,7 +120,7 @@ export function Section({
     return (
       <section
         aria-labelledby={id}
-        className={`section scroll-mt-14 grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] ${className}`}
+        className={`section scroll-mt-36 grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] ${className}`}
       >
         <div className="lg:sticky lg:top-24 lg:self-start">
           {heading}
@@ -131,7 +131,7 @@ export function Section({
     );
   }
   return (
-    <section aria-labelledby={id} className={`section scroll-mt-14 ${className}`}>
+    <section aria-labelledby={id} className={`section scroll-mt-36 ${className}`}>
       <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
         {heading}
         {action}

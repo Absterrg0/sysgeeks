@@ -1,11 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { StageBarInvestigation } from "@/components/investigation/stage-bar";
-import { Brand, DesktopLinks, DesktopNav } from "@/components/site-nav";
+import { Brand, DesktopNav } from "@/components/site-nav";
+import { DotArrow } from "@/components/icons";
+import { PracticeEntryLink } from "@/components/practice-entry-link";
 import { AiKeyButton } from "@/components/ai-key/ai-key-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -24,7 +25,9 @@ function preloadMobileNav() {
 export function SiteHeader({ investigations }: { investigations: StageBarInvestigation[] }) {
   const pathname = usePathname();
   // Inside a system, the bar grows a second row: the system's workspace.
-  const match = pathname.match(/^\/investigations\/([^/]+)/);
+  // The playground is its own workspace, with its own system switcher: no second row there.
+  const app = pathname === "/" || /\/playground\/?$/.test(pathname);
+  const match = app ? null : pathname.match(/^\/investigations\/([^/]+)/);
   const investigation = match ? investigations.find((inv) => inv.id === match[1]) : undefined;
   const project = pathname.match(/^\/projects\/(?!new$|examples(?:\/|$))([^/]+)\/?$/)?.[1];
   const [open, setOpen] = useState(false);
@@ -49,22 +52,19 @@ export function SiteHeader({ investigations }: { investigations: StageBarInvesti
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 px-3 pt-3 sm:px-4 sm:pt-4 lg:px-6">
-      {/* A rem wider than the page's content column on each side, so the brand inside it lines up with the content. */}
-      <div className="nav-float relative z-10 mx-auto max-w-[71rem]">
-        <div className="flex h-14 items-center gap-6 pr-2 pl-4">
+    <header className={`sticky top-0 z-40 px-2 pt-2 md:pt-3 ${app ? "sm:px-4" : "md:px-6"}`}>
+      {/* A rem wider than the page's content column on each side, so the brand inside it lines up with the content.
+          On the workspace screens the bar spans the window, in line with the panels under it. */}
+      <div className={`nav-float relative z-10 mx-auto ${app ? "max-w-none" : "max-w-[71rem]"}`}>
+        <div className="flex h-14 items-center gap-2 pr-2 pl-3 md:gap-3 md:pr-2.5 md:pl-3.5">
           <Brand onNavigate={() => setOpen(false)} />
           <DesktopNav />
-          <div className="ml-auto flex items-center gap-1.5">
-            <DesktopLinks />
+          <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
             <AiKeyButton />
-            <Link href="/investigations" prefetch={false} className="btn btn-accent btn-sm ml-1.5 hidden sm:inline-flex">
-              Practice system design
-            </Link>
             <button
               type="button"
-              className="knob size-10 text-ink lg:hidden"
+              className="knob size-10 text-ink-2 lg:size-8"
               aria-expanded={open}
               aria-controls="mobile-nav"
               aria-label={open ? "Close menu" : "Open menu"}
@@ -86,12 +86,21 @@ export function SiteHeader({ investigations }: { investigations: StageBarInvesti
                 />
               </svg>
             </button>
+            <PracticeEntryLink
+              href="/investigations/url-shortener/playground"
+              investigationId="url-shortener"
+              source="header_playground"
+              className="btn btn-accent group ml-1 hidden h-9 rounded-[10px] pr-3 pl-3.5 sm:inline-flex"
+            >
+              Open playground
+              <DotArrow />
+            </PracticeEntryLink>
           </div>
         </div>
         {open && (
           <div
             id="mobile-nav"
-            className="max-h-[calc(100dvh-5.5rem)] overflow-y-auto border-t border-rule-soft px-2 py-4 lg:hidden"
+            className="max-h-[calc(100dvh-5.5rem)] overflow-y-auto border-t border-rule-soft px-2 py-4"
           >
             <MobileNav onNavigate={() => setOpen(false)} />
           </div>

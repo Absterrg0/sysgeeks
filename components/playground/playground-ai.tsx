@@ -127,7 +127,7 @@ export function PlaygroundAi(props: {
   return (
     <section aria-labelledby="ai-read" className="mt-10">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h2 id="ai-read" className="font-display text-[1.25rem] tracking-[-0.015em]">
+        <h2 id="ai-read" className="text-[15px] font-semibold tracking-[-0.01em]">
           Ask AI what your design does
         </h2>
         <span className="ai-label">AI</span>

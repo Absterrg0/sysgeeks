@@ -7,7 +7,8 @@ import { StageWalkthrough } from "@/components/investigation/walkthrough";
 import { Prose } from "@/components/prose";
 import { SystemMap } from "@/components/system-map";
 import { SourceList } from "@/components/writeup";
-import { DashList, PageHeader, Section } from "@/components/page-header";
+import { DashList, Section } from "@/components/page-header";
+import { DotArrow } from "@/components/icons";
 import { getInvestigation, listInvestigations, writeupsForInvestigation } from "@/lib/content";
 import { breadcrumbs, clipDescription, faqPage, jsonLd, pageMetadata, systemNameForTitle } from "@/lib/metadata";
 import { proseToPlainText } from "@/lib/prose";
@@ -77,6 +78,21 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
       .map((c) => `${c.label} (${lowerFirst(c.responsibility).replace(/\.$/, "")})`)
       .join("; ")}.`;
 
+  const toc = [
+    { id: "answer", label: "The short answer" },
+    { id: "architecture", label: "The architecture" },
+    ...(sources.length > 0 ? [{ id: "sources", label: "Primary sources" }] : []),
+    { id: "why", label: "Why it works" },
+    { id: "invariants", label: "Invariants" },
+    { id: "relies", label: "What it relies on" },
+    { id: "tradeoffs", label: "Tradeoffs" },
+    { id: "alternatives", label: "Alternatives" },
+    { id: "breaks", label: "When it stops working" },
+    { id: "walkthrough", label: "Every stage" },
+    { id: "evidence", label: "How you did" },
+    { id: "variants", label: "As an interview question" },
+  ];
+
   return (
     <div>
       <script
@@ -118,52 +134,67 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
           }),
         }}
       />
-      <div className="measure">
-        <PageHeader
-          eyebrow="The finished design, decision by decision"
-          title={howTo(inv.searchTitle)}
-          meta={`By SysGeeks · ${inv.title}`}
-        >
-          Not the one correct diagram, but a design you can defend under these constraints: the finished architecture, then
-          every stage&apos;s question with the reasoning that answers it, the tradeoffs it accepts, and where another
+      <header className="pt-8 sm:pt-12">
+        <p className="text-[0.8125rem] text-ink-3">
+          <Link href={`/investigations/${inv.id}`} className="transition-colors hover:text-ink">
+            {inv.title}
+          </Link>
+          <span className="mx-1.5 text-rule-strong">/</span>
+          The finished design, decision by decision
+        </p>
+        <h1 className="mt-3 max-w-[24ch] text-[clamp(2rem,1.6rem+1.4vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance">
+          {howTo(inv.searchTitle)}
+        </h1>
+        <p className="mt-4 max-w-[40rem] text-[1.0625rem] leading-relaxed text-ink-2 text-pretty">
+          Not the one correct diagram, but a design you can defend under these constraints: the finished architecture,
+          then every stage&apos;s question with the reasoning that answers it, the tradeoffs it accepts, and where another
           engineer could land differently.
-        </PageHeader>
-
-        <nav aria-label="Practice this system design question" className="mt-5 flex flex-wrap gap-2.5">
+        </p>
+        <p className="mt-3 text-[0.8125rem] text-ink-3">
+          By SysGeeks · {inv.stages.length} stages · {system.components.length} parts
+        </p>
+        <nav aria-label="Practice this system design question" className="mt-7 flex flex-wrap gap-2.5">
           {firstStage && (
-            <Link href={`/investigations/${inv.id}/${firstStage.id}`} className="btn btn-accent">
+            <Link href={`/investigations/${inv.id}/${firstStage.id}`} className="btn btn-accent btn-lg group">
               Try it before reading the answer
+              <DotArrow />
             </Link>
           )}
-          <Link href={`/investigations/${inv.id}/design`} className="btn btn-secondary">
+          <Link href={`/investigations/${inv.id}/design`} className="btn btn-secondary btn-lg">
             Design it from a blank page
           </Link>
         </nav>
+      </header>
 
-        <section aria-labelledby="short-answer" className="section pt-0 sm:pt-0">
-          <h2 id="short-answer" className="font-display text-[1.5rem] leading-tight">
+      <div className="mt-12 grid gap-x-16 lg:grid-cols-[minmax(0,1fr)_13rem]">
+      <div className="min-w-0 max-w-[46rem]">
+        <section aria-labelledby="short-answer" id="answer" className="scroll-mt-36">
+          <h2 id="short-answer" className="text-[1.375rem] leading-[1.2] font-semibold tracking-[-0.025em]">
             The short answer
           </h2>
-          <p className="mt-3 max-w-[66ch] text-[1rem] leading-relaxed text-ink-2">
+          <p className="mt-3 text-[1.0625rem] leading-relaxed">
             {inv.answerSummary ??
               `${system.components.length} parts, each with one job. The map below shows how requests and data move between them; the stages after it explain why each part is there.`}
           </p>
-          <dl className="mt-6 max-w-[66ch] divide-y divide-rule border-y border-rule">
+          <dl className="sheet mt-6 overflow-hidden">
             {system.components.map((c) => (
-              <div key={c.id} className="grid gap-x-6 gap-y-1 py-3 sm:grid-cols-[11rem_minmax(0,1fr)]">
-                <dt className="text-[0.9375rem] font-medium">{c.label}</dt>
-                <dd className="text-[0.9375rem] leading-relaxed text-ink-2">{c.responsibility}</dd>
+              <div key={c.id} className="sheet-row grid gap-x-6 gap-y-0.5 px-5 py-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+                <dt className="text-[0.875rem] font-medium">{c.label}</dt>
+                <dd className="text-[0.875rem] leading-relaxed text-ink-2">{c.responsibility}</dd>
               </div>
             ))}
           </dl>
         </section>
-      </div>
 
-      <section aria-label="Final architecture" className="section pt-0 sm:pt-0">
-        <SystemMap label={`${inv.title}: final architecture`} components={system.components} flows={system.flows} />
-      </section>
+        <section aria-labelledby="architecture-title" id="architecture" className="mt-14 scroll-mt-36">
+          <h2 id="architecture-title" className="text-[1.375rem] leading-[1.2] font-semibold tracking-[-0.025em]">
+            The architecture
+          </h2>
+          <div className="mt-5">
+            <SystemMap label={`${inv.title}: final architecture`} components={system.components} flows={system.flows} />
+          </div>
+        </section>
 
-      <div className="measure">
         {sources.length > 0 && (
           <Section
             id="sources"
@@ -252,8 +283,8 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
             )
           }
         >
-          <nav aria-label="Stages in this walkthrough" className="well px-4 py-4 sm:px-5">
-            <p className="eyebrow mb-2">Jump to a stage</p>
+          <nav aria-label="Stages in this walkthrough" className="sheet px-4 py-4 sm:px-5 lg:hidden">
+            <p className="kicker mb-2.5">Jump to a stage</p>
             <ol className="grid gap-x-8 gap-y-1.5 text-[0.875rem] sm:grid-cols-2">
               {inv.stages.map((stage, i) => (
                 <li key={stage.id}>
@@ -318,6 +349,36 @@ export default async function ReviewPage(props: PageProps<"/investigations/[inve
             </Link>
           )}
         </Section>
+      </div>
+      <aside aria-label="On this page" className="hidden lg:block">
+        <nav className="sticky top-36 max-h-[calc(100dvh-10rem)] overflow-y-auto pb-6 text-[0.8125rem]">
+          <p className="kicker mb-3">On this page</p>
+          <ol className="space-y-2 border-l border-rule">
+            {toc.map((item) => (
+              <li key={item.id}>
+                <a href={`#${item.id}`} className="-ml-px block border-l border-transparent pl-3 text-ink-2 transition-colors hover:border-ink hover:text-ink">
+                  {item.label}
+                </a>
+                {item.id === "walkthrough" && (
+                  <ol className="mt-2 space-y-1.5">
+                    {inv.stages.map((stage, i) => (
+                      <li key={stage.id}>
+                        <a
+                          href={`#stage-${stage.id}`}
+                          className="-ml-px flex gap-2 border-l border-transparent pl-5 text-ink-3 transition-colors hover:border-ink hover:text-ink"
+                        >
+                          <span className="font-mono text-[0.6875rem] leading-5 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                          <span className="min-w-0 leading-5">{stage.title}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </aside>
       </div>
     </div>
   );

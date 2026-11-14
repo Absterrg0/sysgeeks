@@ -12,7 +12,7 @@ import { DataControls } from "@/components/understanding/data-controls";
 import { UnderstandingView, type InvestigationOutline } from "@/components/understanding/understanding-view";
 import { listConcepts, listInvestigations } from "@/lib/content";
 import { listExercises } from "@/lib/content/exercises";
-import { SCENARIOS } from "@/lib/content/scenarios";
+import { listMissions } from "@/lib/content/scenarios";
 import type { InterviewCandidate } from "@/lib/domain/interview";
 import type { CuratedLabels } from "@/lib/exercise-labels";
 import { pageMetadata } from "@/lib/metadata";
@@ -73,7 +73,7 @@ export default function ReviewPage() {
   }));
 
   const titles = new Map(listInvestigations().map((inv) => [inv.id, inv.title]));
-  const scenarios: ReviewScenario[] = SCENARIOS.map((s) => ({
+  const scenarios: ReviewScenario[] = listMissions().map((s) => ({
     id: s.id,
     investigationId: s.investigationId,
     title: s.title,
